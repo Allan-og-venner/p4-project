@@ -15,11 +15,11 @@ import java_cup.runtime.*;
   StringBuffer string = new StringBuffer();
 
   private Symbol symbol(int type) {
-    return new JavaSymbol(type, yyline+1, yycolumn+1);
+    return new Symbol(type, yyline, yycolumn);
   }
 
   private Symbol symbol(int type, Object value) {
-    return new JavaSymbol(type, yyline+1, yycolumn+1, value);
+    return new Symbol(type, yyline, yycolumn, value);
   }
 %}
 
@@ -89,7 +89,7 @@ SingleCharacter = [^\r\n\'\\]
   "."                            { return symbol(DOT); }
 
   /* operators */
-  "="                            { return symbol(sym.EQ); }
+  "="                            { return symbol(EQ); }
   ">"                            { return symbol(GT); }
   "<"                            { return symbol(LT); }
   "!"                            { return symbol(NOT); }
