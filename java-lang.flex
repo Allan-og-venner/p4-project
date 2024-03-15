@@ -3,21 +3,24 @@ import java_cup.runtime.*;
 %%
 %public
 %class Lexer
-%implements symbol
+%implements sym
 
-%cup
 %unicode
+
 %line
 %column
-%{
-      StringBuffer string = new StringBuffer();
 
-      private Symbol symbol(int type) {
-        return new Symbol(type, yyline, yycolumn);
-      }
-      private Symbol symbol(int type, Object value) {
-        return new Symbol(type, yyline, yycolumn, value);
-      }
+%cup
+%{
+  StringBuffer string = new StringBuffer();
+
+  private Symbol symbol(int type) {
+    return new JavaSymbol(type, yyline+1, yycolumn+1);
+  }
+
+  private Symbol symbol(int type, Object value) {
+    return new JavaSymbol(type, yyline+1, yycolumn+1, value);
+  }
 %}
 
 /* main character classes */
@@ -86,7 +89,7 @@ SingleCharacter = [^\r\n\'\\]
   "."                            { return symbol(DOT); }
 
   /* operators */
-  "="                            { return symbol(EQ); }
+  "="                            { return symbol(sym.EQ); }
   ">"                            { return symbol(GT); }
   "<"                            { return symbol(LT); }
   "!"                            { return symbol(NOT); }
@@ -175,3 +178,5 @@ SingleCharacter = [^\r\n\'\\]
 
 /* error fallback */
 [^]                              { throw new RuntimeException("Illegal character \""+yytext()+"\" at line "+yyline+", column "+yycolumn); }
+
+<<EOF>>                          { return symbol(EOF); }
