@@ -9,7 +9,7 @@ relation: arith '<' relation
         | arith '>' relation
         | arith '!=' relation
         | arith;
-arith:  term '+' factor;
+arith:  term '+' arith | term '-' arith;
 term:   ;
 factor:   ;
 value:  ;
