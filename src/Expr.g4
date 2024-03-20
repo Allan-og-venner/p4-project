@@ -9,4 +9,4 @@ expr:expr + expr;
 
 
 NEWLINE : [\r\n]+ -> skip;
-INT     : [0-9]+ ;'
+INT     : [0-9]+ ;
