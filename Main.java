@@ -1,12 +1,19 @@
 import gen.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        ExprLexer lexer = new ExprLexer(new ANTLRInputStream("int a = b;"));
-        ExprParser parser = new ExprParser(new CommonTokenStream(lexer));
-        ParseTree tree = parser.parse();
+    public static void main(String[] args) {
+        CharStream in = CharStreams.fromString("int a = b + c;");
+        ExprLexer lexer = new ExprLexer(in);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ExprParser parser = new ExprParser(tokens);
+        ParseTree tree = parser.prog();
+        System.out.println("Parse tree output: " + tree.toStringTree(parser));
+
     }
 
 }
