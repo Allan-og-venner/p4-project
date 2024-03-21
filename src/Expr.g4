@@ -75,7 +75,7 @@ CHAR: '\''.'\'';
 STRING: '"'CHAR+'"';
 
 BLOCK_COMMENT
-    : '/' .? '/' -> channel(HIDDEN);
+    : '/*' .*? '*/' -> channel(HIDDEN);
 
 WS : [ \t]+ -> skip ; // toss out whitespace
 NEWLINE : [\r\n]+ -> skip;
