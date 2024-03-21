@@ -62,10 +62,11 @@ TYPE_FLOAT : 'float';
 TYPE_CHAR : 'char';
 TYPE_STRING : 'string';
 
+CHAR: '\''.'\'';
+STRING: '"'CHAR+'"';
+
 NEWLINE : [\r\n]+ -> skip;
 NUMERAL     :  [+-]?[0-9]+ ;
 FLOAT : ((NUMERAL?)'.'([0-9]*))
         |(NUMERAL'.'([0-9]*?));
-CHAR : .;
-STRING : CHAR+;
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9_-]*;
