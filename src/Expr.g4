@@ -11,9 +11,9 @@ defin:  modifier type IDENTIFIER '=' expr
 assign: IDENTIFIER '=' expr;
 
 
-fdecl: modifier KEY_FUNC IDENTIFIER'('fparam')' '{'block'}' | modifier KEY_FUNC IDENTIFIER'('')' '{'block'}';
+fdecl: modifier KEY_FUNC IDENTIFIER'('fparam')' KEY_RETURNTYPE_ARROW type '{'block'}' | modifier KEY_FUNC IDENTIFIER'('')' KEY_RETURNTYPE_ARROW type '{'block'}';
 fparam: type IDENTIFIER | type IDENTIFIER',' fparam;
-aparam: IDENTIFIER | IDENTIFIER',' aparam;
+aparam: expr | expr',' aparam;
 
 cdecl: KEY_CLASS IDENTIFIER '{'block'}' | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER '{'block'}';
 
@@ -22,7 +22,7 @@ call: IDENTIFIER'('aparam')' | IDENTIFIER'('')';
 command: KEY_RETURN expr | KEY_BREAK | KEY_CONTINUE;
 control: loop | ifthen;
 loop:   KEY_LOOP KEY_WHILE '('expr')' '{'block'}'
-        | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN IDENTIFIER;
+        | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN IDENTIFIER '{'block'}';
 ifthen: KEY_IF '('expr')' '{'block'}';
 
 expr:   logic | relation | arith | value;
@@ -38,14 +38,18 @@ arith:  term '+' arith | term '-' arith | term;
 term:   factor '*' term | factor '/' term | factor '%' term | factor;
 factor: '('expr')' | value | '!'factor;
 
-value:  NUMERAL | FLOAT | IDENTIFIER | call | array | string | char | fieldaccess;
-array:  '{''}' | '{'values'}';
+value:  NUMERAL | FLOAT | IDENTIFIER | call | array | string | char | classAccess;
+acessibleValue: IDENTIFIER | call | arrayAccess;
 values: value',' values | value;
-type:   TYPE_INT | TYPE_FLOAT | TYPE_CHAR | TYPE_STRING | IDENTIFIER;
+type:   TYPE_INT | TYPE_FLOAT | TYPE_CHAR | TYPE_STRING | TYPE_VOID | IDENTIFIER;
 modifier : MOD_STATIC | ;
 char:   '\''CHAR'\'';
 string: '"'STRING'"' | '"''"';
-fieldaccess: IDENTIFIER'.'IDENTIFIER | IDENTIFIER'.'fieldaccess;
+
+array:  '{''}' | '{'values'}';
+arrayAccess: IDENTIFIER'['expr']';
+
+classAccess: acessibleValue('.'call |'.'IDENTIFIER)+;
 
 KEY_CLASS : 'class';
 KEY_FUNC : 'func';
@@ -58,13 +62,14 @@ KEY_FOR: 'for';
 KEY_WHILE: 'while';
 KEY_IF: 'if';
 KEY_LOOP: 'loop';
-
 MOD_STATIC : 'static';
+KEY_RETURNTYPE_ARROW : '->';
 
 TYPE_INT : 'int';
 TYPE_FLOAT : 'float';
 TYPE_CHAR : 'char';
 TYPE_STRING : 'string';
+TYPE_VOID : 'void';
 
 CHAR: '\''.'\'';
 STRING: '"'CHAR+'"';
