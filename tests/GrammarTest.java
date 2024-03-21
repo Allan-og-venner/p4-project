@@ -25,7 +25,7 @@ public class GrammarTest {
         assertEquals(4, allTokens.size()); // Expecting three tokens: INT, '+', INT
 
         // Check first token is an integer
-        assertEquals(ExprLexer.TYPE_INT, allTokens.get(0).getType());
+        assertEquals(ExprLexer.NUMERAL, allTokens.get(0).getType());
         assertEquals("3", allTokens.get(0).getText());
 
         // Check second token is the '+' operator
@@ -33,7 +33,7 @@ public class GrammarTest {
         assertEquals("+", allTokens.get(1).getText());
 
         // Check third token is an integer
-        assertEquals(ExprLexer.TYPE_INT, allTokens.get(2).getType());
+        assertEquals(ExprLexer.NUMERAL, allTokens.get(2).getType());
         assertEquals("4", allTokens.get(2).getText());
     }
 }
