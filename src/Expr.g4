@@ -12,7 +12,7 @@ assign: IDENTIFIER '=' expr;
 
 
 fdecl: modifier KEY_FUNC IDENTIFIER'('fparam')' KEY_RETURNTYPE_ARROW type '{'block'}' | modifier KEY_FUNC IDENTIFIER'('')' KEY_RETURNTYPE_ARROW type '{'block'}';
-fparam: type IDENTIFIER | type IDENTIFIER',' fparam;
+fparam: type IDENTIFIER('['']')? | type IDENTIFIER('['']')?',' fparam;
 aparam: expr | expr',' aparam;
 
 cdecl: KEY_CLASS IDENTIFIER '{'block'}' | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER '{'block'}';
