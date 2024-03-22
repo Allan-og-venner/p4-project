@@ -78,8 +78,8 @@ value:  NUMERAL
     | IDENTIFIER
     | call
     | array
-    | string
-    | char
+    | STRING
+    | CHAR
     | classAccess;
 acessibleValue: IDENTIFIER
     | call
@@ -95,10 +95,6 @@ type: TYPE_INT
     | TYPE_VOID
     | IDENTIFIER;
 modifier : KEY_STATIC | ;
-
-/* String rules */
-char: CHAR;
-string: STRING;
 
 /* Array rules*/
 array: L_CBRACKET R_CBRACKET | L_CBRACKET values R_CBRACKET;
@@ -160,7 +156,7 @@ TYPE_FLOAT : 'float';
 TYPE_CHAR : 'char';
 TYPE_STRING : 'string';
 TYPE_VOID : 'void';
-CHAR: '\''.'\'';
+CHAR: '\''.?'\'';
 STRING: '"'.*?'"';
 NUMERAL     :  [+-]?[0-9]+ ;
 FLOAT : ((NUMERAL?)'.'([0-9]*))
