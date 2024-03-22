@@ -1,18 +1,20 @@
 grammar Expr;
 
-prog:   block EOF ;
+/* Program rules*/
+prog: block EOF
+    | EOF ;
 block: statement
     | statement block;
+
+/* Statement rules*/
 statement:  decl
     | expr SEMICOLON
     | assign SEMICOLON
     | command SEMICOLON
     | control;
-decl:   defin SEMICOLON
+decl: defin SEMICOLON
     | fdecl
     | cdecl;
-
-
 defin:  modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
     | modifier type IDENTIFIER;
@@ -26,9 +28,9 @@ fparam: type IDENTIFIER
 aparam: expr
     | expr COMMA aparam;
 cdecl: KEY_CLASS IDENTIFIER L_CBRACKET block R_CBRACKET
-    | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block '}';
-call: IDENTIFIER'('aparam')'
-    | IDENTIFIER'('')';
+    | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block R_CBRACKET;
+call: IDENTIFIER L_PAREN aparam R_PAREN
+    | IDENTIFIER L_PAREN R_PAREN;
 
 /*  Control command rules */
 command: KEY_RETURN expr
@@ -36,37 +38,39 @@ command: KEY_RETURN expr
     | KEY_CONTINUE;
 control: loop
     | ifthen;
-loop: KEY_LOOP KEY_WHILE '('expr')' '{'block'}'
-    | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN IDENTIFIER '{'block'}';
-ifthen: KEY_IF '('expr')' '{'block'}';
+loop: KEY_LOOP KEY_WHILE L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET
+    | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN IDENTIFIER L_CBRACKET block R_CBRACKET;
+ifthen: KEY_IF L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET;
 
 /* Expression rules */
 expr: logic
     | relation
     | arith
     | value;
-logic:  relation '&&' logic
-    | relation '||' logic
-    | relation; //Logical expressions
-relation: arith '<' relation
-    | arith '<=' relation
-    | arith '==' relation
-    | arith '>=' relation
-    | arith '>' relation
-    | arith '!=' relation
-    | arith; //Relational expressions
+//Logical expressions
+logic:  relation AND logic
+    | relation OR logic
+    | relation;
+//Relational expressions
+relation: arith LT relation
+    | arith LTEQ relation
+    | arith EQEQ relation
+    | arith GTEQ relation
+    | arith GT relation
+    | arith NOTEQ relation
+    | arith;
 
 /* Arimatic rules */
-arith:  term '+' arith
-    | term '-' arith
+arith:  term PLUS arith
+    | term MINUS arith
     | term;
-term:   factor '*' term
-    | factor '/' term
-    | factor '%' term
+term:   factor MULT term
+    | factor DIV term
+    | factor MOD term
     | factor;
-factor: '('expr')'
+factor: L_PAREN expr R_PAREN
     | value
-    | '!'factor;
+    | NOT factor;
 
 /* Value rules */
 value:  NUMERAL
@@ -80,11 +84,11 @@ value:  NUMERAL
 acessibleValue: IDENTIFIER
     | call
     | arrayAccess;
-values: value',' values
+values: value COMMA values
     | value;
 
 /* Type rules*/
-type:   TYPE_INT
+type: TYPE_INT
     | TYPE_FLOAT
     | TYPE_CHAR
     | TYPE_STRING
@@ -93,15 +97,15 @@ type:   TYPE_INT
 modifier : KEY_STATIC | ;
 
 /* String rules */
-char:   '\''CHAR'\'';
-string: '"'STRING'"' | '"''"';
+char: CHAR;
+string: STRING;
 
 /* Array rules*/
-array:  '{''}' | '{'values'}';
-arrayAccess: IDENTIFIER'['expr']';
+array: L_CBRACKET R_CBRACKET | L_CBRACKET values R_CBRACKET;
+arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: acessibleValue('.'call |'.'IDENTIFIER)+;
+classAccess: acessibleValue( PERIODE call | PERIODE IDENTIFIER)+;
 
 
 /* Operators */
@@ -160,12 +164,12 @@ CHAR: '\''.'\'';
 STRING: '"'.*?'"';
 NUMERAL     :  [+-]?[0-9]+ ;
 FLOAT : ((NUMERAL?)'.'([0-9]*))
-        |(NUMERAL'.'([0-9]*?));
+    |(NUMERAL'.'([0-9]*?));
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9_-]*;
 
 
 /* Extra */
-BLOCK_COMMENT: '/' .? '/' -> channel(HIDDEN); // Hides comments from compiler
+BLOCK_COMMENT: '/*' .*? '*/' -> channel(HIDDEN); // Hides comments from compiler
 WS: [ \t]+ -> skip ; // toss out whitespace
 NEWLINE: [\r\n]+ -> skip;// toss out newlines
 
