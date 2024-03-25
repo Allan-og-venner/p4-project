@@ -167,18 +167,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitModifier(ExprParser.ModifierContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#char}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitChar(ExprParser.CharContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ExprParser#string}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitString(ExprParser.StringContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ExprParser#array}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

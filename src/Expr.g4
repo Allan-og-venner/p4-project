@@ -70,7 +70,9 @@ term:   factor MULT term
     | factor;
 factor: L_PAREN expr R_PAREN
     | value
-    | NOT factor;
+    | NOT factor
+    | MINUS factor
+    | PLUS factor;
 
 /* Value rules */
 value:  NUMERAL
@@ -158,7 +160,7 @@ TYPE_STRING : 'string';
 TYPE_VOID : 'void';
 CHAR: '\''.?'\'';
 STRING: '"'.*?'"';
-NUMERAL     :  [+-]?[0-9]+ ;
+NUMERAL     : [0-9]+ ;
 FLOAT : ((NUMERAL?)'.'([0-9]*))
     |(NUMERAL'.'([0-9]*?));
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9_-]*;
