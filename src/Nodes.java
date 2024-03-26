@@ -1,5 +1,3 @@
-public class ProgramNode {
-}
 public abstract class StatementNode {
     private StatementNode left;
     private StatementNode right;
