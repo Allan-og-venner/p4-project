@@ -39,7 +39,7 @@ command: KEY_RETURN expr
 control: loop
     | ifthen;
 loop: KEY_LOOP KEY_WHILE L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET
-    | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN IDENTIFIER L_CBRACKET block R_CBRACKET;
+    | KEY_LOOP KEY_FOR IDENTIFIER KEY_IN expr L_CBRACKET block R_CBRACKET;
 ifthen: KEY_IF L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET;
 
 /* Expression rules */
@@ -83,7 +83,7 @@ value:  NUMERAL
     | STRING
     | CHAR
     | classAccess;
-acessibleValue: IDENTIFIER
+accessibleObject: IDENTIFIER
     | call
     | arrayAccess;
 values: value COMMA values
@@ -103,7 +103,9 @@ array: L_CBRACKET R_CBRACKET | L_CBRACKET values R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: acessibleValue( PERIODE call | PERIODE IDENTIFIER)+;
+classAccess: accessibleObject( PERIODE accessibleValue)*;
+accessibleValue: call
+    |IDENTIFIER;
 
 
 /* Operators */
