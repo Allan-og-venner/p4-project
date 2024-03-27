@@ -1,3 +1,4 @@
+package src;
 public abstract class StatementNode {
     private StatementNode left;
     private StatementNode right;

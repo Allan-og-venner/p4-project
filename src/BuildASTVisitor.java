@@ -1,17 +1,11 @@
+package src;
 import java.util.function.Function;
 import java.util.HashMap;
 import java.util.Map;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import gen.*;
+public class BuildAstVisitor extends ExprBaseVisitor<StatementNode> {
 
-public class BuildAstVisitor extends MathBaseVisitor<ExpressionNode> {
-
-    private static final Map<String, Function<Double, Double>> functionMap = new HashMap<>();
-
-    static {
-        functionMap.put("sin", Math::sin);
-        functionMap.put("cos", Math::cos);
-        // Add other functions as necessary
-    }
 
     @Override
     public ExpressionNode visitCompileUnit(MathParser.CompileUnitContext context) {
