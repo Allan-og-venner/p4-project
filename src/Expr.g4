@@ -18,7 +18,7 @@ decl: defin SEMICOLON
 defin:  modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
     | modifier type IDENTIFIER;
-assign: (IDENTIFIER|arrayAccess|classAccess) EQ expr;
+assign: (arrayAccess|classAccess|IDENTIFIER) EQ expr;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
@@ -43,10 +43,10 @@ loop: KEY_LOOP KEY_WHILE L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET
 ifthen: KEY_IF L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET;
 
 /* Expression rules */
-expr: logic
-    | relation
+expr: factor
     | arith
-    | value;
+    | relation
+    | logic;
 //Logical expressions
 logic:  relation AND logic
     | relation OR logic
@@ -75,7 +75,7 @@ factor: L_PAREN expr R_PAREN
     | PLUS factor;
 
 /* Value rules */
-value:  NUMERAL
+value: NUMERAL
     | FLOAT
     | IDENTIFIER
     | call
@@ -86,8 +86,8 @@ value:  NUMERAL
 accessibleObject: IDENTIFIER
     | call
     | arrayAccess;
-values: value COMMA values
-    | value;
+exprs: expr COMMA exprs
+    | expr;
 
 /* Type rules*/
 type: TYPE_INT
@@ -99,7 +99,7 @@ type: TYPE_INT
 modifier : KEY_STATIC | ;
 
 /* Array rules*/
-array: L_CBRACKET R_CBRACKET | L_CBRACKET values R_CBRACKET;
+array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
