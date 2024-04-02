@@ -18,7 +18,7 @@ decl: defin SEMICOLON
 defin:  modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
     | modifier type IDENTIFIER;
-assign: IDENTIFIER EQ expr;
+assign: (IDENTIFIER|arrayAccess|classAccess) EQ expr;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
