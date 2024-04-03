@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            String userDir = new File("").getAbsolutePath();
+            String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");
             ExprLexer lexer = new ExprLexer(in);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -21,7 +21,7 @@ public class Main {
             EvaluateExpressionVisitor visitor = new EvaluateExpressionVisitor();
             System.out.println("AST output: " + visitor.visit(ast));
         }catch (Exception e){
-            System.out.println(e);
+            System.out.print(e.getMessage());
         }
 
     }
