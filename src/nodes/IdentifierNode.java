@@ -2,7 +2,7 @@ package nodes;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class IdentifierNode extends StatementNode {
+public class IdentifierNode extends AccessibleObjectNode {
 
 
     private String text;

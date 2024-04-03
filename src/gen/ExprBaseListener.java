@@ -1,5 +1,4 @@
-// Generated from C:/Users/sinag/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
-package gen;
+package gen;// Generated from /Users/simonthordal/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -108,18 +107,6 @@ public class ExprBaseListener implements ExprListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFparam(ExprParser.FparamContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAparam(ExprParser.AparamContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAparam(ExprParser.AparamContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -281,25 +268,25 @@ public class ExprBaseListener implements ExprListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAcessibleValue(ExprParser.AcessibleValueContext ctx) { }
+	@Override public void enterAccessibleObject(ExprParser.AccessibleObjectContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAcessibleValue(ExprParser.AcessibleValueContext ctx) { }
+	@Override public void exitAccessibleObject(ExprParser.AccessibleObjectContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterValues(ExprParser.ValuesContext ctx) { }
+	@Override public void enterExprs(ExprParser.ExprsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitValues(ExprParser.ValuesContext ctx) { }
+	@Override public void exitExprs(ExprParser.ExprsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -360,6 +347,18 @@ public class ExprBaseListener implements ExprListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitClassAccess(ExprParser.ClassAccessContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAccessibleValue(ExprParser.AccessibleValueContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAccessibleValue(ExprParser.AccessibleValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

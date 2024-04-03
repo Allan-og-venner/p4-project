@@ -1,8 +1,8 @@
 package nodes;
 
-public class FunctionCallNode extends ValueNode {
+public class FunctionCallNode extends AccessibleObjectNode {
     private IdentifierNode function;
-    private AparamNode parameter;
+    private ExpressionsNode parameter;
 
     public IdentifierNode getFunction() {
         return function;
@@ -12,11 +12,11 @@ public class FunctionCallNode extends ValueNode {
         this.function = function;
     }
 
-    public AparamNode getParameter() {
+    public ExpressionsNode getParameter() {
         return parameter;
     }
 
-    public void setParameter(AparamNode parameter) {
+    public void setParameter(ExpressionsNode parameter) {
         this.parameter = parameter;
     }
 }

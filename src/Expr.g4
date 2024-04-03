@@ -25,11 +25,9 @@ fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW 
     | modifier KEY_FUNC IDENTIFIER L_PAREN R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET;
 fparam: type IDENTIFIER
     | type IDENTIFIER COMMA fparam;
-aparam: expr
-    | expr COMMA aparam;
 cdecl: KEY_CLASS IDENTIFIER L_CBRACKET block R_CBRACKET
     | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block R_CBRACKET;
-call: IDENTIFIER L_PAREN aparam R_PAREN
+call: IDENTIFIER L_PAREN exprs R_PAREN
     | IDENTIFIER L_PAREN R_PAREN;
 
 /*  Control command rules */
@@ -61,12 +59,12 @@ relation: arith LT relation
     | arith;
 
 /* Arimatic rules */
-arith:  term PLUS arith
-    | term MINUS arith
+arith:  arith PLUS term
+    | arith MINUS term
     | term;
-term:   factor MULT term
-    | factor DIV term
-    | factor MOD term
+term:   term MULT factor
+    | term DIV factor
+    | term MOD factor
     | factor;
 factor: L_PAREN expr R_PAREN
     | value
@@ -105,7 +103,7 @@ arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 /* Class rules */
 classAccess: accessibleObject( PERIODE accessibleValue)*;
 accessibleValue: call
-    |IDENTIFIER;
+    | IDENTIFIER;
 
 
 /* Operators */

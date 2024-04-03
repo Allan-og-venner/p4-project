@@ -1,6 +1,6 @@
 package nodes;
 
-public class ArrayAccessNode {
+public class ArrayAccessNode extends ValueNode {
     private IdentifierNode array;
     private ExpressionNode index;
 

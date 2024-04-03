@@ -1,4 +1,5 @@
 package nodes;
 
-public class CharNode extends TypeNode {
+public class CharNode extends StringNode {
+
 }

@@ -1,22 +1,13 @@
 package nodes;
 
-public class ArrayNode extends ValueNode {
-    private ExpressionNode left;
-    private ArrayNode right;
+public class ArrayNode extends AccessibleObjectNode {
+    private ExpressionsNode innerNode;
 
-    public ExpressionNode getLeft() {
-        return left;
+    public ExpressionsNode getInnerNode() {
+        return innerNode;
     }
 
-    public void setLeft(ExpressionNode left) {
-        this.left = left;
-    }
-
-    public ArrayNode getRight() {
-        return right;
-    }
-
-    public void setRight(ArrayNode right) {
-        this.right = right;
+    public void setInnerNode(ExpressionsNode innerNode) {
+        this.innerNode = innerNode;
     }
 }

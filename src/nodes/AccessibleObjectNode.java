@@ -1,4 +1,4 @@
 package nodes;
 
-public abstract class AccessibleObjectNode extends StatementNode {
+public abstract class AccessibleObjectNode extends ValueNode {
 }

@@ -1,5 +1,4 @@
-// Generated from C:/Users/sinag/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
-package gen;
+package gen;// Generated from /Users/simonthordal/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -87,16 +86,6 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFparam(ExprParser.FparamContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ExprParser#aparam}.
-	 * @param ctx the parse tree
-	 */
-	void enterAparam(ExprParser.AparamContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ExprParser#aparam}.
-	 * @param ctx the parse tree
-	 */
-	void exitAparam(ExprParser.AparamContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExprParser#cdecl}.
 	 * @param ctx the parse tree
@@ -228,25 +217,25 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitValue(ExprParser.ValueContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ExprParser#acessibleValue}.
+	 * Enter a parse tree produced by {@link ExprParser#accessibleObject}.
 	 * @param ctx the parse tree
 	 */
-	void enterAcessibleValue(ExprParser.AcessibleValueContext ctx);
+	void enterAccessibleObject(ExprParser.AccessibleObjectContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ExprParser#acessibleValue}.
+	 * Exit a parse tree produced by {@link ExprParser#accessibleObject}.
 	 * @param ctx the parse tree
 	 */
-	void exitAcessibleValue(ExprParser.AcessibleValueContext ctx);
+	void exitAccessibleObject(ExprParser.AccessibleObjectContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ExprParser#values}.
+	 * Enter a parse tree produced by {@link ExprParser#exprs}.
 	 * @param ctx the parse tree
 	 */
-	void enterValues(ExprParser.ValuesContext ctx);
+	void enterExprs(ExprParser.ExprsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ExprParser#values}.
+	 * Exit a parse tree produced by {@link ExprParser#exprs}.
 	 * @param ctx the parse tree
 	 */
-	void exitValues(ExprParser.ValuesContext ctx);
+	void exitExprs(ExprParser.ExprsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExprParser#type}.
 	 * @param ctx the parse tree
@@ -297,4 +286,14 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitClassAccess(ExprParser.ClassAccessContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExprParser#accessibleValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterAccessibleValue(ExprParser.AccessibleValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#accessibleValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitAccessibleValue(ExprParser.AccessibleValueContext ctx);
 }

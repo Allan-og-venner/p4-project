@@ -1,6 +1,8 @@
 package nodes;
 
-public abstract class AccessibleValueNode {
+import com.sun.jdi.Value;
+
+public abstract class AccessibleValueNode extends ValueNode {
     private AccessibleValueNode left;
     private AccessibleValueNode right;
 

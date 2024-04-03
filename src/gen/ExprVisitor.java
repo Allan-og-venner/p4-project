@@ -1,5 +1,4 @@
-// Generated from C:/Users/sinag/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
-package gen;
+package gen;// Generated from /Users/simonthordal/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -58,12 +57,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFparam(ExprParser.FparamContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ExprParser#aparam}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAparam(ExprParser.AparamContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExprParser#cdecl}.
 	 * @param ctx the parse tree
@@ -143,17 +136,17 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitValue(ExprParser.ValueContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#acessibleValue}.
+	 * Visit a parse tree produced by {@link ExprParser#accessibleObject}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAcessibleValue(ExprParser.AcessibleValueContext ctx);
+	T visitAccessibleObject(ExprParser.AccessibleObjectContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#values}.
+	 * Visit a parse tree produced by {@link ExprParser#exprs}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitValues(ExprParser.ValuesContext ctx);
+	T visitExprs(ExprParser.ExprsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExprParser#type}.
 	 * @param ctx the parse tree
@@ -184,4 +177,10 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitClassAccess(ExprParser.ClassAccessContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExprParser#accessibleValue}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccessibleValue(ExprParser.AccessibleValueContext ctx);
 }

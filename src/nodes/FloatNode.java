@@ -1,4 +1,5 @@
 package nodes;
 
-public class FloatNode extends TypeNode {
+public class FloatNode extends NumberNode {
+
 }

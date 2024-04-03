@@ -1,6 +1,6 @@
 package nodes;
 
-public abstract class StatementNode {
+public abstract class StatementNode extends BlockNode{
     private StatementNode left;
     private StatementNode right;
 

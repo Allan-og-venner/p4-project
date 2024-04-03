@@ -1,8 +1,8 @@
 package nodes;
 
-public class AparamNode extends ExpressionNode {
+public class ExpressionsNode extends ExpressionNode {
     private ExpressionNode left;
-    private AparamNode right;
+    private ExpressionsNode right;
 
     public ExpressionNode getLeft() {
         return left;
@@ -12,11 +12,12 @@ public class AparamNode extends ExpressionNode {
         this.left = left;
     }
 
-    public AparamNode getRight() {
+    public ExpressionsNode getRight() {
         return right;
     }
 
-    public void setRight(AparamNode right) {
+    public void setRight(ExpressionsNode right) {
         this.right = right;
     }
 }
+
