@@ -8,7 +8,7 @@ import org.junit.Test;
 //integration test for the lexer and parser, tests if the parser generates the correct parse tree for an expression according to grammar
 public class ParserTest {
 
-    //create a class to hold the result of the parse method to be used for the test
+    //create a class to hold the result of the parse method to be used for the tests
     private static class ParseResult {
         public final ParseTree tree;
         public final Parser parser;
