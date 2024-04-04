@@ -77,6 +77,16 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitFdecl(ExprParser.FdeclContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExprParser#fparams}.
+	 * @param ctx the parse tree
+	 */
+	void enterFparams(ExprParser.FparamsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#fparams}.
+	 * @param ctx the parse tree
+	 */
+	void exitFparams(ExprParser.FparamsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExprParser#fparam}.
 	 * @param ctx the parse tree
 	 */

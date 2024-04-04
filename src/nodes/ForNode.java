@@ -5,27 +5,27 @@ public class ForNode {
     private ExpressionNode array;
     private StatementNode block;
 
-    private StatementNode getBlock() {
+    public StatementNode getBlock() {
         return block;
     }
 
-    private void setBlock(StatementNode block) {
+    public void setBlock(StatementNode block) {
         this.block = block;
     }
 
-    private IdentifierNode getIterator() {
+    public IdentifierNode getIterator() {
         return iterator;
     }
 
-    private void setIterator(IdentifierNode iterator) {
+    public void setIterator(IdentifierNode iterator) {
         this.iterator = iterator;
     }
 
-    private ExpressionNode getArray() {
+    public ExpressionNode getArray() {
         return array;
     }
 
-    private void setArray(ExpressionNode array) {
+    public void setArray(ExpressionNode array) {
         this.array = array;
     }
 }

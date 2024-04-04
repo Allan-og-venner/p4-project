@@ -4,19 +4,19 @@ public abstract class StatementNode extends BlockNode{
     private StatementNode left;
     private StatementNode right;
 
-    private StatementNode getLeft() {
+    public StatementNode getLeft() {
         return left;
     }
 
-    private void setLeft(StatementNode left) {
+    public void setLeft(StatementNode left) {
         this.left = left;
     }
 
-    private StatementNode getRight() {
+    public StatementNode getRight() {
         return right;
     }
 
-    private void setRight(StatementNode right) {
+    public void setRight(StatementNode right) {
         this.right = right;
     }
 }

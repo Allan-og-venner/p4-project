@@ -1,43 +1,41 @@
 package nodes;
 
-public class FunctionDNode extends ExpressionNode {
+public class FunctionDNode extends DeclarationNode {
     private ModifierNode modifier;
     private IdentifierNode function;
     private FparamNode parameter;
     private TypeNode returnType;
 
-    private ModifierNode getModifier() {
+    public ModifierNode getModifier() {
         return modifier;
     }
 
-    private void setModifier(ModifierNode modifier) {
+    public void setModifier(ModifierNode modifier) {
         this.modifier = modifier;
     }
 
-    private IdentifierNode getFunction() {
+    public IdentifierNode getFunction() {
         return function;
     }
 
-    private void setFunction(IdentifierNode function) {
+    public void setFunction(IdentifierNode function) {
         this.function = function;
     }
 
-    private TypeNode getReturnType() {
+    public TypeNode getReturnType() {
         return returnType;
     }
 
-    private void setReturnType(TypeNode returnType) {
+    public void setReturnType(TypeNode returnType) {
         this.returnType = returnType;
     }
 
-    private ExpressionNode argument;
-
-
-    private ExpressionNode getArgument() {
-        return argument;
+    public FparamNode getParameter() {
+        return parameter;
     }
 
-    private void setArgument(ExpressionNode argument) {
-        this.argument = argument;
+    public void setParameter(FparamNode parameter) {
+        this.parameter = parameter;
     }
+
 }

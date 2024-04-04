@@ -1,22 +1,23 @@
 package nodes;
 
-public abstract class FparamNode {
-    private FparamNode left;
-    private FparamNode right;
+public class FparamNode extends StatementNode {
 
-    public FparamNode getLeft() {
-        return left;
+    private TypeNode Type;
+    private IdentifierNode Identifier;
+
+    public TypeNode getType() {
+        return Type;
     }
 
-    public void setLeft(FparamNode left) {
-        this.left = left;
+    public void setType(TypeNode type) {
+        Type = type;
     }
 
-    public FparamNode getRight() {
-        return right;
+    public IdentifierNode getIdentifier() {
+        return Identifier;
     }
 
-    public void setRight(FparamNode right) {
-        this.right = right;
+    public void setIdentifier(IdentifierNode identifier) {
+        Identifier = identifier;
     }
 }

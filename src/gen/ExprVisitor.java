@@ -52,6 +52,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFdecl(ExprParser.FdeclContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExprParser#fparams}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFparams(ExprParser.FparamsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExprParser#fparam}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

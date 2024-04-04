@@ -23,8 +23,9 @@ assign: (arrayAccess|classAccess|IDENTIFIER) EQ expr;
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
     | modifier KEY_FUNC IDENTIFIER L_PAREN R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET;
-fparam: type IDENTIFIER
-    | type IDENTIFIER COMMA fparam;
+fparams: fparam COMMA fparams
+    | fparam;
+fparam: type IDENTIFIER;
 cdecl: KEY_CLASS IDENTIFIER L_CBRACKET block R_CBRACKET
     | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block R_CBRACKET;
 call: IDENTIFIER L_PAREN exprs R_PAREN

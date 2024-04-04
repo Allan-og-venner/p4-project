@@ -4,19 +4,19 @@ public class WhileNode {
     private ExpressionNode condition;
     private StatementNode block;
 
-    private ExpressionNode getCondition() {
+    public ExpressionNode getCondition() {
         return condition;
     }
 
-    private void setCondition(ExpressionNode condition) {
+    public void setCondition(ExpressionNode condition) {
         this.condition = condition;
     }
 
-    private StatementNode getBlock() {
+    public StatementNode getBlock() {
         return block;
     }
 
-    private void setBlock(StatementNode block) {
+    public void setBlock(StatementNode block) {
         this.block = block;
     }
 }

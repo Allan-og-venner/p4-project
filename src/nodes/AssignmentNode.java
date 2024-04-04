@@ -4,19 +4,19 @@ public class AssignmentNode {
     private DefineNode left;
     private ExpressionNode right;
 
-    private DefineNode getLeft() {
+    public DefineNode getLeft() {
         return left;
     }
 
-    private void setLeft(DefineNode left) {
+    public void setLeft(DefineNode left) {
         this.left = left;
     }
 
-    private ExpressionNode getRight() {
+    public ExpressionNode getRight() {
         return right;
     }
 
-    private void setRight(ExpressionNode right) {
+    public void setRight(ExpressionNode right) {
         this.right = right;
     }
 }

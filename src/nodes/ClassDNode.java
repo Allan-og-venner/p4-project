@@ -1,17 +1,11 @@
 package nodes;
 
-public class ClassDNode extends AccessibleObjectNode {
-    private ModifierNode modifier;
+public class ClassDNode extends DeclarationNode {
+
     private IdentifierNode name;
+    private IdentifierNode superClass;
     private StatementNode block;
 
-    public ModifierNode getModifier() {
-        return modifier;
-    }
-
-    public void setModifier(ModifierNode modifier) {
-        this.modifier = modifier;
-    }
 
     public IdentifierNode getName() {
         return name;
@@ -19,6 +13,14 @@ public class ClassDNode extends AccessibleObjectNode {
 
     public void setName(IdentifierNode name) {
         this.name = name;
+    }
+
+    public IdentifierNode getSuperClass() {
+        return superClass;
+    }
+
+    public void setSuperClass(IdentifierNode superClass) {
+        this.superClass = superClass;
     }
 
     public StatementNode getBlock() {
