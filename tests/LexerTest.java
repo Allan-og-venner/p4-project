@@ -1,12 +1,12 @@
-package tests;
-
 import gen.ExprLexer;
 import org.antlr.v4.runtime.*;
 import org.junit.Test;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 
-public class GrammarTest {
+//Unit tests for the lexer
+
+public class LexerTest {
 
     @Test
     public void testSimpleExpressionTokens() {

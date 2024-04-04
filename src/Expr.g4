@@ -58,7 +58,7 @@ relation: arith LT relation
     | arith NOTEQ relation
     | arith;
 
-/* Arimatic rules */
+/* Arithmetic rules */
 arith:  arith PLUS term
     | arith MINUS term
     | term;
