@@ -15,7 +15,7 @@ statement:  decl
 decl: defin SEMICOLON
     | fdecl
     | cdecl;
-defin:  modifier type IDENTIFIER EQ expr
+defin: modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
     | modifier type IDENTIFIER;
 assign: (arrayAccess|classAccess|IDENTIFIER) EQ expr;
@@ -59,7 +59,7 @@ relation: arith LT relation
     | arith;
 
 /* Arimatic rules */
-arith:  arith PLUS term
+arith: arith PLUS term
     | arith MINUS term
     | term;
 term:   term MULT factor

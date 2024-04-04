@@ -1,4 +1,3 @@
-package tests;
 
 import gen.ExprLexer;
 import org.antlr.v4.runtime.*;
