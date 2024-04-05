@@ -106,12 +106,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpr(ExprParser.ExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#logic}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogic(ExprParser.LogicContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ExprParser#relation}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

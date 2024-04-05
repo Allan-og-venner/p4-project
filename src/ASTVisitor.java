@@ -9,7 +9,7 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(NegateNode node);
     public abstract T visit(NumberNode node);
 
-    // Instead of a dynamic dispatch, provide a method that delegates to the specific visit methods based on actual type.
+//Static implementation of visits
     public T visit(StatementNode node){
         return visit((ExpressionNode) node);
     }

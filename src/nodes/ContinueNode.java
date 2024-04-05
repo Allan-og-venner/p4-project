@@ -1,4 +1,4 @@
 package nodes;
 
-public class ContinueNode {
+public class ContinueNode extends CommandNode {
 }

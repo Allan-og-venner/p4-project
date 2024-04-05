@@ -18,7 +18,7 @@ decl: defin SEMICOLON
 defin: modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
     | modifier type IDENTIFIER;
-assign: (arrayAccess|classAccess|IDENTIFIER) EQ expr;
+assign: value EQ expr;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
@@ -42,21 +42,17 @@ loop: KEY_LOOP KEY_WHILE L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET
 ifthen: KEY_IF L_PAREN expr R_PAREN L_CBRACKET block R_CBRACKET;
 
 /* Expression rules */
-expr: factor
-    | arith
-    | relation
-    | logic;
 //Logical expressions
-logic:  relation AND logic
-    | relation OR logic
+expr:  expr AND relation
+    | expr OR relation
     | relation;
 //Relational expressions
-relation: arith LT relation
-    | arith LTEQ relation
-    | arith EQEQ relation
-    | arith GTEQ relation
-    | arith GT relation
-    | arith NOTEQ relation
+relation: relation LT arith
+    | relation LTEQ arith
+    | relation EQEQ arith
+    | relation GTEQ arith
+    | relation GT arith
+    | relation NOTEQ arith
     | arith;
 
 /* Arimatic rules */

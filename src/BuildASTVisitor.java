@@ -8,7 +8,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         return visitBlock(context.block());
     }
 
-
     @Override
     public BlockNode visitBlock(ExprParser.BlockContext context) {
         System.out.println("Visited block node");
@@ -33,9 +32,91 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             return visitAssign(context.assign());
         } else if (context.command() != null) {
             return visitCommand(context.command());
+        } else if (context.control() != null) {
+            return visitControl(context.control());
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
+    }
+
+    @Override
+    public ControlNode visitControl(ExprParser.ControlContext context) {
+        System.out.println("Visited control node");
+        if (context.loop() != null) {
+            return visitLoop(context.loop());
+        } else if (context.ifthen() != null) {
+            return visitIfthen(context.ifthen());
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+
+    }
+
+    @Override
+    public IfNode visitIfthen(ExprParser.IfthenContext context) {
+        System.out.println("Visited If-then node");
+        IfNode node = new IfNode();
+        if(context.expr() != null) {
+            node.setCondition(visitExpr(context.expr()));
+            node.setBlock(visitBlock(context.block()));
+            return node;
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+    }
+
+    @Override
+    public LoopNode visitLoop(ExprParser.LoopContext context) {
+        System.out.println("Visited loop node");
+        if(context.KEY_WHILE() != null) {
+            WhileNode node = new WhileNode();
+            node.setCondition(visitExpr(context.expr()));
+            node.setBlock(visitBlock(context.block()));
+            return node;
+        } else if (context.KEY_FOR() != null) {
+            ForNode node = new ForNode();
+            IdentifierNode iNode = new IdentifierNode();
+            iNode.setText(context.IDENTIFIER().getText());
+            node.setIterator(iNode);
+            node.setArray(visitExpr(context.expr()));
+            node.setBlock(visitBlock(context.block()));
+            return node;
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+    }
+
+    @Override
+    public CommandNode visitCommand(ExprParser.CommandContext context) {
+        System.out.println("Visited command node");
+
+        if (context.KEY_RETURN() != null) {
+            ReturnNode node = new ReturnNode();
+            node.setInnerNode(visitExpr(context.expr()));
+            return node;
+        } else if (context.KEY_BREAK() != null) {
+            return new BreakNode();
+        } else if (context.KEY_CONTINUE() != null) {
+            return new ContinueNode();
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+    }
+
+    @Override
+    public AssignmentNode visitAssign(ExprParser.AssignContext context) {
+        System.out.println("Visited assign node");
+        AssignmentNode node = new AssignmentNode();
+        if (context.value() != null) {
+            node.setLeft(visitValue(context.value()));
+            if (context.expr() !=null){
+                node.setRight(visitExpr(context.expr()));
+            }
+            return node;
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+
     }
 
     @Override
@@ -47,6 +128,18 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             return visitFdecl(context.fdecl());
         } else if (context.cdecl() != null) {
             return visitCdecl(context.cdecl());
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+    }
+
+    @Override
+    public ModifierNode visitModifier(ExprParser.ModifierContext context) {
+        System.out.println("Visited modifier node");
+        if (context.KEY_STATIC() != null) {
+            ModifierNode node = new ModifierNode();
+            node.setModifier(context.KEY_STATIC().getText());
+            return node;
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
@@ -173,46 +266,22 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     }
 
     @Override
-    public ExpressionNode visitAssign(ExprParser.AssignContext context) {
-        System.out.println("Visited assign node");
-        if (context == null) {
-            return null; // NOT YET 
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
-    }
-
-    @Override
-    public ExpressionNode visitCommand(ExprParser.CommandContext context) {
-        System.out.println("Visited command node");
-        if (context == null) {
-            return null; // NOT YET
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
-    }
-
-    @Override
-    public ModifierNode visitModifier(ExprParser.ModifierContext context) {
-        System.out.println("Visited modifier node");
-        if (context == null) {
-            return null; // NOT YET
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
-    }
-
-    @Override
     public ExpressionNode visitExpr(ExprParser.ExprContext context) {
         System.out.println("Visited expr node");
-        if (context.factor() == null) {
-            return visitFactor(context.factor());
-        } else if (context.arith() != null) {
-            return visitArith(context.arith());
+        if (context.AND() != null) {
+            InfixExpressionNode node;
+            node = new ANDNode();
+            node.setLeft(visitExpr(context.expr()));
+            node.setRight(visitRelation(context.relation()));
+            return node;
+        } else if (context.OR() != null) {
+            InfixExpressionNode node;
+            node = new ORNode();
+            node.setLeft(visitExpr(context.expr()));
+            node.setRight(visitRelation(context.relation()));
+            return node;
         } else if (context.relation() != null) {
             return visitRelation(context.relation());
-        } else if (context.logic() != null) {
-            return visitLogic(context.logic());
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
@@ -247,32 +316,31 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         if (context.LT() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
-            node.setLeft(visitArith(context.arith()));
-            node.setRight(visitRelation(context.relation()));
+            node.setLeft(visitRelation(context.relation()));
+            node.setRight(visitArith(context.arith()));
             return node;
         } else if (context.LTEQ() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
-            node.setLeft(visitArith(context.arith()));
-            node.setRight(visitRelation(context.relation()));
+            node.setLeft(visitRelation(context.relation()));
+            node.setRight(visitArith(context.arith()));
             return node;
         } else if (context.EQEQ() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
-            node.setLeft(visitArith(context.arith()));
-            node.setRight(visitRelation(context.relation()));
+            node.setLeft(visitRelation(context.relation()));
+            node.setRight(visitArith(context.arith()));
             return node;
         } else if (context.GT() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
-            node.setLeft(visitArith(context.arith()));
-            node.setRight(visitRelation(context.relation()));
+            node.setLeft(visitRelation(context.relation()));
+            node.setRight(visitArith(context.arith()));
             return node;
         } else if (context.GTEQ() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
-            node.setLeft(visitArith(context.arith()));
-            node.setRight(visitRelation(context.relation()));
+            node.setLeft(visitRelation(context.relation()));node.setRight(visitArith(context.arith()));
             return node;
         } else if (context.NOTEQ() != null) {
             InfixExpressionNode node;
@@ -287,27 +355,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         }
     }
 
-    @Override
-    public ExpressionNode visitLogic(ExprParser.LogicContext context) {
-        System.out.println("Visited logic node");
-        if (context.AND() != null) {
-            InfixExpressionNode node;
-            node = new ANDNode();
-            node.setLeft(visitRelation(context.relation()));
-            node.setRight(visitLogic(context.logic()));
-            return node;
-        } else if (context.OR() != null) {
-            InfixExpressionNode node;
-            node = new ORNode();
-            node.setLeft(visitRelation(context.relation()));
-            node.setRight(visitLogic(context.logic()));
-            return node;
-        } else if (context.relation() != null) {
-            return visitRelation(context.relation());
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
-    }
     @Override
     public ExpressionNode visitTerm(ExprParser.TermContext context) {
         System.out.println("Visited term node");

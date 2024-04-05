@@ -1,6 +1,6 @@
 package nodes;
 
-public class ReturnNode {
+public class ReturnNode extends CommandNode {
     private ExpressionNode innerNode;
 
     public ExpressionNode getInnerNode() {

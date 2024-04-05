@@ -1,4 +1,4 @@
 package nodes;
 
-public class BreakNode {
+public class BreakNode extends CommandNode {
 }

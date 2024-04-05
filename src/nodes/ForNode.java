@@ -1,15 +1,15 @@
 package nodes;
 
-public class ForNode {
+public class ForNode  extends LoopNode{
     private IdentifierNode iterator;
     private ExpressionNode array;
-    private StatementNode block;
+    private BlockNode block;
 
-    public StatementNode getBlock() {
+    public BlockNode getBlock() {
         return block;
     }
 
-    public void setBlock(StatementNode block) {
+    public void setBlock(BlockNode block) {
         this.block = block;
     }
 

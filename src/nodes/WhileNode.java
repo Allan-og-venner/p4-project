@@ -1,8 +1,8 @@
 package nodes;
 
-public class WhileNode {
+public class WhileNode extends LoopNode {
     private ExpressionNode condition;
-    private StatementNode block;
+    private BlockNode block;
 
     public ExpressionNode getCondition() {
         return condition;
@@ -12,11 +12,11 @@ public class WhileNode {
         this.condition = condition;
     }
 
-    public StatementNode getBlock() {
+    public BlockNode getBlock() {
         return block;
     }
 
-    public void setBlock(StatementNode block) {
+    public void setBlock(BlockNode block) {
         this.block = block;
     }
 }

@@ -1,14 +1,14 @@
 package nodes;
 
-public class AssignmentNode {
-    private DefineNode left;
+public class AssignmentNode extends StatementNode{
+    private ValueNode left;
     private ExpressionNode right;
 
-    public DefineNode getLeft() {
+    public ValueNode getLeft() {
         return left;
     }
 
-    public void setLeft(DefineNode left) {
+    public void setLeft(ValueNode left) {
         this.left = left;
     }
 
