@@ -21,8 +21,8 @@ defin: modifier type IDENTIFIER EQ expr
 assign: value EQ expr;
 
 /* Function rules*/
-fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparam R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
-    | modifier KEY_FUNC IDENTIFIER L_PAREN R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET;
+fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
+    | modifier KEY_ACTION IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type COLON STRING L_CBRACKET block R_CBRACKET;
 fparams: fparam COMMA fparams
     | fparam;
 fparam: type IDENTIFIER;
@@ -77,6 +77,7 @@ value: NUMERAL
     | array
     | STRING
     | CHAR
+    | KEY_NULL
     | classAccess;
 accessibleObject: IDENTIFIER
     | call
@@ -98,7 +99,7 @@ array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: accessibleObject( PERIODE accessibleValue)*;
+classAccess: accessibleObject( PERIOD accessibleValue)*;
 accessibleValue: call
     | IDENTIFIER;
 
@@ -130,7 +131,8 @@ L_BRACKET: '[';
 R_BRACKET: ']';
 SEMICOLON: ';';
 COMMA: ',';
-PERIODE: '.';
+COLON: ':';
+PERIOD: '.';
 
 /* Keywords */
 KEY_NEW: 'new';
@@ -148,6 +150,7 @@ KEY_LOOP: 'loop';
 KEY_STATIC : 'static';
 KEY_RETURNTYPE_ARROW : '->';
 KEY_NULL: 'null';
+KEY_ACTION: 'action';
 
 /* Types */
 TYPE_INT : 'int';

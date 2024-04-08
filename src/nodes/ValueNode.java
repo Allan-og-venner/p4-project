@@ -1,4 +1,4 @@
 package nodes;
 
-public class ValueNode extends ExpressionNode {
+public abstract class ValueNode extends ExpressionNode {
 }
