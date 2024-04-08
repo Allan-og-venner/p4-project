@@ -20,6 +20,8 @@ public abstract class ASTVisitor<T> {
             throw new IllegalArgumentException("Unknown nodes.ExpressionNode subclass");
         }
     }
+
+    //Relation, ..
     public T visit(ExpressionNode node) {
         if (node instanceof AdditionNode) {
             return visit((AdditionNode) node);
