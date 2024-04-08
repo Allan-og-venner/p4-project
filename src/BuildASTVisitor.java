@@ -12,11 +12,13 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public BlockNode visitBlock(ExprParser.BlockContext context) {
         System.out.println("Visited block node");
         BlockNode node = new BlockNode();
-        node.setStatement(visitStatement(context.statement()));
-        if (context.block() != null){
-            node.setBlocks(visitBlock(context.block()));
+        if (context.statement() != null) {
+            node.setStatement(visitStatement(context.statement()));
+            if (context.block() != null) {
+                node.setBlocks(visitBlock(context.block()));
+            }
         } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            throw new UnsupportedOperationException("Operation not supported (block node)");
         }
         return node;
     }
@@ -35,7 +37,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         } else if (context.control() != null) {
             return visitControl(context.control());
         } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            throw new UnsupportedOperationException("Operation not supported (statement node)");
         }
     }
 
@@ -47,16 +49,16 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         } else if (context.ifthen() != null) {
             return visitIfthen(context.ifthen());
         } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            throw new UnsupportedOperationException("Operation not supported (control node)");
         }
 
     }
 
     @Override
     public IfNode visitIfthen(ExprParser.IfthenContext context) {
-        System.out.println("Visited If-then node");
+        System.out.println("Visited if-then node");
         IfNode node = new IfNode();
-        if(context.expr() != null) {
+        if (context.expr() != null) {
             node.setCondition(visitExpr(context.expr()));
             node.setBlock(visitBlock(context.block()));
             return node;

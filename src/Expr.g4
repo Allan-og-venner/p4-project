@@ -7,7 +7,7 @@ block: statement
     | statement block;
 
 /* Statement rules*/
-statement:  decl
+statement: decl
     | expr SEMICOLON
     | assign SEMICOLON
     | command SEMICOLON
@@ -60,7 +60,7 @@ relation: relation LT arith
 arith: arith PLUS term
     | arith MINUS term
     | term;
-term:   term MULT factor
+term: term MULT factor
     | term DIV factor
     | term MOD factor
     | factor;

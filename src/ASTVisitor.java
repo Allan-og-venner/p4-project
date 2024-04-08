@@ -6,6 +6,7 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(SubtractionNode node);
     public abstract T visit(MultiplicationNode node);
     public abstract T visit(DivisionNode node);
+    public abstract T visit(ModNode node);
     public abstract T visit(NegateNode node);
     public abstract T visit(NumberNode node);
 
@@ -31,6 +32,8 @@ public abstract class ASTVisitor<T> {
             return visit((MultiplicationNode) node);
         } else if (node instanceof DivisionNode) {
             return visit((DivisionNode) node);
+        } else if (node instanceof ModNode) {
+            return visit((ModNode) node);
         } else if (node instanceof NegateNode) {
             return visit((NegateNode) node);
         }  else if (node instanceof ValueNode) {
