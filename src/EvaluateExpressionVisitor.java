@@ -3,6 +3,11 @@ import nodes.*;
 public class EvaluateExpressionVisitor extends ASTVisitor<String> {
 
     @Override
+    public String visit(BlockNode node) {
+        return "";
+    }
+
+    @Override
     public String visit(AdditionNode node) {
         System.out.println(visit(node.getLeft()) + " + " + visit(node.getRight()));
         return String.valueOf(Double.parseDouble(visit(node.getLeft())) + Double.parseDouble(visit(node.getRight())));
@@ -41,5 +46,20 @@ public class EvaluateExpressionVisitor extends ASTVisitor<String> {
     @Override
     public String visit(NumberNode node) {
         return String.valueOf(node.getValue());
+    }
+
+    @Override
+    public String visit(DefineNode node) {
+        return "";
+    }
+
+    @Override
+    public String visit(FunctionDNode node) {
+        return "";
+    }
+
+    @Override
+    public String visit(ClassDNode node) {
+        return "";
     }
 }

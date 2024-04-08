@@ -3,7 +3,7 @@ package nodes;
 public class FunctionDNode extends DeclarationNode {
     private ModifierNode modifier;
     private IdentifierNode function;
-    private FparamNode parameter;
+    private FparamsNode parameter;
     private TypeNode returnType;
 
     public ModifierNode getModifier() {
@@ -30,11 +30,11 @@ public class FunctionDNode extends DeclarationNode {
         this.returnType = returnType;
     }
 
-    public FparamNode getParameter() {
+    public FparamsNode getParameter() {
         return parameter;
     }
 
-    public void setParameter(FparamNode parameter) {
+    public void setParameter(FparamsNode parameter) {
         this.parameter = parameter;
     }
 

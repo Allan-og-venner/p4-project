@@ -12,6 +12,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public BlockNode visitBlock(ExprParser.BlockContext context) {
         System.out.println("Visited block node");
         BlockNode node = new BlockNode();
+        System.out.println(context.statement() != null);
         if (context.statement() != null) {
             node.setStatement(visitStatement(context.statement()));
             if (context.block() != null) {
@@ -153,6 +154,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         DefineNode node = new DefineNode();
         if (context.modifier().KEY_STATIC() != null) {
             node.setModi(visitModifier(context.modifier()));
+        }
             if (context.type() != null && context.IDENTIFIER() != null) {
                 node.setType(visitType(context.type()));
                 IdentifierNode text = new IdentifierNode();
@@ -166,11 +168,11 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 if (context.expr() != null){
                     node.setValue(visitExpr(context.expr()));
                 }
+            }else {
+                throw new UnsupportedOperationException("Operation not supported");
             }
             return node;
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
+
     }
 
     @Override
@@ -178,15 +180,17 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         System.out.println("Visited type node");
         TypeNode node = new TypeNode();
         if (context.TYPE_INT() != null){
-            node.setType(context.TYPE_INT().getText());
+            node.setTypeName(context.TYPE_INT().getText());
         } else if (context.TYPE_FLOAT() != null){
-            node.setType(context.TYPE_FLOAT().getText());
+            node.setTypeName(context.TYPE_FLOAT().getText());
         } else if (context.TYPE_STRING() != null){
-            node.setType(context.TYPE_STRING().getText());
+            node.setTypeName(context.TYPE_STRING().getText());
         } else if (context.TYPE_CHAR() != null) {
-            node.setType(context.TYPE_CHAR().getText());
+            node.setTypeName(context.TYPE_CHAR().getText());
         } else if (context.TYPE_VOID() != null) {
-            node.setType(context.TYPE_VOID().getText());
+            node.setTypeName(context.TYPE_VOID().getText());
+        } else if (context.IDENTIFIER() != null) {
+            node.setTypeName(context.IDENTIFIER().getText());
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
@@ -204,8 +208,8 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 IdentifierNode text = new IdentifierNode();
                 text.setText(context.IDENTIFIER().getText());
                 node.setFunction(text);
-                if (context.fparam() != null) {
-                    node.setParameter(visitFparam(context.fparam()));
+                if (context.fparams() != null) {
+                    node.setParameter(visitFparams(context.fparams()));
                 }
                 if (context.block() != null) {
                     node.setBlocks(visitBlock(context.block()));
@@ -221,13 +225,16 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FparamsNode visitFparams(ExprParser.FparamsContext context) {
         System.out.println("Visited functionParameters node");
         FparamsNode node = new FparamsNode();
-        node.setLeft(visitFparam(context.fparam()));
-        if (context.fparams() != null) {
-            node.setRight(visitFparams(context.fparams()));
-            return node;
-        } else {
+        if (context.fparam() != null) {
+            node.setLeft(visitFparam(context.fparam()));
+            if (context.fparams() != null) {
+                node.setRight(visitFparams(context.fparams()));
+            }
+        }
+         else {
             throw new UnsupportedOperationException("Operation not supported");
         }
+        return node;
     }
 
     @Override
@@ -409,11 +416,13 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public ValueNode visitCall(ExprParser.CallContext context) {
         System.out.println("Visited call node");
         FunctionCallNode node = new FunctionCallNode();
-        IdentifierNode NameNode = new IdentifierNode();
-        NameNode.setText(context.IDENTIFIER().getText());
-        node.setFunction(NameNode);
-        if (context.exprs() != null) {
-            node.setParameter(visitExprs(context.exprs()));
+        if (context.IDENTIFIER() != null) {
+            IdentifierNode NameNode = new IdentifierNode();
+            NameNode.setText(context.IDENTIFIER().getText());
+            node.setFunction(NameNode);
+            if (context.exprs() != null) {
+                node.setParameter(visitExprs(context.exprs()));
+            }
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
