@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class SymbolTable {
-    private Hashtable<String, String> types = new Hashtable<String, String>();
+public class SymbolTable implements Cloneable {
+
+    private Hashtable<String, String> tTable = new Hashtable<String, String>();
+    private Hashtable<String, String> vTable = new Hashtable<String, String>();
 
     public SymbolTable() {
         types.put("int", "");
@@ -21,12 +23,16 @@ public class SymbolTable {
         types.put(name, superclass);
     }
 
-    public Hashtable<String, String> getTypes() { return this.types; }
+    public Hashtable<String, String> getTypes() { return this.tTable; }
 
-    private Hashtable<String, String> table = new Hashtable<String, String>();
 
     public boolean checkType(String input) {
         return this.types.contains(input);
+    }
+
+    public boolean checkClass(String input) {
+        String found = this.tTable.get(input);
+        return !(found == null || found.isEmpty());
     }
 
     //Check if class1 inherits class2
@@ -44,10 +50,22 @@ public class SymbolTable {
         return true;
     }
 
-    public void addSymbol(String symbol, String type) {
+    public void addValue(String symbol, String type) {
         if (checkType(type)) {
-            table.put(symbol, type);
+            vTable.put(symbol, type);
         }
+    }
+
+    public String lookup(String input) {
+        return vTable.get(input);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        SymbolTable cloned = (SymbolTable) super.clone();
+        cloned.tTable = (Hashtable<String, String>) this.tTable.clone();
+        cloned.vTable = (Hashtable<String, String>) this.vTable.clone();
+        return cloned;
     }
 
 }

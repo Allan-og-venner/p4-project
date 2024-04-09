@@ -33,7 +33,6 @@ public abstract class ASTVisitor<T> {
 
     public abstract T visit(ForNode node);
     public abstract T visit(IfNode node);
-    public abstract T visit(LoopNode node);
     public abstract T visit(WhileNode node);
 
     public abstract T visit(ArrayAccessNode node);

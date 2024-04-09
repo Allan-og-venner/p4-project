@@ -1,7 +1,11 @@
 import nodes.*;
+import java.util.ArrayList;
+import java.util.Stack;
 
-public class TypeCheckerVisitor extends ASTVisitor<String> {
+public class TypeCheckerVisitor extends ASTVisitor<String>{
     private SymbolTable symbolTable = new SymbolTable();
+
+    private Stack<SymbolTable> symbolTables = new Stack<SymbolTable>();
 
     //Addition, subtraction, multiplication and division accept both number types
     //If there is at least one float, all of them return float. Else, int.
@@ -225,12 +229,34 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
 
     @Override
     public String visit(ForNode node) {
-        return null;
+        try {
+            symbolTables.push((SymbolTable) symbolTables.peek().clone());
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+        }
+        String arrayType = visit(node.getArray());
+        if (arrayType.startsWith("array") && !symbolTable.checkClass(arrayType)) {
+            visit(node.getBlock());
+            symbolTables.pop();
+            return "void";
+        }
+        throw new WrongTypeException("array", arrayType);
     }
 
     @Override
     public String visit(IfNode node) {
-        return null;
+        try {
+            symbolTables.push((SymbolTable) symbolTables.peek().clone());
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+        }
+        String conditionalType = visit(node.getCondition());
+        if (conditionalType.matches("int")) {
+            visit(node.getBlock());
+            symbolTables.pop();
+            return "void";
+        }
+        throw new WrongTypeException("int", conditionalType);
     }
 
     @Override
@@ -240,17 +266,32 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
 
     @Override
     public String visit(WhileNode node) {
-        return null;
+        try {
+            symbolTables.push((SymbolTable) symbolTables.peek().clone());
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+        }
+        String conditionalType = visit(node.getCondition());
+        if (conditionalType.matches("int")) {
+            visit(node.getBlock());
+            symbolTables.pop();
+            return "void";
+        }
+        throw new WrongTypeException("int", conditionalType);
     }
 
     @Override
     public String visit(ArrayAccessNode node) {
-        return null;
+        String arrayType = visit(node.getArray());
+        if (arrayType.startsWith("array") && !symbolTable.checkClass(arrayType)) {
+            return arrayType.replaceFirst("^array", "");
+        }
+        throw new WrongTypeException("array", arrayType);
     }
 
     @Override
     public String visit(ArrayNode node) {
-        return null;
+        return "array" + node.getInnerNode();
     }
 
     @Override
@@ -295,17 +336,28 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
 
     @Override
     public String visit(ExpressionsNode node) {
-        return null;
+        String expr1Type = visit(node.getLeft());
+        if (node.getRight() != null) {
+            String expr2Type = visit(node.getRight());
+            if (!expr1Type.equals(expr2Type)) {
+                throw new WrongTypeException("matching types", expr1Type + " and " + expr2Type);
+            }
+        }
+        return expr1Type;
     }
 
     @Override
     public String visit(IdentifierNode node) {
-        return null;
+        return symbolTable.lookup(node.getText());
     }
 
     @Override
     public String visit(ModifierNode node) {
         return null;
+    }
+    
+    public TypeCheckerVisitor() {
+        symbolTables.push(symbolTable);
     }
 
 }
