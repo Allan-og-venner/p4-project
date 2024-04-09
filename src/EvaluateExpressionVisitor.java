@@ -4,7 +4,8 @@ public class EvaluateExpressionVisitor extends ASTVisitor<String> {
 
     @Override
     public String visit(BlockNode node) {
-        return "";
+
+        return visit(node.getStatement());
     }
 
     @Override
