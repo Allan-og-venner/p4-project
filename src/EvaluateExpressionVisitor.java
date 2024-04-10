@@ -1,6 +1,6 @@
 import nodes.*;
 
-public class EvaluateExpressionVisitor extends ASTVisitor<String> {
+public abstract class EvaluateExpressionVisitor extends ASTVisitor<String> {
 
     @Override
     public String visit(BlockNode node) {

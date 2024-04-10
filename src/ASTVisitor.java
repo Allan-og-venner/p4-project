@@ -13,6 +13,27 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(DefineNode node);
     public abstract T visit(FunctionDNode node);
     public abstract T visit(ClassDNode node);
+    public abstract T visit(ForNode node);
+    public abstract T visit(WhileNode node);
+    public abstract T visit(IfNode node);
+    public abstract T visit(ReturnNode node);
+    public abstract T visit(BreakNode node);
+    public abstract T visit(ContinueNode node);
+    public abstract T visit(ArrayNode node);
+    public abstract T visit(ClassAccessNode node);
+    public abstract T visit(ArrayAccessNode node);
+    public abstract T visit(FunctionCallNode node);
+    public abstract T visit(IdentifierNode node);
+    public abstract T visit(AssignmentNode node);
+    public abstract T visit(NegativeNode node);
+    public abstract T visit(FparamNode node);
+    public abstract T visit(ValueNode node);
+    public abstract T visit(LessThanNode node);
+    public abstract T visit(GreaterThanNode node);
+    public abstract T visit(LTEQNode node);
+    public abstract T visit(GTEQNode node);
+    public abstract T visit(NOTEQNode node);
+
 //Static implementation of visits
 
     public T visit(AccessibleObjectNode node){
@@ -28,6 +49,17 @@ public abstract class ASTVisitor<T> {
         throw new IllegalArgumentException("Unknown nodes.AccessibleObjectNode subclass");
     }
 
+    public T visit(CommandNode node){
+        if(node instanceof BreakNode){
+            return visit((BreakNode)node);
+        } else if (node instanceof ContinueNode) {
+            return visit((ContinueNode)node);
+        } else if (node instanceof ReturnNode) {
+            return visit((ReturnNode)node);
+        }
+        throw new IllegalArgumentException("Unknown nodes.CommandNode subclass");
+    }
+
     public T visit(StatementNode node){
         if (node instanceof DeclarationNode){
             return visit((DeclarationNode) node);
@@ -37,6 +69,8 @@ public abstract class ASTVisitor<T> {
             return visit((AssignmentNode) node);
         } else if (node instanceof CommandNode) {
             return visit((CommandNode) node);
+        } else if (node instanceof ControlNode) {
+            return visit((ControlNode) node);
         }
         throw new IllegalArgumentException("Unknown nodes.StatementNode subclass");
     }
@@ -49,10 +83,23 @@ public abstract class ASTVisitor<T> {
         } else if (node instanceof ClassDNode) {
             return visit((ClassDNode) node);
         }
+        throw new IllegalArgumentException("Unknown nodes.DeclarationNode subclass");
+    }
+
+    public T visit(ExpressionNode node){
+        if (node instanceof ValueNode){
+            return visit((ValueNode) node);
+        } else if (node instanceof InfixExpressionNode) {
+            return visit((InfixExpressionNode) node);
+        } else if (node instanceof NegateNode) {
+            return visit((NegateNode) node);
+        } else if (node instanceof NegativeNode) {
+            return visit((NegativeNode) node);
+        }
         throw new IllegalArgumentException("Unknown nodes.ExpressionNode subclass");
     }
-    //Relation, ..
-    public T visit(ExpressionNode node) {
+
+    public T visit(InfixExpressionNode node) {
         if (node instanceof AdditionNode) {
             return visit((AdditionNode) node);
         } else if (node instanceof SubtractionNode) {
@@ -63,11 +110,41 @@ public abstract class ASTVisitor<T> {
             return visit((DivisionNode) node);
         } else if (node instanceof ModNode) {
             return visit((ModNode) node);
-        } else if (node instanceof NegateNode) {
-            return visit((NegateNode) node);
-        }  else if (node instanceof ValueNode) {
-            return visit((NumberNode) node);
+        } else if (node instanceof LessThanNode) {
+            return visit((LessThanNode) node);
+        } else if (node instanceof GreaterThanNode) {
+            return visit((GreaterThanNode) node);
+        } else if (node instanceof LTEQNode) {
+            return visit((LTEQNode) node);
+        } else if (node instanceof GTEQNode) {
+            return visit((GTEQNode) node);
+        } else if (node instanceof NOTEQNode) {
+            return visit((NOTEQNode) node);
+        } else if (node instanceof ANDNode) {
+            return visit((ANDNode) node);
+        } else if (node instanceof ORNode) {
+            return visit((ORNode) node);
+        } else if (node instanceof EQEQNode) {
+            return visit ((EQEQNode) node);
         }
         throw new IllegalArgumentException("Unknown nodes.ExpressionNode subclass");
+    }
+
+    public T visit(ControlNode node) {
+        if (node instanceof LoopNode) {
+            return visit((LoopNode) node);
+        } else if (node instanceof IfNode) {
+            return visit((IfNode) node);
+        }
+        throw new IllegalArgumentException("Unknown node.ExpressionNode subclass");
+    }
+
+    public T visit(LoopNode node){
+        if (node instanceof ForNode){
+            return visit((ForNode) node);
+        } else if (node instanceof WhileNode) {
+            return visit((WhileNode) node);
+        }
+        throw new IllegalArgumentException("Unknown node.LoopNode subclass");
     }
 }

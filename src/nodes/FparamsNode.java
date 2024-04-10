@@ -1,6 +1,6 @@
 package nodes;
 
-public class FparamsNode extends StatementNode {
+public class FparamsNode extends FunctionDNode {
     private FparamNode left;
     private FparamsNode right;
 

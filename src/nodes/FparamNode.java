@@ -1,6 +1,6 @@
 package nodes;
 
-public class FparamNode extends StatementNode {
+public class FparamNode extends FparamsNode {
 
     private TypeNode Type;
     private IdentifierNode Identifier;

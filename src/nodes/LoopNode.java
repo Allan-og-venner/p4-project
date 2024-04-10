@@ -1,4 +1,4 @@
 package nodes;
 
-public class LoopNode extends ControlNode{
+public abstract class LoopNode extends ControlNode{
 }
