@@ -10,6 +10,9 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(ModNode node);
     public abstract T visit(NegateNode node);
     public abstract T visit(NumberNode node);
+    public abstract T visit(StringNode node);
+    public abstract T visit(FloatNode node);
+    public abstract T visit(CharNode node);
     public abstract T visit(DefineNode node);
     public abstract T visit(FunctionDNode node);
     public abstract T visit(ClassDNode node);
@@ -33,7 +36,13 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(LTEQNode node);
     public abstract T visit(GTEQNode node);
     public abstract T visit(NOTEQNode node);
-
+    public abstract T visit(ANDNode node);
+    public abstract T visit(ORNode node);
+    public abstract T visit(EQEQNode node);
+    public abstract T visit(ModifierNode node);
+    public abstract T visit(TypeNode node);
+    public abstract T visit(ExpressionsNode node);
+    public abstract T visit(FparamsNode node);
 //Static implementation of visits
 
     public T visit(AccessibleObjectNode node){

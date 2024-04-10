@@ -2,7 +2,6 @@ package nodes;
 
 public class DefineNode extends DeclarationNode {
    private ModifierNode Modi;
-    private TypeNode Type;
     private IdentifierNode ID;
     private ValueNode Index;
     private ExpressionNode Value;
@@ -13,14 +12,6 @@ public class DefineNode extends DeclarationNode {
 
     public void setModi(ModifierNode modi) {
         Modi = modi;
-    }
-
-    public TypeNode getType() {
-        return Type;
-    }
-
-    public void setType(TypeNode type) {
-        Type = type;
     }
 
     public IdentifierNode getID() {

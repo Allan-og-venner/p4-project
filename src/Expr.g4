@@ -23,7 +23,7 @@ assign: value EQ expr;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
-    | modifier KEY_ACTION IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type COLON STRING L_CBRACKET block R_CBRACKET;
+    |  KEY_ACTION IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type COLON STRING L_CBRACKET block R_CBRACKET;
 fparams: fparam COMMA fparams
     | fparam;
 fparam: type IDENTIFIER;

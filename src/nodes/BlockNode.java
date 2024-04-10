@@ -1,10 +1,22 @@
 package nodes;
 
+import java.lang.reflect.Type;
+
 public class BlockNode {
 
     private StatementNode statement;
 
     private BlockNode blocks;
+
+    private TypeNode type;
+
+    public TypeNode getType() {
+        return type;
+    }
+
+    public void setType(TypeNode Type) {
+        this.type = Type;
+    }
 
     public StatementNode getStatement() {
         return statement;
