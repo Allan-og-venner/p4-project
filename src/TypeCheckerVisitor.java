@@ -131,7 +131,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
 
-        if (type1 == type2) {
+        if (type1.equals(type2)) {
             return "int";
         }
 
@@ -257,11 +257,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             return "void";
         }
         throw new WrongTypeException("int", conditionalType);
-    }
-
-    @Override
-    public String visit(LoopNode node) {
-        return null;
     }
 
     @Override

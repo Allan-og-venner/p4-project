@@ -7,27 +7,27 @@ public class SymbolTable implements Cloneable {
     private Hashtable<String, String> vTable = new Hashtable<String, String>();
 
     public SymbolTable() {
-        types.put("int", "");
-        types.put("float", "");
-        types.put("char", "");
-        types.put("string", "");
-        types.put("void", "");
-        types.put("object", "");
+        tTable.put("int", "");
+        tTable.put("float", "");
+        tTable.put("char", "");
+        tTable.put("string", "");
+        tTable.put("void", "");
+        tTable.put("object", "");
     }
 
     public void addClass(String name) {
-        types.put(name, "Object");
+        tTable.put(name, "Object");
     }
 
     public void addClass(String name, String superclass) {
-        types.put(name, superclass);
+        tTable.put(name, superclass);
     }
 
     public Hashtable<String, String> getTypes() { return this.tTable; }
 
 
     public boolean checkType(String input) {
-        return this.types.contains(input);
+        return this.tTable.contains(input);
     }
 
     public boolean checkClass(String input) {
@@ -37,15 +37,15 @@ public class SymbolTable implements Cloneable {
 
     //Check if class1 inherits class2
     public boolean checkInherits(String class1, String class2) {
-        if (class1 == "null") {
+        if (class1.equals("null")) {
             return true;
         }
         String key = class1;
-        while (key != class2) {
-            if(key == "Object"){
+        while (key.equals(class2)) {
+            if(key.equals("Object")) {
                 return false;
             }
-            key = types.get(key);
+            key = tTable.get(key);
         }
         return true;
     }
