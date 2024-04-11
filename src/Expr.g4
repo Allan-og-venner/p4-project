@@ -77,7 +77,6 @@ value: NUMERAL
     | array
     | STRING
     | CHAR
-    | KEY_NULL
     | classAccess;
 accessibleObject: IDENTIFIER
     | call
@@ -99,7 +98,7 @@ array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: accessibleObject( PERIOD accessibleValue)*;
+classAccess: accessibleObject( PERIODE accessibleValue)*;
 accessibleValue: call
     | IDENTIFIER;
 
@@ -131,8 +130,7 @@ L_BRACKET: '[';
 R_BRACKET: ']';
 SEMICOLON: ';';
 COMMA: ',';
-COLON: ':';
-PERIOD: '.';
+PERIODE: '.';
 
 /* Keywords */
 KEY_NEW: 'new';
@@ -150,7 +148,6 @@ KEY_LOOP: 'loop';
 KEY_STATIC : 'static';
 KEY_RETURNTYPE_ARROW : '->';
 KEY_NULL: 'null';
-KEY_ACTION: 'action';
 
 /* Types */
 TYPE_INT : 'int';
