@@ -482,11 +482,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ModifierNode node) {
-        return null;
+        if(node.getModifier() == null) {
+            return "";
+        }
+        return node.getModifier() + " ";
     }
     
     public TypeCheckerVisitor() {
         symbolTables.push(symbolTable);
     }
-
 }

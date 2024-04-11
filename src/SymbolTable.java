@@ -5,6 +5,8 @@ public class SymbolTable implements Cloneable {
 
     private Hashtable<String, String> tTable = new Hashtable<String, String>();
     private Hashtable<String, String> vTable = new Hashtable<String, String>();
+    private Hashtable<String, String> fTable = new Hashtable<String, String>();
+    private Hashtable<String, SymbolTable> cTable = new Hashtable<String, SymbolTable>();
 
     public SymbolTable() {
         tTable.put("int", "");
@@ -12,7 +14,7 @@ public class SymbolTable implements Cloneable {
         tTable.put("char", "");
         tTable.put("string", "");
         tTable.put("void", "");
-        tTable.put("object", "");
+        tTable.put("Object", "");
     }
 
     public void addClass(String name) {
@@ -42,7 +44,7 @@ public class SymbolTable implements Cloneable {
         }
         String key = class1;
         while (key.equals(class2)) {
-            if(key.equals("Object")) {
+            if (key.equals("Object")) {
                 return false;
             }
             key = tTable.get(key);
@@ -83,7 +85,7 @@ public class SymbolTable implements Cloneable {
         SymbolTable cloned = (SymbolTable) super.clone();
         cloned.tTable = (Hashtable<String, String>) this.tTable.clone();
         cloned.vTable = (Hashtable<String, String>) this.vTable.clone();
+        cloned.fTable = (Hashtable<String, String>) this.fTable.clone();
         return cloned;
     }
-
 }
