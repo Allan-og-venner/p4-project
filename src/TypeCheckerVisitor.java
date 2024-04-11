@@ -1,10 +1,12 @@
 import nodes.*;
 import java.util.Stack;
 
+
+
 public class TypeCheckerVisitor extends ASTVisitor<String>{
     private SymbolTable symbolTable = new SymbolTable();
 
-    private Stack<SymbolTable> symbolTables = new Stack<SymbolTable>();
+    private Stack<SymbolTable> symbolTables = new Stack<>();
 
     //Addition, subtraction, multiplication and division accept both number types
     //If there is at least one float, all of them return float. Else, int.
