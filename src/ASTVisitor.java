@@ -53,10 +53,13 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(ModifierNode node);
     public abstract T visit(NegativeNode node);
 
+    public abstract T visit (BlockNode node);
+
 //Static implementation of visits
     public T visit(StatementNode node){
         return visit((ExpressionNode) node);
     }
+    /*
     public T visit(BlockNode node){
        try {
            return visit(node.getStatement());
@@ -64,6 +67,8 @@ public abstract class ASTVisitor<T> {
             throw new IllegalArgumentException("Unknown nodes.ExpressionNode subclass");
         }
     }
+
+     */
     public T visit(ExpressionNode node) {
         if (node instanceof AdditionNode) {
             return visit((AdditionNode) node);

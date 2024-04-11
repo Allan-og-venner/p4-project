@@ -211,4 +211,9 @@ public class EvaluateExpressionVisitor extends ASTVisitor<String> {
     public String visit(NegativeNode node) {
         return null;
     }
+
+    @Override
+    public String visit(BlockNode node) {
+        return null;
+    }
 }

@@ -1,5 +1,4 @@
 import nodes.*;
-import java.util.ArrayList;
 import java.util.Stack;
 
 public class TypeCheckerVisitor extends ASTVisitor<String>{
@@ -92,6 +91,15 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException("int or float", innerType);
     }
 
+    @Override
+    public String visit(BlockNode node) {
+        if (node.getBlocks() != null) {
+            return visit(node.getStatement());
+        } else {
+            return visit(node.getBlocks());
+        }
+    }
+
     //Always an int
     @Override
     public String visit(NumberNode node) {
@@ -158,17 +166,41 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(GTEQNode node) {
-        return null;
+        String type1 = visit(node.getLeft());
+        String type2 = visit(node.getRight());
+        if (type1.matches("int|float") && type2.matches("int|float")) {
+            if (type1.equals("float") || type2.equals("float")) {
+                return "float";
+            }
+            return "int";
+        }
+        throw new WrongTypeException("number and number", type1 + type2);
     }
 
     @Override
     public String visit(LessThanNode node) {
-        return null;
+        String type1 = visit(node.getLeft());
+        String type2 = visit(node.getRight());
+        if (type1.matches("int|float") && type2.matches("int|float")) {
+            if (type1.equals("float") || type2.equals("float")) {
+                return "float";
+            }
+            return "int";
+        }
+        throw new WrongTypeException("number and number", type1 + type2);
     }
 
     @Override
     public String visit(LTEQNode node) {
-        return null;
+        String type1 = visit(node.getLeft());
+        String type2 = visit(node.getRight());
+        if (type1.matches("int|float") && type2.matches("int|float")) {
+            if (type1.equals("float") || type2.equals("float")) {
+                return "float";
+            }
+            return "int";
+        }
+        throw new WrongTypeException("number and number", type1 + type2);
     }
 
     @Override
@@ -278,15 +310,15 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayAccessNode node) {
         String arrayType = visit(node.getArray());
-        if (arrayType.startsWith("array") && !symbolTable.checkClass(arrayType)) {
-            return arrayType.replaceFirst("^array", "");
+        if (arrayType.startsWith("array ") && !symbolTable.checkClass(arrayType)) {
+            return arrayType.replaceFirst("^array ", "");
         }
         throw new WrongTypeException("array", arrayType);
     }
 
     @Override
     public String visit(ArrayNode node) {
-        return "array" + node.getInnerNode();
+        return "array " + node.getInnerNode();
     }
 
     @Override
@@ -306,12 +338,38 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FunctionDNode node) {
+        String identifier = symbolTables.peek().fLookup(node.getFunction().getText());
+        if (identifier != null) {
+            throw new DuplicateDefinitionException(identifier);
+        } else {
+            identifier = node.getFunction().getText();
+        }
+        String returnType = node.getReturnType().getType();
+
+        try {
+            symbolTables.push((SymbolTable) symbolTables.peek().clone());
+            visit(node.getParameter());
+            String returnedType = visit(node.getBlocks());
+            symbolTables.pop();
+            if (returnType.equals(returnedType)) {
+                symbolTables.peek().addFunction(identifier, returnType);
+            } else {
+                throw new WrongTypeException("matching types", returnType + " and " + returnedType);
+            }
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
     @Override
     public String visit(AssignmentNode node) {
-        return null;
+        String identifierType = visit(node.getLeft());
+        String expressionType = visit(node.getRight());
+        if (identifierType.equals(expressionType)) {
+            return null;
+        }
+        throw new WrongTypeException(identifierType, expressionType);
     }
 
     @Override
@@ -321,11 +379,83 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ClassDNode node) {
+        String className = node.getName().getText();
+        String superclassName = node.getSuperClass().getText();
+        SymbolTable newTable;
+        if (symbolTables.peek().checkClass(className)) {
+            throw new DuplicateDefinitionException(className);
+        }
+        if (node.getSuperClass() != null && !symbolTables.peek().checkClass(superclassName)) {
+            throw new SymbolUnboundException(superclassName);
+        }
+        symbolTables.peek().addClass(className, superclassName);
+        try {
+            newTable = (SymbolTable) symbolTables.peek().clone();
+            visit(node.getBlock(), newTable);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public String visit(BlockNode node, SymbolTable table) {
+        if (node.getStatement() instanceof DefineNode 
+                || node.getStatement() instanceof FunctionDNode) {
+             visit(node.getStatement(), table);
+        } else {
+            visit(node.getStatement());
+        }
+        visit(node.getBlocks());
+        return null;
+    }
+
+    public String visit(FunctionDNode node, SymbolTable table) {
+        String identifier = table.fLookup(node.getFunction().getText());
+        if (identifier != null) {
+            throw new DuplicateDefinitionException(identifier);
+        } else {
+            identifier = node.getFunction().getText();
+        }
+        String returnType = node.getReturnType().getType();
+        String returnedType = visit(node.getBlocks());
+        if (returnType.equals(returnedType)) {
+            table.addFunction(identifier, visit(node.getModifier()) + returnType);
+            return null;
+        } else {
+            throw new WrongTypeException("matching types", returnType + " and " + returnedType);
+        }
+    }
+
+    public String visit(DefineNode node, SymbolTable table) {
+        String identifier = node.getID().getText();
+        String type = node.getType().getType();
+        if (table.vLookup(identifier) != null) {
+            throw new DuplicateDefinitionException(identifier);
+        }
+        if (node.getValue() != null) {
+            String exprType = visit(node.getValue());
+            if (!exprType.equals(type)) {
+                throw new WrongTypeException(type, exprType);
+            }
+        }
+        table.addValue(identifier, visit(node.getModi()) + type);
         return null;
     }
 
     @Override
     public String visit(DefineNode node) {
+        String identifier = node.getID().getText();
+        String type = node.getType().getType();
+        if (symbolTables.peek().vLookup(identifier) != null) {
+            throw new DuplicateDefinitionException(identifier);
+        }
+        if (node.getValue() != null) {
+            String exprType = visit(node.getValue());
+            if (!exprType.equals(type)) {
+                throw new WrongTypeException(type, exprType);
+            }
+        }
+        symbolTables.peek().addValue(identifier, type);
         return null;
     }
 
@@ -343,7 +473,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(IdentifierNode node) {
-        return symbolTable.lookup(node.getText());
+        String type = symbolTables.peek().vLookup(node.getText());
+        if (type == null) {
+            throw new SymbolUnboundException(node.getText());
+        }
+        return type;
     }
 
     @Override

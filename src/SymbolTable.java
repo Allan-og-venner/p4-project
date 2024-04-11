@@ -56,8 +56,26 @@ public class SymbolTable implements Cloneable {
         }
     }
 
-    public String lookup(String input) {
+    public void addFunction(String symbol, String type) {
+        if (checkType(type)) {
+            fTable.put(symbol, type);
+        }
+    }
+
+    public void superAddFunction(String input, String type) {
+        fTable.put(input, type);
+    }
+
+    public void superAddValue(String input, String type) {
+        vTable.put(input, type);
+    }
+
+    public String vLookup(String input) {
         return vTable.get(input);
+    }
+
+    public String fLookup(String input) {
+        return fTable.get(input);
     }
 
     @Override
