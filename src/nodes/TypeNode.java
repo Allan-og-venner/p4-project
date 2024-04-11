@@ -1,13 +1,14 @@
 package nodes;
 
-public class TypeNode extends BlockNode {
-        private String type;
 
-        public String getType() {
-                return type;
+public class TypeNode extends DefineNode{
+        private String typeName;
+
+        public String getTypeName() {
+                return typeName;
         }
 
-        public void setType(String type) {
-                this.type = type;
+        public void setTypeName(String typeName) {
+                this.typeName = typeName;
         }
 }

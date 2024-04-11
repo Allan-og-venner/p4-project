@@ -14,6 +14,8 @@ public class Main {
             ExprParser parser = new ExprParser(tokens);
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            EvaluateExpressionVisitor value = new EvaluateExpressionVisitor();
+            System.out.println(value.visit(ast));
         }catch (Exception e){
             System.out.print(e.getMessage());
         }

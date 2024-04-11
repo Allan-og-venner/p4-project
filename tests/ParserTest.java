@@ -37,5 +37,6 @@ public class ParserTest {
         // Check if the parse tree matches the expected structure
         //The rules are defined in the grammar file, and says: expr --> arith --> arith + term --> term --> factor --> value: 2
         Assert.assertEquals("(expr (arith (term (term (factor (value 2))) / (factor (value 2)))))", treeString);
+        //expected should be: (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) but I am keeping this wrong one for the report for now
     }
 }

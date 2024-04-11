@@ -7,7 +7,7 @@ block: statement
     | statement block;
 
 /* Statement rules*/
-statement:  decl
+statement: decl
     | expr SEMICOLON
     | assign SEMICOLON
     | command SEMICOLON
@@ -17,12 +17,13 @@ decl: defin SEMICOLON
     | cdecl;
 defin: modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
-    | modifier type IDENTIFIER;
+    | modifier type IDENTIFIER
+    | modifier type IDENTIFIER EQ KEY_NEW expr;
 assign: value EQ expr;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
-    | modifier KEY_ACTION IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type COLON STRING L_CBRACKET block R_CBRACKET;
+    |  KEY_ACTION IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type COLON STRING L_CBRACKET block R_CBRACKET;
 fparams: fparam COMMA fparams
     | fparam;
 fparam: type IDENTIFIER;
@@ -59,7 +60,7 @@ relation: relation LT arith
 arith: arith PLUS term
     | arith MINUS term
     | term;
-term:   term MULT factor
+term: term MULT factor
     | term DIV factor
     | term MOD factor
     | factor;
@@ -98,7 +99,7 @@ array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: accessibleObject( PERIODE accessibleValue)*;
+classAccess: accessibleObject( PERIOD accessibleValue)*;
 accessibleValue: call
     | IDENTIFIER;
 
@@ -130,7 +131,8 @@ L_BRACKET: '[';
 R_BRACKET: ']';
 SEMICOLON: ';';
 COMMA: ',';
-PERIODE: '.';
+COLON: ':';
+PERIOD: '.';
 
 /* Keywords */
 KEY_NEW: 'new';
@@ -148,6 +150,7 @@ KEY_LOOP: 'loop';
 KEY_STATIC : 'static';
 KEY_RETURNTYPE_ARROW : '->';
 KEY_NULL: 'null';
+KEY_ACTION: 'action';
 
 /* Types */
 TYPE_INT : 'int';
