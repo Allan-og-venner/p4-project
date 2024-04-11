@@ -222,16 +222,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(TypeNode node) {
         return null;
     }
-
-    @Override
-    public String visit(VoidNode node) {
-        return null;
-    }
-
-    @Override
-    public String visit(IntNode node) {
-        return null;
-    }
     //END OF CURSED NODES WAAH
 
     @Override
@@ -329,6 +319,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     }
 
     @Override
+    public String visit(ValueNode node) {
+        return null;
+    }
+
+    @Override
     public String visit(FparamsNode node) {
         return null;
     }
@@ -346,7 +341,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         } else {
             identifier = node.getFunction().getText();
         }
-        String returnType = node.getReturnType().getType();
+        String returnType = node.getReturnType().getTypeName();
 
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
@@ -418,7 +413,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         } else {
             identifier = node.getFunction().getText();
         }
-        String returnType = node.getReturnType().getType();
+        String returnType = node.getReturnType().getTypeName();
         String returnedType = visit(node.getBlocks());
         if (returnType.equals(returnedType)) {
             table.addFunction(identifier, visit(node.getModifier()) + returnType);
@@ -430,7 +425,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     public String visit(DefineNode node, SymbolTable table) {
         String identifier = node.getID().getText();
-        String type = node.getType().getType();
+        String type = node.getType().getTypeName();
         if (table.vLookup(identifier) != null) {
             throw new DuplicateDefinitionException(identifier);
         }
@@ -447,7 +442,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(DefineNode node) {
         String identifier = node.getID().getText();
-        String type = node.getType().getType();
+        String type = node.getType().getTypeName();
         if (symbolTables.peek().vLookup(identifier) != null) {
             throw new DuplicateDefinitionException(identifier);
         }
