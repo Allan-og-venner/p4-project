@@ -164,6 +164,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 }
                 if (context.expr() != null){
                     node.setValue(visitExpr(context.expr()));
+
                 }
             }else {
                 throw new UnsupportedOperationException("Operation not supported");
@@ -198,18 +199,18 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         System.out.println("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
-            node.setModifier(visitModifier(context.modifier()));
-            if (context.type() != null && context.IDENTIFIER() != null) {
-                node.setReturnType(visitType(context.type()));
-                IdentifierNode text = new IdentifierNode();
-                text.setText(context.IDENTIFIER().getText());
-                node.setFunction(text);
-                if (context.fparams() != null) {
-                    node.setParameter(visitFparams(context.fparams()));
-                }
-                if (context.block() != null) {
-                    node.setBlocks(visitBlock(context.block()));
-                }
+        node.setModifier(visitModifier(context.modifier()));
+        if (context.type() != null && context.IDENTIFIER() != null) {
+            node.setReturnType(visitType(context.type()));
+            IdentifierNode text = new IdentifierNode();
+            text.setText(context.IDENTIFIER().getText());
+            node.setFunction(text);
+            if (context.fparams() != null) {
+                node.setParameter(visitFparams(context.fparams()));
+            }
+            if (context.block() != null) {
+                node.setBlocks(visitBlock(context.block()));
+            }
             } else {
                 throw new UnsupportedOperationException("Operation not supported");
             }
@@ -411,6 +412,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public ValueNode visitCall(ExprParser.CallContext context) {
         System.out.println("Visited call node");
         FunctionCallNode node = new FunctionCallNode();
+        node.setNewKeyword(context.KEY_NEW().getText());
         if (context.IDENTIFIER() != null) {
             IdentifierNode NameNode = new IdentifierNode();
             NameNode.setText(context.IDENTIFIER().getText());

@@ -17,8 +17,7 @@ decl: defin SEMICOLON
     | cdecl;
 defin: modifier type IDENTIFIER EQ expr
     | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
-    | modifier type IDENTIFIER
-    | modifier type IDENTIFIER EQ KEY_NEW expr;
+    | modifier type IDENTIFIER;
 assign: value EQ expr;
 
 /* Function rules*/
@@ -30,7 +29,7 @@ fparam: type IDENTIFIER;
 cdecl: KEY_CLASS IDENTIFIER L_CBRACKET block R_CBRACKET
     | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block R_CBRACKET;
 call: IDENTIFIER L_PAREN exprs R_PAREN
-    | IDENTIFIER L_PAREN R_PAREN;
+    | KEY_NEW? IDENTIFIER L_PAREN R_PAREN;
 
 /*  Control command rules */
 command: KEY_RETURN expr
@@ -92,7 +91,7 @@ type: TYPE_INT
     | TYPE_STRING
     | TYPE_VOID
     | IDENTIFIER;
-modifier : KEY_STATIC | ;
+modifier : KEY_STATIC?;
 
 /* Array rules*/
 array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
