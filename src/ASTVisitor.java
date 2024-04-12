@@ -156,4 +156,27 @@ public abstract class ASTVisitor<T> {
         }
         throw new IllegalArgumentException("Unknown node.LoopNode subclass");
     }
+
+    public T visit (ValueNode node){
+        if (node instanceof FloatNode) {
+            return visit((FloatNode) node);
+        } else if (node instanceof CharNode) {
+            return visit((CharNode) node);
+        }  if (node instanceof NumberNode) {
+            return visit((NumberNode) node);
+        } else if (node instanceof StringNode) {
+            return visit((StringNode) node);
+        } else if (node instanceof IdentifierNode) {
+            return visit((IdentifierNode) node);
+        } else if (node instanceof FunctionCallNode) {
+            return visit((FunctionCallNode) node);
+        } else if (node instanceof ClassAccessNode) {
+            return visit((ClassAccessNode) node);
+        } else if (node instanceof ArrayNode) {
+            return visit((ArrayNode) node);
+        } else if (node instanceof ArrayAccessNode) {
+            return visit((ArrayAccessNode) node);
+        }
+        throw new IllegalArgumentException("Unknown node.ValueNode subclass");
+    }
 }

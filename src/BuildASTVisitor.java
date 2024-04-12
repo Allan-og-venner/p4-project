@@ -139,22 +139,19 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     @Override
     public ModifierNode visitModifier(ExprParser.ModifierContext context) {
         System.out.println("Visited modifier node");
+        ModifierNode node = new ModifierNode();
         if (context.KEY_STATIC() != null) {
-            ModifierNode node = new ModifierNode();
             node.setModifier(context.KEY_STATIC().getText());
-            return node;
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
+
         }
+        return node;
     }
 
     @Override
     public DefineNode visitDefin(ExprParser.DefinContext context) {
         System.out.println("Visited define node");
         DefineNode node = new DefineNode();
-        if (context.modifier().KEY_STATIC() != null) {
-            node.setModi(visitModifier(context.modifier()));
-        }
+        node.setModi(visitModifier(context.modifier()));
             if (context.type() != null && context.IDENTIFIER() != null) {
                 node.setType(visitType(context.type()));
                 IdentifierNode text = new IdentifierNode();
@@ -201,7 +198,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         System.out.println("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
-        if (context.modifier().KEY_STATIC() != null) {
             node.setModifier(visitModifier(context.modifier()));
             if (context.type() != null && context.IDENTIFIER() != null) {
                 node.setReturnType(visitType(context.type()));
@@ -217,7 +213,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             } else {
                 throw new UnsupportedOperationException("Operation not supported");
             }
-        }
         return node;
     }
 
@@ -254,7 +249,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ClassDNode visitCdecl(ExprParser.CdeclContext context) {
-        System.out.println("Visited classParameters node");
+        System.out.println("Visited classDeclaration node");
         if (context.IDENTIFIER(0) != null) {
             ClassDNode node = new ClassDNode();
             IdentifierNode text = new IdentifierNode();

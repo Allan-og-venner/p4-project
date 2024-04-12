@@ -5,10 +5,16 @@ static int counter = 0;
 float ratio[10] = {0.1, 0.2, 0.3};
 char letter = 'A';
 string name = "Language";
+float b = ratio[5];
 
 /* Function to calculate the sum of two integers */
 static func sum(int a, int b) -> int {
     return a + b;
+
+}
+
+func print(string s) -> void {
+    "Do something";
 }
 
 
@@ -16,33 +22,34 @@ static func sum(int a, int b) -> int {
 class Animal {
     string species;
 
-    func Animal(string species) -> void {
-        this.species = species;
+    func Animal(string inputSpecies) -> void {
+        species = inputSpecies;
     }
 
-    func describe() -> void {
-        print("This animal is a " + this.species);
+    static func describe() -> void {
+        print("This animal is a " + species);
     }
 
     action showSpecies(Animal animal) -> void : "Spec {animal.toString}" {
-    	this.species;
+        species;
     }
-
 }
 
 /*Class Inheritance*/
 class Dog extends Animal {
-int a = 0;
+    int a = 0;
 }
 
 /*Main Block*/
 
     /* Using the sum function*/
     int result = sum(5, 10);
-    print("Sum: " + result);
+    print("Sum: ");
 
-    /* Display action*/
-    display("Hello, World!");
+    print("Hello, World!");
+    string dog = "put dog here";
+    string cat = "put cat here";
+    string animals[2] = {dog, cat};
 
     /*Working with an array*/
     loop for animal in animals {
@@ -55,5 +62,6 @@ int a = 0;
     }
 
     /*Class and object usage*/
-    Dog myDog = new Dog();
-    myDog.describe();
+    string myDog = "put dog here";
+    Animal.describe();
+    Dog.describe();

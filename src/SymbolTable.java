@@ -6,6 +6,8 @@ public class SymbolTable implements Cloneable {
     private Hashtable<String, String> tTable = new Hashtable<String, String>();
     private Hashtable<String, String> vTable = new Hashtable<String, String>();
     private Hashtable<String, String> fTable = new Hashtable<String, String>();
+    private Hashtable<String, String> innerVTable = new Hashtable<String, String>();
+    private Hashtable<String, String> innerFTable = new Hashtable<String, String>();
     private Hashtable<String, SymbolTable> cTable = new Hashtable<String, SymbolTable>();
 
     public SymbolTable() {
@@ -27,14 +29,21 @@ public class SymbolTable implements Cloneable {
 
     public Hashtable<String, String> getTypes() { return this.tTable; }
 
-
     public boolean checkType(String input) {
-        return this.tTable.contains(input);
+        return this.tTable.containsKey(input);
     }
 
     public boolean checkClass(String input) {
         String found = this.tTable.get(input);
         return !(found == null || found.isEmpty());
+    }
+
+    public boolean checkInnerF(String input) {
+        return this.innerFTable.containsKey(input);
+    }
+
+    public boolean checkInnerV(String input) {
+        return this.innerVTable.containsKey(input);
     }
 
     //Check if class1 inherits class2
@@ -53,39 +62,65 @@ public class SymbolTable implements Cloneable {
     }
 
     public void addValue(String symbol, String type) {
-        if (checkType(type)) {
-            vTable.put(symbol, type);
-        }
+        String innerstType = type.replaceAll("^array ", "");
+        if (checkType(innerstType)) {
+            innerVTable.put(symbol, type);
+        } else throw new TypeNotFoundException(type);
     }
 
     public void addFunction(String symbol, String type) {
         if (checkType(type)) {
-            fTable.put(symbol, type);
-        }
+            innerFTable.put(symbol, type);
+        } else throw new TypeNotFoundException(type);
     }
 
-    public void superAddFunction(String input, String type) {
-        fTable.put(input, type);
-    }
-
-    public void superAddValue(String input, String type) {
-        vTable.put(input, type);
+    public void addClassSymbols(String classname, SymbolTable table) {
+        cTable.put(classname, table);
     }
 
     public String vLookup(String input) {
+        if (innerVTable.containsKey(input)) {
+            return innerVTable.get(input);
+        }
         return vTable.get(input);
     }
 
     public String fLookup(String input) {
+        if (innerFTable.containsKey(input)) {
+            return innerFTable.get(input);
+        }
         return fTable.get(input);
+    }
+
+    public String cLookup(String input) {
+        if(cTable.containsKey(input)) {
+            return "Class " + input;
+        } return null;
+    }
+    
+    public SymbolTable findClassSymbolTable(String className) {
+        return cTable.get(className);
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
         SymbolTable cloned = (SymbolTable) super.clone();
-        cloned.tTable = (Hashtable<String, String>) this.tTable.clone();
-        cloned.vTable = (Hashtable<String, String>) this.vTable.clone();
-        cloned.fTable = (Hashtable<String, String>) this.fTable.clone();
+        cloned.tTable = new Hashtable<String, String>();
+        cloned.tTable.putAll(this.tTable);
+        cloned.vTable = new Hashtable<String, String>();
+        cloned.vTable.putAll(this.vTable);
+        cloned.vTable.putAll(this.innerVTable);
+        cloned.fTable = new Hashtable<String, String>();
+        cloned.fTable.putAll(this.fTable);
+        cloned.fTable.putAll(this.innerFTable);
+        cloned.cTable = new Hashtable<String, SymbolTable>();
+        cloned.cTable.putAll(this.cTable);
+        cloned.innerVTable = new Hashtable<String,String>();
+        cloned.innerFTable = new Hashtable<String,String>();
         return cloned;
     }
+
+    public Hashtable<String,String> getVTable() {return this.vTable;}
+    public Hashtable<String,String> getInnerVTable() {return this.innerVTable;}
+    public Hashtable<String, SymbolTable> getCTable() {return this.cTable;}
 }
