@@ -1,6 +1,9 @@
 import nodes.*;
 import org.antlr.v4.codegen.model.Loop;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 
@@ -332,27 +335,48 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new DuplicateDefinitionException(identifier);
         }
         symbolTables.peek().addValue(identifier, type);
-        return "void";
+        return type;
     }
 
 
     @Override
     public String visit(FparamsNode node) {
-        visit(node.getLeft());
         if (node.getRight() != null) {
-            visit(node.getRight());
+            return visit(node.getLeft()) + "," + visit(node.getRight());
         }
-        return "void";
+        return visit(node.getLeft());
     }
 
     @Override
     public String visit(FunctionCallNode node) {
         String identifier = node.getFunction().getText();
-        String type = symbolTables.peek().fLookup(identifier);
-        if (type == null) {
-            throw new SymbolUnboundException(identifier);
+        if (node.getHasNew()) {
+            if (!symbolTable.checkClass(identifier)) {
+                throw new SymbolUnboundException(identifier);
+            }
+            return identifier;
+
+        } else {
+            String type = symbolTables.peek().fLookup(identifier);
+            ArrayList<String> types = new ArrayList<>(Arrays.asList(type.split(",")));
+            if (type.equals("null")) {
+                throw new SymbolUnboundException(identifier);
+            }
+            visit(node.getParameter(), types);
+            return types.get(0);
         }
-        return type;
+    }
+
+    public String visit(ExpressionsNode node, ArrayList<String> expectedTypes) {
+        expectedTypes.remove(0);
+        String exprType = visit(node.getLeft());
+        if (!symbolTable.checkInherits(exprType, expectedTypes.get(0))) {
+            throw new WrongTypeException(expectedTypes.get(0), exprType);
+        }
+        if (node.getRight() != null) {
+            visit(node.getRight(), expectedTypes);
+        }
+        return exprType;
     }
 
     @Override
@@ -367,13 +391,14 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
+            String parameterTypes = "";
             if(node.getParameter() != null) {
-                visit(node.getParameter());
+                parameterTypes = visit(node.getParameter());
             }
             String returnedType = visit(node.getBlocks());
             symbolTables.pop();
-            if (returnType.equals(returnedType)) {
-                symbolTables.peek().addFunction(identifier, returnType);
+            if (symbolTable.checkInherits(returnedType, returnType)) {
+                symbolTables.peek().addFunction(identifier, returnType + "," + parameterTypes);
             } else {
                 throw new WrongTypeException(returnType, returnedType);
             }
@@ -468,13 +493,14 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String returnType = node.getReturnType().getTypeName();
         try {
             symbolTables.push((SymbolTable) table.clone());
+            String parameterTypes = "";
             if(node.getParameter() != null) {
-                visit(node.getParameter());
+                parameterTypes = visit(node.getParameter());
             }
             String returnedType = visit(node.getBlocks());
             symbolTables.pop();
-            if (returnType.equals(returnedType)) {
-                table.addFunction(visit(node.getModifier()) + identifier, returnType);
+            if (symbolTable.checkInherits(returnedType, returnType)) {
+                table.addFunction(visit(node.getModifier()) + identifier, returnType + "," + parameterTypes);
                 return "void";
             } else {
                 throw new WrongTypeException(returnType, returnedType);
@@ -528,9 +554,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String expr1Type = visit(node.getLeft());
         if (node.getRight() != null) {
             String expr2Type = visit(node.getRight());
-            if (!expr1Type.equals(expr2Type)) {
+            String commonAncestor = symbolTable.findClosestAncestor(expr1Type, expr2Type);
+            if (commonAncestor.equals("void")) {
                 throw new WrongTypeException(expr1Type, expr2Type);
             }
+            return commonAncestor;
         }
         return expr1Type;
     }

@@ -411,6 +411,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public ValueNode visitCall(ExprParser.CallContext context) {
         System.out.println("Visited call node");
         FunctionCallNode node = new FunctionCallNode();
+        node.setHasNew(context.KEY_NEW() != null);
         if (context.IDENTIFIER() != null) {
             IdentifierNode NameNode = new IdentifierNode();
             NameNode.setText(context.IDENTIFIER().getText());

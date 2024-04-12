@@ -2,10 +2,13 @@ import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.*;
 
+import java.util.ArrayList;
+
 
 public class Main {
     public static void main(String[] args) {
 
+        Object test[] = {new TypeCheckerVisitor(), new SymbolTable(), 1, "hej"};
         try {
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");

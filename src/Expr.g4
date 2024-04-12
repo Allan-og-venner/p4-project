@@ -15,10 +15,7 @@ statement: decl
 decl: defin SEMICOLON
     | fdecl
     | cdecl;
-defin: modifier type IDENTIFIER EQ expr
-    | modifier type IDENTIFIER L_BRACKET NUMERAL R_BRACKET EQ expr
-    | modifier type IDENTIFIER
-    | modifier type IDENTIFIER EQ KEY_NEW expr;
+defin: modifier type IDENTIFIER (L_BRACKET NUMERAL R_BRACKET)? (EQ expr)?;
 assign: value EQ expr;
 
 /* Function rules*/
@@ -29,8 +26,7 @@ fparams: fparam COMMA fparams
 fparam: type IDENTIFIER;
 cdecl: KEY_CLASS IDENTIFIER L_CBRACKET block R_CBRACKET
     | KEY_CLASS IDENTIFIER KEY_EXTENDS IDENTIFIER L_CBRACKET block R_CBRACKET;
-call: IDENTIFIER L_PAREN exprs R_PAREN
-    | IDENTIFIER L_PAREN R_PAREN;
+call: KEY_NEW? IDENTIFIER L_PAREN exprs? R_PAREN;
 
 /*  Control command rules */
 command: KEY_RETURN expr
