@@ -30,7 +30,6 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(AssignmentNode node);
     public abstract T visit(NegativeNode node);
     public abstract T visit(FparamNode node);
-    public abstract T visit(ValueNode node);
     public abstract T visit(LessThanNode node);
     public abstract T visit(GreaterThanNode node);
     public abstract T visit(LTEQNode node);
