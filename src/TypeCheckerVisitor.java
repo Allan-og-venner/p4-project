@@ -412,7 +412,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(AssignmentNode node) {
         String identifierType = visit(node.getLeft());
         String expressionType = visit(node.getRight());
-        if (identifierType.equals(expressionType)) {
+        if (symbolTable.checkInherits(expressionType, identifierType)) {
             return "void";
         }
         throw new WrongTypeException(identifierType, expressionType);
@@ -519,7 +519,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         }
         if (node.getValue() != null) {
             String exprType = visit(node.getValue());
-            if (!exprType.equals(type)) {
+            if (!symbolTable.checkInherits(exprType, type)) {
                 throw new WrongTypeException(type, exprType);
             }
         }
@@ -541,7 +541,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         }
         if (node.getValue() != null) {
             String exprType = visit(node.getValue());
-            if (!exprType.equals(type)) {
+            System.out.println(exprType);
+            if (!symbolTable.checkInherits(exprType, type)) {
                 throw new WrongTypeException(type, exprType);
             }
         }
