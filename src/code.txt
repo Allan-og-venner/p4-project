@@ -1,67 +1,46 @@
-/* Example Program */
 
-/* Variable Declarations */
-static int counter = 0;
-float ratio[10] = {0.1, 0.2, 0.3};
-char letter = 'A';
-string name = "Language";
-float b = ratio[5];
-
-/* Function to calculate the sum of two integers */
-static func sum(int a, int b) -> int {
-    return a + b;
-
-}
-
-func print(string s) -> void {
-    "Do something";
-}
-
-
-/* Class Declaration*/
 class Animal {
-    string species;
-
-    func Animal(string inputSpecies) -> void {
-        species = inputSpecies;
-    }
-
-    static func describe() -> void {
-        print("This animal is a " + species);
-    }
-
-    action showSpecies(Animal animal) -> void : "Spec {animal.toString}" {
-        species;
-    }
-}
-
-/*Class Inheritance*/
-class Dog extends Animal {
     int a = 0;
 }
 
-/*Main Block*/
+class Dog extends Animal {
+int a = 0;
+}
 
-    /* Using the sum function*/
-    int result = sum(5, 10);
-    print("Sum: ");
+class Cat extends Animal {
+int a = 0;
+}
 
-    print("Hello, World!");
-    string dog = "put dog here";
-    string cat = "put cat here";
-    string animals[2] = {dog, cat};
+class British extends Cat {
+int a = 0;
+}
 
-    /*Working with an array*/
-    loop for animal in animals {
-        print(animal);
-    }
+class Shorthair extends British {
+int a = 0;
+}
 
-    /*Conditional statement*/
-    if (counter > 0) {
-        print("Counter is positive.");
-    }
+class Longhair extends British {
+int a = 0;
+}
 
-    /*Class and object usage*/
-    string myDog = "put dog here";
-    Animal.describe();
-    Dog.describe();
+class Color extends Longhair {
+int a = 0;
+}
+
+
+class Brown extends Color {
+int a = 0;
+}
+
+class Gray extends Longhair{
+int a = 0;
+}
+
+
+Shorthair luder1 = new Shorthair();
+Brown luder2 = new Brown();
+Gray luder3 = new Gray();
+Cat luder4 = new Cat();
+Dog luder5 = new Dog();
+
+Animal animals[5] = {luder1, luder2, luder3, luder4, luder5};

@@ -1,17 +1,14 @@
 package nodes;
 
 public class FunctionCallNode extends AccessibleObjectNode {
-    private String NewKeyword;
     private IdentifierNode function;
     private ExpressionsNode parameter;
 
-    public String getNewKeyword() {
-        return NewKeyword;
-    }
+    private boolean hasNew;
 
-    public void setNewKeyword(String newKeyword) {
-        NewKeyword = newKeyword;
-    }
+    public boolean getHasNew() {return hasNew;}
+
+    public void setHasNew(boolean hasNew) { this.hasNew = hasNew; }
 
     public IdentifierNode getFunction() {
         return function;
