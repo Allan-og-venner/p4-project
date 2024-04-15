@@ -12,6 +12,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     private Stack<SymbolTable> symbolTables = new Stack<>();
 
+
     //Addition, subtraction, multiplication and division accept both number types
     //If there is at least one float, all of them return float. Else, int.
     @Override
@@ -24,7 +25,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             return "int";
         }
-        throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
+        throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             return "int";
         }
-        throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
+        throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             return "int";
         }
-        throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
+        throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             return "int";
         }
-        throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
+        throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
     //Takes only an int (bool) as input, and returns another one if true.
@@ -84,7 +85,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if (type1.equals("int") && type2.equals("int")) {
             return "int";
         }
-        throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
+        throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
     //Takes int or float, and returns the same
@@ -108,8 +109,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             return stmType;
         }
         if (node.getStatement() instanceof ControlNode || node.getStatement() instanceof LoopNode) {
-            if(!stmType.equals(blockType)) {
-                throw new WrongTypeException(node.getBlocks().lineNumber, "Matching types",stmType + ", " + blockType);
+            if(!stmType.equals("void") && !stmType.equals(blockType)) {
+                throw new WrongTypeException(node.getStatement().lineNumber, "Matching types",stmType + ", " + blockType);
             }
         }
         return blockType;
@@ -272,7 +273,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             System.out.println(e.getMessage());
         }
         String arrayType = visit(node.getArray());
-        if (arrayType.startsWith("array") && !symbolTable.checkClass(arrayType)) {
+        if (arrayType.startsWith("array ") && !symbolTable.checkClass(arrayType)) {
+            String type = arrayType.replaceFirst("^array ", "");
+            symbolTables.peek().addValue(node.getIterator().getText(), type);
             String returnType = visit(node.getBlock());
             symbolTables.pop();
             return returnType;
@@ -315,7 +318,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayAccessNode node) {
         String arrayType = visit(node.getArray());
-        if (arrayType.startsWith("array ") && !symbolTable.checkClass(arrayType)) {
+        if (arrayType.startsWith("array ")) {
             return arrayType.replaceFirst("^array ", "");
         }
         throw new WrongTypeException(node.lineNumber, "array", arrayType);
@@ -361,7 +364,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (type.equals("null")) {
                 throw new SymbolUnboundException(node.lineNumber, identifier);
             }
-            visit(node.getParameter(), types);
+            if(node.getParameter() != null) {
+                visit(node.getParameter(), types);
+            }
             return types.get(0);
         }
     }
@@ -369,6 +374,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(ExpressionsNode node, ArrayList<String> expectedTypes) {
         expectedTypes.remove(0);
         String exprType = visit(node.getLeft());
+        if(expectedTypes.isEmpty()) {
+            throw new WrongTypeException(node.lineNumber, "void", exprType);
+        }
         if (!symbolTable.checkInherits(exprType, expectedTypes.get(0))) {
             throw new WrongTypeException(node.lineNumber, expectedTypes.get(0), exprType);
         }
@@ -387,7 +395,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             identifier = node.getFunction().getText();
         }
         String returnType = node.getReturnType().getTypeName();
-
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
             String parameterTypes = "";
@@ -396,7 +403,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             String returnedType = visit(node.getBlocks());
             symbolTables.pop();
-            if (symbolTable.checkInherits(returnedType, returnType)) {
+            if (symbolTables.peek().checkInherits(returnedType, returnType)) {
                 symbolTables.peek().addFunction(identifier, returnType + "," + parameterTypes);
             } else {
                 throw new WrongTypeException(node.lineNumber, returnType, returnedType);
@@ -535,7 +542,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             type = node.getType().getTypeName();
         }
         String identifier = node.getID().getText();
-        if (symbolTables.peek().vLookup(identifier) != null) {
+        if (symbolTables.peek().checkInnerV(identifier)) {
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
         }
         if (node.getValue() != null) {

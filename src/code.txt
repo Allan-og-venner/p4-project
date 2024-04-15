@@ -1,62 +1,20 @@
 
-func print(string text) -> void {
-    "do something";
-}
 
-func test() -> float {
-   return 1+1.1;
-}
-
-class Animal {
-    string name;
-
-    static int count;
-
-    static func increaseCount() -> void {
-        count = count + 1;
-    }
-}
-
-class Dog extends Animal {
-    func bark() -> void {
-        print("bow wow");
-    }
-}
-
-class Cat extends Animal {
-    func meow() -> void {
-        print("miau");
-    }
-}
-
-class Springer extends Dog {
-    func annoy(string owner) -> void {
-         print(owner);
-         print(" is annoyed");
-    }
-}
-
-Springer copper2 = new Springer();
-Dog copper = new Springer();
-Animal amber = new Cat();
-Cat ellie = new Cat();
-
-func printGreater(int a, int b) -> int {
-    if (a > b) {
-        return a;
-    }
-    if (b > a) {
-       return b;
-    }
+func add() -> int {
     return "hej";
 }
 
 
-copper2.annoy();
+func printGreater() -> int {
+    "hej";
+    "hej";
+    "hej";
+    "hej";
+    "hej";
+    add();
 
-Animal pets[3] = {copper, amber, ellie,copper2};
-
-
-if (amber == ellie) {
-    print("They're the same cats!");
+    return "hej";
 }
+
+
+printGreater(2);
