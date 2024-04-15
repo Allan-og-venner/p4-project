@@ -1,46 +1,62 @@
 
+func print(string text) -> void {
+    "do something";
+}
+
+func test() -> float {
+   return 1+1.1;
+}
+
 class Animal {
-    int a = 0;
+    string name;
+
+    static int count;
+
+    static func increaseCount() -> void {
+        count = count + 1;
+    }
 }
 
 class Dog extends Animal {
-int a = 0;
+    func bark() -> void {
+        print("bow wow");
+    }
 }
 
 class Cat extends Animal {
-int a = 0;
+    func meow() -> void {
+        print("miau");
+    }
 }
 
-class British extends Cat {
-int a = 0;
+class Springer extends Dog {
+    func annoy(string owner) -> void {
+         print(owner);
+         print(" is annoyed");
+    }
 }
 
-class Shorthair extends British {
-int a = 0;
-}
+Springer copper2 = new Springer();
+Dog copper = new Springer();
+Animal amber = new Cat();
+Cat ellie = new Cat();
 
-class Longhair extends British {
-int a = 0;
-}
-
-class Color extends Longhair {
-int a = 0;
-}
-
-
-class Brown extends Color {
-int a = 0;
-}
-
-class Gray extends Longhair{
-int a = 0;
+func printGreater(int a, int b) -> int {
+    if (a > b) {
+        return a;
+    }
+    if (b > a) {
+       return b;
+    }
+    return "hej";
 }
 
 
-Shorthair luder1 = new Shorthair();
-Brown luder2 = new Brown();
-Gray luder3 = new Gray();
-Cat luder4 = new Cat();
-Dog luder5 = new Dog();
+copper2.annoy();
 
-Animal animals[5] = {luder1, luder2, luder3, luder4, luder5};
+Animal pets[3] = {copper, amber, ellie,copper2};
+
+
+if (amber == ellie) {
+    print("They're the same cats!");
+}

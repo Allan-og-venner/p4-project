@@ -1,9 +1,14 @@
 package nodes;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.lang.reflect.Type;
 
 public class BlockNode {
-
+    public int lineNumber;
+    public void getLineNumberFromContext(ParserRuleContext context){
+        lineNumber = context.getStart().getLine();
+    }
     private StatementNode statement;
 
     private BlockNode blocks;

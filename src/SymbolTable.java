@@ -69,7 +69,6 @@ public class SymbolTable implements Cloneable {
 
     public void addValue(String symbol, String type) {
         String innerstType = type.replaceAll("^array ", "");
-        System.out.println(innerstType);
         if (checkType(innerstType)) {
             innerVTable.put(symbol, type);
         } else {
@@ -80,9 +79,7 @@ public class SymbolTable implements Cloneable {
     public void addFunction(String symbol, String type) {
         ArrayList<String> types = new ArrayList<>(Arrays.asList(type.split(",")));
         for (String i : types) {
-            System.out.println(i);
             if (!checkType(i)) {
-                System.out.println(i);
                 throw new TypeNotFoundException(i);
             }
         }
@@ -96,6 +93,12 @@ public class SymbolTable implements Cloneable {
     public String vLookup(String input) {
         if (innerVTable.containsKey(input)) {
             return innerVTable.get(input);
+        }
+        if (innerVTable.containsKey("static " + input)) {
+            return innerVTable.get("static " + input);
+        }
+        if (vTable.containsKey("static " + input)) {
+            return vTable.get("static " + input);
         }
         return vTable.get(input);
     }

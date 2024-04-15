@@ -1,5 +1,5 @@
 public class WrongTypeException extends RuntimeException {
-    public WrongTypeException(String expected, String received) {
-        super("Expected type: " + expected + ", received: " + received);
+    public WrongTypeException(int line, String expected, String received) {
+        super(line + ": Expected type: " + expected + ", received: " + received);
     }
 }
