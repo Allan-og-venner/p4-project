@@ -1,5 +1,5 @@
 public class SymbolUnboundException extends RuntimeException{
-    public SymbolUnboundException(String symbol) {
-        super("Symbol accessed before definition: " + symbol);
+    public SymbolUnboundException(int line, String symbol) {
+        super(line + ": Symbol accessed before definition: " + symbol);
     }
 }

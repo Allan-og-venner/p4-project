@@ -1,5 +1,5 @@
 public class DuplicateDefinitionException extends RuntimeException {
-    public DuplicateDefinitionException(String symbol) {
-        super("Symbol already defined: " + symbol);
+    public DuplicateDefinitionException(int line, String symbol) {
+        super(line + ": Symbol already defined: " + symbol);
     }
 }
