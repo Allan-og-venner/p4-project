@@ -30,6 +30,10 @@ public class ASTTest {
     // EvaluateExpressionVisitor value = new EvaluateExpressionVisitor();
     // System.out.println(value.visit(ast));
 
-
+    @Test
+    public void testASTNode() {
+        // Check if the AST node is not null
+        Assert.assertNotNull(ast);
+    }
 
 }
