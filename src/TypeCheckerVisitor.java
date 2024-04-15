@@ -21,8 +21,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
@@ -34,8 +36,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
@@ -47,8 +51,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
@@ -60,8 +66,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
@@ -72,6 +80,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(NegateNode node) {
         String innerType = visit(node.getInnerNode());
         if (innerType.equals("int")) {
+            node.setType(new TypeNode(innerType));
             return innerType;
         }
         throw new WrongTypeException(node.lineNumber, "int", innerType);
@@ -83,6 +92,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.equals("int") && type2.equals("int")) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
@@ -93,6 +103,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(NegativeNode node) {
         String innerType = visit(node.getInnerNode());
         if (innerType.matches("int|float")) {
+            node.setType(new TypeNode(innerType));
             return innerType;
         }
         throw new WrongTypeException(node.lineNumber, "int or float", innerType);
@@ -106,6 +117,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             blockType = visit(node.getBlocks());
         }
         if (node.getStatement() instanceof ReturnNode) {
+            node.setType(new TypeNode(stmType));
             return stmType;
         }
         if (node.getStatement() instanceof ControlNode || node.getStatement() instanceof LoopNode) {
@@ -113,18 +125,21 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 throw new WrongTypeException(node.getStatement().lineNumber, "Matching types",stmType + ", " + blockType);
             }
         }
+        node.setType(new TypeNode(blockType));
         return blockType;
     }
 
     //Always an int
     @Override
     public String visit(NumberNode node) {
+        node.setType(new TypeNode("int"));
         return "int";
     }
 
     //Always a float
     @Override
     public String visit(FloatNode node) {
+        node.setType(new TypeNode("float"));
         return "float";
     }
 
@@ -134,6 +149,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.equals("int") && type2.equals("int")) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
@@ -145,6 +161,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.equals("int") && type2.equals("int")) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
@@ -156,11 +173,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
 
         if (type1.equals(type2)) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
 
         if (symbolTable.checkInherits(type1, type2)
             || symbolTable.checkInherits(type2, type1)) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "compatible types", type1 + " and " + type2);
@@ -173,8 +192,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + " and " + type2);
@@ -186,8 +207,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
@@ -199,8 +222,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
@@ -212,8 +237,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
+                node.setType(new TypeNode("float"));
                 return "float";
             }
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
@@ -226,6 +253,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
         if (symbolTable.checkInherits(type1, type2)
                 || symbolTable.checkInherits(type2, type1)) {
+            node.setType(new TypeNode("int"));
             return "int";
         }
         throw new WrongTypeException(node.lineNumber, "compatible types", type1 + " and " + type2);
@@ -278,6 +306,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             symbolTables.peek().addValue(node.getIterator().getText(), type);
             String returnType = visit(node.getBlock());
             symbolTables.pop();
+            node.setType(new TypeNode(returnType));
             return returnType;
         }
         throw new WrongTypeException(node.lineNumber, "array", arrayType);
@@ -294,6 +323,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if (conditionalType.matches("int")) {
             String returnType = visit(node.getBlock());
             symbolTables.pop();
+            node.setType(new TypeNode(returnType));
             return returnType;
         }
         throw new WrongTypeException(node.lineNumber, "int", conditionalType);
@@ -310,6 +340,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if (conditionalType.matches("int")) {
             String returnType = visit(node.getBlock());
             symbolTables.pop();
+            node.setType(new TypeNode(returnType));
             return returnType;
         }
         throw new WrongTypeException(node.lineNumber, "int", conditionalType);
@@ -319,7 +350,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(ArrayAccessNode node) {
         String arrayType = visit(node.getArray());
         if (arrayType.startsWith("array ")) {
-            return arrayType.replaceFirst("^array ", "");
+            String type = arrayType.replaceFirst("^array ", "");
+            node.setType(new TypeNode(type));
+            return type;
         }
         throw new WrongTypeException(node.lineNumber, "array", arrayType);
     }
@@ -337,6 +370,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
         }
         symbolTables.peek().addValue(identifier, type);
+        node.setType(new TypeNode(type));
         return type;
     }
 
@@ -356,6 +390,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (!symbolTable.checkClass(identifier)) {
                 throw new SymbolUnboundException(node.lineNumber, identifier);
             }
+            node.setType(new TypeNode(identifier));
             return identifier;
 
         } else {
@@ -367,6 +402,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if(node.getParameter() != null) {
                 visit(node.getParameter(), types);
             }
+            node.setType(new TypeNode(types.get(0)));
             return types.get(0);
         }
     }
@@ -383,6 +419,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if (node.getRight() != null) {
             visit(node.getRight(), expectedTypes);
         }
+        node.setType(new TypeNode(exprType));
         return exprType;
     }
 
@@ -411,6 +448,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         } catch (CloneNotSupportedException e) {
             System.out.println(e.getMessage());
         }
+        node.setType(new TypeNode("void"));
         return "void";
     }
 
@@ -419,6 +457,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String identifierType = visit(node.getLeft());
         String expressionType = visit(node.getRight());
         if (symbolTable.checkInherits(expressionType, identifierType)) {
+            node.setType(new TypeNode("void"));
             return "void";
         }
         throw new WrongTypeException(node.lineNumber, identifierType, expressionType);
@@ -427,26 +466,44 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ClassAccessNode node) {
         String objectType = visit(node.getObject());
+        System.out.println(objectType);
         for (ValueNode currentField : node.getValue()) {
             if (objectType.startsWith("Class ")) {
                 objectType = objectType.replaceFirst("^Class ", "");
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
+                String identifier = "";
+                String nextObjectType = "";
                 if (currentField instanceof FunctionCallNode) {
-                    objectType = classST.fLookup(((FunctionCallNode) currentField).getFunction().getText());
+                    identifier = ((FunctionCallNode) currentField).getFunction().getText();
+                    nextObjectType = classST.fLookup("static " + identifier);
                 } else if (currentField instanceof IdentifierNode) {
-                    objectType = classST.vLookup(((IdentifierNode) currentField).getText());
+                    identifier = ((IdentifierNode) currentField).getText();
+                    nextObjectType = classST.vLookup("static " + identifier);
                 }
+                if(nextObjectType == null) {
+                    throw new NoStaticFieldException(node.lineNumber, objectType, identifier);
+                }
+                objectType = nextObjectType;
             } else if (symbolTables.peek().checkClass(objectType)) {
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
+                System.out.println(classST.getInnerVTable());
+                String identifier = "";
                 if (currentField instanceof FunctionCallNode) {
-                    objectType = classST.fLookup(((FunctionCallNode) currentField).getFunction().getText());
+                    identifier = ((FunctionCallNode) currentField).getFunction().getText();
+                    objectType = classST.fLookup(identifier);
                 } else if (currentField instanceof IdentifierNode) {
-                    objectType = classST.vLookup(((IdentifierNode) currentField).getText());
+                    identifier = ((IdentifierNode) currentField).getText();
+                    objectType = classST.vLookup(identifier);
+                    System.out.println(objectType);
+                }
+                if (objectType == null) {
+                    throw new SymbolUnboundException(node.lineNumber, identifier);
                 }
             } else {
                 throw new WrongTypeException(node.lineNumber, "object or class", objectType);
             }
         }
+        node.setType(new TypeNode(objectType));
         return objectType;
     }
 
@@ -467,11 +524,17 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         symbolTables.peek().addClass(className, superclassName);
         try {
             newTable = (SymbolTable) symbolTables.peek().clone();
+            if (!superclassName.equals("Object")){
+                SymbolTable superNewTable = symbolTables.peek().findClassSymbolTable(superclassName);
+                newTable.getFTable().putAll(superNewTable.getInnerFTable());
+                newTable.getVTable().putAll(superNewTable.getInnerVTable());
+            }
             visit(node.getBlocks(), newTable);
             symbolTables.peek().addClassSymbols(className, newTable);
         } catch (CloneNotSupportedException e) {
             System.out.println(e.getMessage());
         }
+        node.setType(new TypeNode("void"));
         return "void";
     }
 
@@ -486,6 +549,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if(node.getBlocks() != null) {
             visit(node.getBlocks(), table);
         }
+        node.setType(new TypeNode("void"));
         return "void";
     }
 
@@ -507,6 +571,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             symbolTables.pop();
             if (symbolTable.checkInherits(returnedType, returnType)) {
                 table.addFunction(visit(node.getModifier()) + identifier, returnType + "," + parameterTypes);
+                node.setType(new TypeNode("void"));
                 return "void";
             } else {
                 throw new WrongTypeException(node.lineNumber, returnType, returnedType);
@@ -520,7 +585,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(DefineNode node, SymbolTable table) {
         String identifier = node.getID().getText();
         String type = node.getType().getTypeName();
-        if (table.vLookup(identifier) != null) {
+        if (table.checkInnerV(identifier)) {
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
         }
         if (node.getValue() != null) {
@@ -530,6 +595,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
         }
         table.addValue( visit(node.getModi()) + identifier,type);
+        node.setType(new TypeNode("void"));
         return "void";
     }
 
@@ -552,6 +618,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
         }
         symbolTables.peek().addValue(identifier, type);
+        node.setType(new TypeNode("void"));
         return "void";
     }
 
@@ -564,8 +631,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (commonAncestor.equals("void")) {
                 throw new WrongTypeException(node.lineNumber, expr1Type, expr2Type);
             }
+            node.setType(new TypeNode(commonAncestor));
             return commonAncestor;
         }
+        node.setType(new TypeNode(expr1Type));
         return expr1Type;
     }
 
@@ -573,12 +642,14 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(IdentifierNode node) {
         String className = symbolTables.peek().cLookup(node.getText());
         if (className != null) {
+            node.setType(new TypeNode(className));
             return className;
         }
         String type = symbolTables.peek().vLookup(node.getText());
         if (type == null) {
             throw new SymbolUnboundException(node.lineNumber, node.getText());
         }
+        node.setType(new TypeNode(type));
         return type;
     }
 
