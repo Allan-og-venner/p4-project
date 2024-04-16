@@ -4,6 +4,12 @@ public class FunctionCallNode extends AccessibleObjectNode {
     private IdentifierNode function;
     private ExpressionsNode parameter;
 
+    private boolean hasNew;
+
+    public boolean getHasNew() {return hasNew;}
+
+    public void setHasNew(boolean hasNew) { this.hasNew = hasNew; }
+
     public IdentifierNode getFunction() {
         return function;
     }

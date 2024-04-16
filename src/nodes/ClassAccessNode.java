@@ -7,8 +7,6 @@ import java.util.List;
 public class ClassAccessNode extends AccessibleObjectNode {
     private ValueNode object;
 
-
-
     private List<ValueNode> value;
 
     public ValueNode getObject() {

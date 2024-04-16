@@ -30,7 +30,6 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(AssignmentNode node);
     public abstract T visit(NegativeNode node);
     public abstract T visit(FparamNode node);
-    public abstract T visit(ValueNode node);
     public abstract T visit(LessThanNode node);
     public abstract T visit(GreaterThanNode node);
     public abstract T visit(LTEQNode node);
@@ -155,5 +154,28 @@ public abstract class ASTVisitor<T> {
             return visit((WhileNode) node);
         }
         throw new IllegalArgumentException("Unknown node.LoopNode subclass");
+    }
+
+    public T visit (ValueNode node){
+        if (node instanceof FloatNode) {
+            return visit((FloatNode) node);
+        } else if (node instanceof CharNode) {
+            return visit((CharNode) node);
+        }  if (node instanceof NumberNode) {
+            return visit((NumberNode) node);
+        } else if (node instanceof StringNode) {
+            return visit((StringNode) node);
+        } else if (node instanceof IdentifierNode) {
+            return visit((IdentifierNode) node);
+        } else if (node instanceof FunctionCallNode) {
+            return visit((FunctionCallNode) node);
+        } else if (node instanceof ClassAccessNode) {
+            return visit((ClassAccessNode) node);
+        } else if (node instanceof ArrayNode) {
+            return visit((ArrayNode) node);
+        } else if (node instanceof ArrayAccessNode) {
+            return visit((ArrayAccessNode) node);
+        }
+        throw new IllegalArgumentException("Unknown node.ValueNode subclass");
     }
 }

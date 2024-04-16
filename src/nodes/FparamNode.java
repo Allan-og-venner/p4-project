@@ -2,7 +2,6 @@ package nodes;
 
 public class FparamNode extends FparamsNode {
 
-
     private IdentifierNode Identifier;
 
     public IdentifierNode getIdentifier() {

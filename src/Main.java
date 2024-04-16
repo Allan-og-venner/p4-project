@@ -2,10 +2,13 @@ import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Main {
-    public static void main(String[] args) {
 
+    public static void main(String[] args) {
         try {
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");
@@ -14,10 +17,11 @@ public class Main {
             ExprParser parser = new ExprParser(tokens);
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
-            EvaluateExpressionVisitor value = new EvaluateExpressionVisitor();
-            System.out.println(value.visit(ast));
-        }catch (Exception e){
-            System.out.print(e.getMessage());
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            System.out.println(typeChecker.visit(ast));
+        } catch (Exception e){
+            System.err.print(e.getMessage());
+            //e.printStackTrace();
         }
 
     }

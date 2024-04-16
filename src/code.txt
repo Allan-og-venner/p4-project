@@ -1,59 +1,20 @@
-/* Example Program */
+class Cat {
+    string name;
+    Cat mate;
+}
 
-/* Variable Declarations */
-static int counter = 0;
-float ratio[10] = {0.1, 0.2, 0.3};
-char letter = 'A';
-string name = "Language";
-
-/* Function to calculate the sum of two integers */
-static func sum(int a, int b) -> int {
-    return a + b;
+class Kitty {
+    Cat parent;
+    static Cat bestCat;
 }
 
 
-/* Class Declaration*/
-class Animal {
-    string species;
+Kitty ellie = new Kitty();
 
-    func Animal(string species) -> void {
-        this.species = species;
-    }
+string test = ellie.parent.name;
 
-    func describe() -> void {
-        print("This animal is a " + this.species);
-    }
+string test2 = Kitty.bestCat.mate.name;
 
-    action showSpecies(Animal animal) -> void : "Spec {animal.toString}" {
-    	this.species;
-    }
+string test3 = ellie.bestCat.mate.name;
 
-}
-
-/*Class Inheritance*/
-class Dog extends Animal {
-int a = 0;
-}
-
-/*Main Block*/
-
-    /* Using the sum function*/
-    int result = sum(5, 10);
-    print("Sum: " + result);
-
-    /* Display action*/
-    display("Hello, World!");
-
-    /*Working with an array*/
-    loop for animal in animals {
-        print(animal);
-    }
-
-    /*Conditional statement*/
-    if (counter > 0) {
-        print("Counter is positive.");
-    }
-
-    /*Class and object usage*/
-    Dog myDog = new Dog();
-    myDog.describe();
+/*String test4 = Kitty.parent.name;*/
