@@ -14,7 +14,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         visitedNodes.add(node);
     }
     //Getter for the list
-    public List<String> getVisitedNodes() {
+    public static List<String> getVisitedNodes() {
         return visitedNodes;
     }
     //Print all nodes for debugging
