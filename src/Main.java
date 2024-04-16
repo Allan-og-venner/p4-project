@@ -19,6 +19,9 @@ public class Main {
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
             TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
             System.out.println(typeChecker.visit(ast));
+
+            BuildASTVisitor.printVisitedNodes();
+
         } catch (Exception e){
             System.err.print(e.getMessage());
             //e.printStackTrace();

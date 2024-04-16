@@ -1,21 +1,42 @@
 import java.util.ArrayList;
+import java.util.List;
+
 import gen.*;
 import nodes.*;
 import org.antlr.v4.codegen.model.decl.Decl;
 
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
+
+    //Save the visited nodes in a list to use for testing purposes
+    private static List<String> visitedNodes = new ArrayList<>();
+    //Method to add nodes to the list
+    public void addVisitedNode(String node) {
+        visitedNodes.add(node);
+    }
+    //Getter for the list
+    public List<String> getVisitedNodes() {
+        return visitedNodes;
+    }
+    //Print all nodes for debugging
+    public static void printVisitedNodes() {
+        for (String node : visitedNodes) {
+            System.out.println(node);
+        }
+    }
+
+
     @Override
     public BlockNode visitProg(ExprParser.ProgContext context) {
-        System.out.println("Visited prog node");
+        addVisitedNode("Visited prog node");
         return visitBlock(context.block());
     }
 
     @Override
     public BlockNode visitBlock(ExprParser.BlockContext context) {
-        System.out.println("Visited block node");
+        addVisitedNode("Visited block node");
         BlockNode node = new BlockNode();
         node.getLineNumberFromContext(context);
-        System.out.println(context.statement() != null);
+        //System.out.println(context.statement() != null);
         if (context.statement() != null) {
             node.setStatement(visitStatement(context.statement()));
             if (context.block() != null) {
@@ -29,7 +50,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public StatementNode visitStatement(ExprParser.StatementContext context) {
-        System.out.println("Visited statement node");
+        addVisitedNode("Visited statement node");
         if (context.decl() != null) {
             DeclarationNode node = visitDecl(context.decl());
             node.getLineNumberFromContext(context);
@@ -57,7 +78,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ControlNode visitControl(ExprParser.ControlContext context) {
-        System.out.println("Visited control node");
+        addVisitedNode("Visited control node");
         if (context.loop() != null) {
             LoopNode node = visitLoop(context.loop());
             node.getLineNumberFromContext(context);
@@ -74,7 +95,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public IfNode visitIfthen(ExprParser.IfthenContext context) {
-        System.out.println("Visited if-then node");
+        addVisitedNode("Visited if-then node");
         IfNode node = new IfNode();
         if (context.expr() != null) {
             node.setCondition(visitExpr(context.expr()));
@@ -88,7 +109,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public LoopNode visitLoop(ExprParser.LoopContext context) {
-        System.out.println("Visited loop node");
+        addVisitedNode("Visited loop node");
         if(context.KEY_WHILE() != null) {
             WhileNode node = new WhileNode();
             node.setCondition(visitExpr(context.expr()));
@@ -111,7 +132,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public CommandNode visitCommand(ExprParser.CommandContext context) {
-        System.out.println("Visited command node");
+        addVisitedNode("Visited command node");
 
         if (context.KEY_RETURN() != null) {
             ReturnNode node = new ReturnNode();
@@ -133,7 +154,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public AssignmentNode visitAssign(ExprParser.AssignContext context) {
-        System.out.println("Visited assign node");
+        addVisitedNode("Visited assign node");
         AssignmentNode node = new AssignmentNode();
         if (context.value() != null) {
             node.setLeft(visitValue(context.value()));
@@ -150,7 +171,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public DeclarationNode visitDecl(ExprParser.DeclContext context) {
-        System.out.println("Visited declaration node");
+        addVisitedNode("Visited declaration node");
         if (context.defin() != null){
             DefineNode node = visitDefin(context.defin());
             node.getLineNumberFromContext(context);
@@ -170,7 +191,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ModifierNode visitModifier(ExprParser.ModifierContext context) {
-        System.out.println("Visited modifier node");
+        addVisitedNode("Visited modifier node");
         ModifierNode node = new ModifierNode();
         if (context.KEY_STATIC() != null) {
             node.setModifier(context.KEY_STATIC().getText());
@@ -182,7 +203,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public DefineNode visitDefin(ExprParser.DefinContext context) {
-        System.out.println("Visited define node");
+        addVisitedNode("Visited define node");
         DefineNode node = new DefineNode();
         node.setModi(visitModifier(context.modifier()));
         if (context.type() != null && context.IDENTIFIER() != null) {
@@ -208,7 +229,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public TypeNode visitType(ExprParser.TypeContext context) {
-        System.out.println("Visited type node");
+        addVisitedNode("Visited type node");
         TypeNode node = new TypeNode();
         if (context.TYPE_INT() != null){
             node.setTypeName(context.TYPE_INT().getText());
@@ -231,7 +252,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
-        System.out.println("Visited functionDeclaration node");
+        addVisitedNode("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
             node.setModifier(visitModifier(context.modifier()));
             if (context.type() != null && context.IDENTIFIER() != null) {
@@ -254,7 +275,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public FparamsNode visitFparams(ExprParser.FparamsContext context) {
-        System.out.println("Visited functionParameters node");
+        addVisitedNode("Visited functionParameters node");
         FparamsNode node = new FparamsNode();
         if (context.fparam() != null) {
             node.setLeft(visitFparam(context.fparam()));
@@ -271,7 +292,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public FparamNode visitFparam(ExprParser.FparamContext context) {
-        System.out.println("Visited functionParam node");
+        addVisitedNode("Visited functionParam node");
         FparamNode node = new FparamNode();
         if (context.type() != null && context.IDENTIFIER() != null) {
             node.setType(visitType(context.type()));
@@ -287,7 +308,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ClassDNode visitCdecl(ExprParser.CdeclContext context) {
-        System.out.println("Visited classDeclaration node");
+        addVisitedNode("Visited classDeclaration node");
 
         if (context.IDENTIFIER(0) != null) {
             ClassDNode node = new ClassDNode();
@@ -312,7 +333,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionNode visitExpr(ExprParser.ExprContext context) {
-        System.out.println("Visited expr node");
+        addVisitedNode("Visited expr node");
         if (context.AND() != null) {
             InfixExpressionNode node;
             node = new ANDNode();
@@ -338,7 +359,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionNode visitArith(ExprParser.ArithContext context) {
-        System.out.println("Visited Arithmetic node");
+        addVisitedNode("Visited Arithmetic node");
         if (context.PLUS() != null) {
             InfixExpressionNode node;
             node = new AdditionNode();
@@ -364,7 +385,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionNode visitRelation(ExprParser.RelationContext context) {
-        System.out.println("Visited relation node");
+        addVisitedNode("Visited relation node");
         if (context.LT() != null) {
             InfixExpressionNode node;
             node = new LessThanNode();
@@ -415,7 +436,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionNode visitTerm(ExprParser.TermContext context) {
-        System.out.println("Visited term node");
+        addVisitedNode("Visited term node");
         if (context.MULT() != null) {
             InfixExpressionNode node = new MultiplicationNode();
             node.setLeft(visitFactor(context.factor()));
@@ -445,7 +466,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionNode visitFactor(ExprParser.FactorContext context) {
-        System.out.println("Visited factor node");
+        addVisitedNode("Visited factor node");
         if (context.L_PAREN() != null && context.R_PAREN() != null) {
             ExpressionNode node = visitExpr(context.expr());
             node.getLineNumberFromContext(context);
@@ -474,7 +495,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ValueNode visitCall(ExprParser.CallContext context) {
-        System.out.println("Visited call node");
+        addVisitedNode("Visited call node");
         FunctionCallNode node = new FunctionCallNode();
         node.setHasNew(context.KEY_NEW() != null);
         if (context.IDENTIFIER() != null) {
@@ -493,7 +514,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ExpressionsNode visitExprs(ExprParser.ExprsContext context) {
-        System.out.println("Visited Expressions node");
+        addVisitedNode("Visited Expressions node");
         ExpressionsNode node = new ExpressionsNode();
         node.setLeft(visitExpr(context.expr()));
         if (context.exprs() != null) {
@@ -507,7 +528,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ValueNode visitValue(ExprParser.ValueContext context) {
-        System.out.println("Visited value node");
+        addVisitedNode("Visited value node");
         if (context.call() != null) {
             ValueNode node = visitCall(context.call());
             node.getLineNumberFromContext(context);
@@ -552,7 +573,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ArrayNode visitArray(ExprParser.ArrayContext context) {
-        System.out.println("Visited array node");
+        addVisitedNode("Visited array node");
         ArrayNode node = new ArrayNode();
         if (context.exprs() != null) {
             node.setInnerNode(visitExprs(context.exprs()));
@@ -565,7 +586,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ClassAccessNode visitClassAccess(ExprParser.ClassAccessContext context) {
-        System.out.println("Visited class access node");
+        addVisitedNode("Visited class access node");
         ClassAccessNode node = new ClassAccessNode();
         node.setObject(visitAccessibleObject(context.accessibleObject()));
         node.setValue(new ArrayList<>());
@@ -578,7 +599,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ValueNode visitAccessibleObject(ExprParser.AccessibleObjectContext context) {
-        System.out.println("Visited accessible object node");
+        addVisitedNode("Visited accessible object node");
         if (context.call() != null) {
             ValueNode node = visitCall(context.call());
             node.getLineNumberFromContext(context);
@@ -599,7 +620,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ArrayAccessNode visitArrayAccess(ExprParser.ArrayAccessContext context) {
-        System.out.println("Visited array access node");
+        addVisitedNode("Visited array access node");
         ArrayAccessNode node = new ArrayAccessNode();
         IdentifierNode nameNode = new IdentifierNode();
         nameNode.setText(context.IDENTIFIER().getText());
@@ -615,7 +636,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public ValueNode visitAccessibleValue(ExprParser.AccessibleValueContext context) {
-        System.out.println("Visited accessible value node");
+        addVisitedNode("Visited accessible value node");
         if (context.call() != null) {
             ValueNode node = visitCall(context.call());
             node.getLineNumberFromContext(context);
@@ -629,4 +650,5 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             throw new UnsupportedOperationException("Operation not supported");
         }
     }
+
 }

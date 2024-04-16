@@ -1,6 +1,7 @@
 import gen.ExprLexer;
 import gen.ExprParser;
 import nodes.BlockNode;
+import nodes.LoopNode;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.junit.Assert;
@@ -27,13 +28,13 @@ public class ASTTest {
     ExprParser parser = new ExprParser(tokens);
     ExprParser.ProgContext tree = parser.prog();
     BlockNode ast = new BuildASTVisitor().visitProg(tree);
-    // EvaluateExpressionVisitor value = new EvaluateExpressionVisitor();
-    // System.out.println(value.visit(ast));
 
     @Test
     public void testASTNode() {
-        // Check if the AST node is not null
+        //check if the AST node is not null
         Assert.assertNotNull(ast);
+        //check is the AST node is an instance of LoopNode
+        Assert.assertTrue(ast instanceof LoopNode);
     }
 
 }
