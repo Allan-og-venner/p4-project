@@ -1,20 +1,20 @@
+class Cat {
+    string name;
+    Cat mate;
+}
 
-
-func add() -> int {
-    return "hej";
+class Kitty {
+    Cat parent;
+    static Cat bestCat;
 }
 
 
-func printGreater() -> int {
-    "hej";
-    "hej";
-    "hej";
-    "hej";
-    "hej";
-    add();
+Kitty ellie = new Kitty();
 
-    return "hej";
-}
+string test = ellie.parent.name;
 
+string test2 = Kitty.bestCat.mate.name;
 
-printGreater(2);
+string test3 = ellie.bestCat.mate.name;
+
+/*String test4 = Kitty.parent.name;*/
