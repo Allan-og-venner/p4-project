@@ -1,20 +1,5 @@
-class Cat {
-    string name;
-    Cat mate;
+
+
+func sum (int a, int b) -> int {
+    return "hej";
 }
-
-class Kitty {
-    Cat parent;
-    static Cat bestCat;
-}
-
-
-Kitty ellie = new Kitty();
-
-string test = ellie.parent.name;
-
-string test2 = Kitty.bestCat.mate.name;
-
-string test3 = ellie.bestCat.mate.name;
-
-/*String test4 = Kitty.parent.name;*/
