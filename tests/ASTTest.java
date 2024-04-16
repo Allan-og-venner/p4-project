@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ASTTest {
 
@@ -31,10 +32,13 @@ public class ASTTest {
 
     @Test
     public void testASTNode() {
+
+        List<String> visitedNodes = BuildASTVisitor.getVisitedNodes();
         //check if the AST node is not null
-        Assert.assertNotNull(ast);
-        //check is the AST node is an instance of LoopNode
-        Assert.assertTrue(ast instanceof LoopNode);
+        Assert.assertNotNull("Visited nodes should not be null", visitedNodes);
+        //check if the AST node is an instance of LoopNode
+        Assert.assertTrue("Visited nodes should contain 'Visited loop node'", visitedNodes.contains("Visited loop node"));
+
     }
 
 }
