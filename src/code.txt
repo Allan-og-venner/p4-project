@@ -1,5 +1,14 @@
 
 
-func sum (int a, int b) -> int {
-    return "hej";
+class Cat {
+    string name;
 }
+
+class Kitty extens Cat {
+    Cat parent;
+}
+
+Kitty amber = new Kitty();
+string greeting = "hej";
+
+int b = amber.name + amber.parent.name;

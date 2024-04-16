@@ -56,7 +56,7 @@ public class WrongTypeException extends RuntimeException {
     }
 
     public WrongTypeException(ModNode node, String left, String right) {
-        super(node.lineNumber + " - Can't use " + (!left.equals("int") ? left : "") + (left.equals("int") && right.equals("int") ? " and " : "") + (right.equals("int") ? right : "") + " for modulo expression");
+        super(node.lineNumber + " - Can't use " + (!left.equals("int") ? left : "") + (!left.equals("int") && !right.equals("int") ? " and " : "") + (!right.equals("int") ? right : "") + " for modulo expression");
     }
 
     public WrongTypeException(ORNode node, String left, String right) {

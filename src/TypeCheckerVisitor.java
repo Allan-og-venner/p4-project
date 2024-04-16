@@ -191,10 +191,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
-            if (type1.equals("float") || type2.equals("float")) {
-                node.setType(new TypeNode("float"));
-                return "float";
-            }
             node.setType(new TypeNode("int"));
             return "int";
         }
@@ -206,10 +202,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
-            if (type1.equals("float") || type2.equals("float")) {
-                node.setType(new TypeNode("float"));
-                return "float";
-            }
             node.setType(new TypeNode("int"));
             return "int";
         }
@@ -221,10 +213,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
-            if (type1.equals("float") || type2.equals("float")) {
-                node.setType(new TypeNode("float"));
-                return "float";
-            }
             node.setType(new TypeNode("int"));
             return "int";
         }
@@ -236,10 +224,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
         if (type1.matches("int|float") && type2.matches("int|float")) {
-            if (type1.equals("float") || type2.equals("float")) {
-                node.setType(new TypeNode("float"));
-                return "float";
-            }
             node.setType(new TypeNode("int"));
             return "int";
         }
