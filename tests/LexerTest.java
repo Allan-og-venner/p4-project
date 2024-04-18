@@ -58,4 +58,26 @@ public class LexerTest {
         assertEquals("'c'", allTokens.get(0).getText());
 
     }
+
+    @Test
+    public void testReservedKeywordToken() {
+        String expression = "action";
+        ExprLexer lexer = new ExprLexer(CharStreams.fromString(expression));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        tokens.fill(); // Load all tokens to inspect them
+
+        List<Token> allTokens = tokens.getTokens();
+
+        //print tokens for debugging
+        for (Token t : allTokens) {
+            System.out.println(t);
+        }
+
+        assertEquals(2, allTokens.size()); // Expecting two tokens: KEY_ACTION, EOF
+
+        // Check token is the reserved keyword action
+        assertEquals(ExprLexer.KEY_ACTION, allTokens.get(0).getType());
+        assertEquals("action", allTokens.get(0).getText());
+
+    }
 }
