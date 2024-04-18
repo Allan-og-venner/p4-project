@@ -29,14 +29,26 @@ public class ParserTest {
     }
 
     @Test
-    public void testValidExpression() {
+    public void testDivisionExpression() {
         String input = "2 / 2;";
         ParseResult result = parse(input);
         String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2))))))");
+        Assert.assertEquals("(expr (relation (arith (term (term (factor (value 2))) / (factor (value 2))))))", treeString);
+    }
 
-        // Check if the parse tree matches the expected structure
-        //The rules are defined in the grammar file, and says: expr --> arith --> arith + term --> term --> factor --> value: 2
-        Assert.assertEquals("(expr (arith (term (term (factor (value 2))) / (factor (value 2)))))", treeString);
-        //expected should be: (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) but I am keeping this wrong one for the report for now
+    @Test
+    public void testPlusExpression() {
+        String input = "2 + 2;";
+        ParseResult result = parse(input);
+        String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))");
+        Assert.assertEquals("(expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))", treeString);
     }
 }
