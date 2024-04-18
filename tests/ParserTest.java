@@ -24,7 +24,7 @@ public class ParserTest {
         ExprLexer lexer = new ExprLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExprParser parser = new ExprParser(tokens);
-        ParseTree tree = parser.expr();
+        ParseTree tree = parser.prog();
         return new ParseResult(tree, parser);
     }
 
@@ -50,5 +50,17 @@ public class ParserTest {
         System.out.println("Actual: " + treeString);
         System.out.println("Expected: (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))");
         Assert.assertEquals("(expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))", treeString);
+    }
+
+    @Test
+    public void testStringDeclaration() {
+        String input = "int llama = 2;";
+        ParseResult result = parse(input);
+        String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (defin(mod(type(type_string)(ID(EQ(expr(rel(arith(term(factor(value(string)))))))))))");
+        Assert.assertEquals("(defin(mod(type(type_string)(ID(EQ(expr(rel(arith(term(factor(value(string)))))))))))", treeString);
     }
 }
