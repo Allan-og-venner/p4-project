@@ -36,8 +36,8 @@ public class ParserTest {
         //Check if the parse tree matches the expected structure
         //print the treeString for debugging
         System.out.println("Actual: " + treeString);
-        System.out.println("Expected: (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2))))))");
-        Assert.assertEquals("(expr (relation (arith (term (term (factor (value 2))) / (factor (value 2))))))", treeString);
+        System.out.println("Expected: (prog (block (statement (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) ;)) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) ;)) <EOF>)", treeString);
     }
 
     @Test
@@ -48,8 +48,8 @@ public class ParserTest {
         //Check if the parse tree matches the expected structure
         //print the treeString for debugging
         System.out.println("Actual: " + treeString);
-        System.out.println("Expected: (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))");
-        Assert.assertEquals("(expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2))))))", treeString);
+        System.out.println("Expected: (prog (block (statement (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2)))))) ;)) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2)))))) ;)) <EOF>)", treeString);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ParserTest {
         //Check if the parse tree matches the expected structure
         //print the treeString for debugging
         System.out.println("Actual: " + treeString);
-        System.out.println("Expected: (defin(mod(type(type_string)(ID(EQ(expr(rel(arith(term(factor(value(string)))))))))))");
-        Assert.assertEquals("(defin(mod(type(type_string)(ID(EQ(expr(rel(arith(term(factor(value(string)))))))))))", treeString);
+        System.out.println("Expected: (prog (block (statement (decl (defin modifier (type int) llama = (expr (relation (arith (term (factor (value 2))))))) ;))) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (decl (defin modifier (type int) llama = (expr (relation (arith (term (factor (value 2))))))) ;))) <EOF>)", treeString);
     }
 }
