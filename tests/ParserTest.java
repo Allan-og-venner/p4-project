@@ -24,19 +24,43 @@ public class ParserTest {
         ExprLexer lexer = new ExprLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExprParser parser = new ExprParser(tokens);
-        ParseTree tree = parser.expr();
+        ParseTree tree = parser.prog();
         return new ParseResult(tree, parser);
     }
 
     @Test
-    public void testValidExpression() {
+    public void testDivisionExpression() {
         String input = "2 / 2;";
         ParseResult result = parse(input);
         String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (prog (block (statement (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) ;)) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) ;)) <EOF>)", treeString);
+    }
 
-        // Check if the parse tree matches the expected structure
-        //The rules are defined in the grammar file, and says: expr --> arith --> arith + term --> term --> factor --> value: 2
-        Assert.assertEquals("(expr (arith (term (term (factor (value 2))) / (factor (value 2)))))", treeString);
-        //expected should be: (expr (relation (arith (term (term (factor (value 2))) / (factor (value 2)))))) but I am keeping this wrong one for the report for now
+    @Test
+    public void testPlusExpression() {
+        String input = "2 + 2;";
+        ParseResult result = parse(input);
+        String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (prog (block (statement (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2)))))) ;)) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (expr (relation (arith (arith (term (factor (value 2)))) + (term (factor (value 2)))))) ;)) <EOF>)", treeString);
+    }
+
+    @Test
+    public void testStringDeclaration() {
+        String input = "int llama = 2;";
+        ParseResult result = parse(input);
+        String treeString = result.tree.toStringTree(result.parser);
+        //Check if the parse tree matches the expected structure
+        //print the treeString for debugging
+        System.out.println("Actual: " + treeString);
+        System.out.println("Expected: (prog (block (statement (decl (defin modifier (type int) llama = (expr (relation (arith (term (factor (value 2))))))) ;))) <EOF>)");
+        Assert.assertEquals("(prog (block (statement (decl (defin modifier (type int) llama = (expr (relation (arith (term (factor (value 2))))))) ;))) <EOF>)", treeString);
     }
 }
