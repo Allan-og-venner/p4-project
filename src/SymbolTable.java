@@ -21,16 +21,34 @@ public class SymbolTable implements Cloneable {
         tTable.put("Object", "");
     }
 
+    /**
+     * puts a class name with the superclass Object into the typeTable
+     * @param name
+     */
     public void addClass(String name) {
         tTable.put(name, "Object");
     }
 
+    /**
+     * puts a class name with some superclass into the typeTable
+     * @param name
+     * @param superclass
+     */
     public void addClass(String name, String superclass) {
         tTable.put(name, superclass);
     }
 
+    /**
+     * Returns the entire typeTable
+     * @return
+     */
     public Hashtable<String, String> getTypes() { return this.tTable; }
 
+    /**
+     * Checks if a type is in the typeTable
+     * @param input
+     * @return true or false
+     */
     public boolean checkType(String input) {
         return this.tTable.containsKey(input);
     }
@@ -49,6 +67,14 @@ public class SymbolTable implements Cloneable {
     }
 
     //Check if class1 inherits class2
+
+    /**
+     * Removes array prefix if there
+     * Loops through the typeTable to check if class1 inherits class2 - returns true if yes
+     * @param class1
+     * @param class2
+     * @return true or false
+     */
     public boolean checkInherits(String class1, String class2) {
         if (class1.equals("null")) {
             return true;
@@ -67,6 +93,11 @@ public class SymbolTable implements Cloneable {
         return true;
     }
 
+    /**
+     * Adds an identifier and type to the valueTable if the type exists in the typeTable
+     * @param symbol identifier
+     * @param type of the identifier
+     */
     public void addValue(String symbol, String type) {
         String innerstType = type.replaceAll("^array ", "");
         if (checkType(innerstType)) {
@@ -76,6 +107,12 @@ public class SymbolTable implements Cloneable {
         }
     }
 
+    /**
+     * Checks if all the parameter types of a function exists in the typeTable
+     * Adds the function symbol, return type and parameter types to the function table
+     * @param symbol identifier for the function
+     * @param type return type + parameter types
+     */
     public void addFunction(String symbol, String type) {
         ArrayList<String> types = new ArrayList<>(Arrays.asList(type.split(",")));
         for (String i : types) {
@@ -86,6 +123,11 @@ public class SymbolTable implements Cloneable {
         innerFTable.put(symbol, type);
     }
 
+    /**
+     *
+     * @param classname
+     * @param table
+     */
     public void addClassSymbols(String classname, SymbolTable table) {
         cTable.put(classname, table);
     }

@@ -3,8 +3,6 @@ import java.util.List;
 
 import gen.*;
 import nodes.*;
-import org.antlr.v4.codegen.model.decl.Decl;
-
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     //Save the visited nodes in a list to use for testing purposes
@@ -254,18 +252,18 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         addVisitedNode("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
-            node.setModifier(visitModifier(context.modifier()));
-            if (context.type() != null && context.IDENTIFIER() != null) {
-                node.setReturnType(visitType(context.type()));
-                IdentifierNode text = new IdentifierNode();
-                text.setText(context.IDENTIFIER().getText());
-                node.setFunction(text);
-                if (context.fparams() != null) {
-                    node.setParameter(visitFparams(context.fparams()));
-                }
-                if (context.block() != null) {
-                    node.setBlocks(visitBlock(context.block()));
-                }
+        node.setModifier(visitModifier(context.modifier()));
+        if (context.type() != null && context.IDENTIFIER() != null) {
+            node.setReturnType(visitType(context.type()));
+            IdentifierNode text = new IdentifierNode();
+            text.setText(context.IDENTIFIER().getText());
+            node.setFunction(text);
+            if (context.fparams() != null) {
+                node.setParameter(visitFparams(context.fparams()));
+            }
+            if (context.block() != null) {
+                node.setBlocks(visitBlock(context.block()));
+            }
             } else {
                 throw new UnsupportedOperationException("Operation not supported");
             }

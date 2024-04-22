@@ -13,6 +13,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     private Stack<SymbolTable> symbolTables = new Stack<>();
 
 
+    /**
+     * Addition, subtraction, multiplication and division accept both number types - float and int
+     * If there is at least one float, all of them return float. Else, int.
+     * @param node
+     * @return "float" or "int"
+     */
     //Addition, subtraction, multiplication and division accept both number types
     //If there is at least one float, all of them return float. Else, int.
     @Override
@@ -75,6 +81,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
+    /**
+     * Checks that the bool to negate is an int. Throws an exception if not.
+     * @param node
+     * @return "int"
+     */
     //Takes only an int (bool) as input, and returns another one if true.
     @Override
     public String visit(NegateNode node) {
@@ -86,6 +97,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "int", innerType);
     }
 
+    /**
+     * Checks that both operands of modNode is type int - returns int if true
+     * @param node
+     * @return "int"
+     */
     //Takes 2 ints as input, and returns an int if true
     @Override
     public String visit(ModNode node) {
@@ -98,6 +114,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + ", " + type2);
     }
 
+    /**
+     * Checks that the input node is either an int or float - returns the same
+     * @param node
+     * @return "int" or "float"
+     */
     //Takes int or float, and returns the same
     @Override
     public String visit(NegativeNode node) {
@@ -109,6 +130,14 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "int or float", innerType);
     }
 
+    /**
+     * Checks for the types of statements in the block
+     * Checks for types of statements in nested blocks.
+     * if statement in block is returnNode - sets type of block to be the return type
+     * if statement in block is controlNode or LoopNode - ??
+     * @param node
+     * @return ????
+     */
     @Override
     public String visit(BlockNode node) {
         String stmType = visit(node.getStatement());
@@ -129,6 +158,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return blockType;
     }
 
+    /**
+     * Input is either int or float - returns the same
+     * @param node
+     * @return "int" or "float"
+     */
     //Always an int
     @Override
     public String visit(NumberNode node) {
@@ -143,6 +177,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "float";
     }
 
+    /**
+     * Checks if both values on either side of the relational operator is an int - returns int if true.
+     * @param node
+     * @return "int"
+     */
     //The logical expressions accept only ints, and if true, return an int
     @Override
     public String visit(ORNode node) {
@@ -155,6 +194,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
     }
 
+    /**
+     * Checks if both values on either side of the relational operator is an int - returns int if true.
+     * @param node
+     * @return "int"
+     */
     //The logical expressions accept only ints, and if true, return an int
     @Override
     public String visit(ANDNode node) {
@@ -167,6 +211,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
     }
 
+    /**
+     * Checks if both values on either side of the relational operator is an int - returns int if true.
+     * Also checks if one of the types inherits the other - returns int if true.
+     * @param node
+     * @return "int"
+     */
     @Override
     public String visit(EQEQNode node) {
         String type1 = visit(node.getLeft());
@@ -185,6 +235,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "compatible types", type1 + " and " + type2);
     }
 
+    /**
+     * Accepts both number types - float and int
+     * If there is at least one float - return float. Else, int.
+     * @param node
+     * @return "float" or "int"
+     */
     //The relational expressions accept all numbers, and if true, return an int
     @Override
     public String visit(GreaterThanNode node) {
@@ -246,6 +302,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "number and number", type1 + type2);
     }
 
+    /**
+     * Checks if one of the types inherits the other, or are the same - returns int if true.
+     * @param node
+     * @return "int"
+     */
     @Override
     public String visit(NOTEQNode node) {
         String type1 = visit(node.getLeft());
@@ -272,7 +333,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     }
 
 
-
     @Override
     public String visit(StringNode node) {
         return "string";
@@ -293,6 +353,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return visit(node.getInnerNode());
     }
 
+    /**
+     * Enters new scope by pushing the current symbolTable.
+     * Checks if the iterator is a valid array, and adds the array identifier and type to ST.
+     * Finds the type of the block/scope, pops the newly ST to exit the scope and returns the block type.
+     * @param node
+     * @return the type of the scope block
+     */
     @Override
     public String visit(ForNode node) {
         try {
@@ -312,6 +379,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "array", arrayType);
     }
 
+    /**
+     * Enters new scope by pushing the current symbolTable.
+     * Checks that the condition in the if-statement is type int.
+     * Finds the type of the block/scope, pops the newly ST to exit the scope and returns the block type.
+     * @param node
+     * @return the type of the scope block
+     */
     @Override
     public String visit(IfNode node) {
         try {
@@ -329,6 +403,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "int", conditionalType);
     }
 
+    /**
+     * Enters new scope by pushing the current symbolTable.
+     * Checks that the condition in the while-statement is type int.
+     * Finds the type of the block/scope, pops the newly ST to exit the scope and returns the block type.
+     * @param node
+     * @return the type of the scope block
+     */
     @Override
     public String visit(WhileNode node) {
         try {
@@ -346,6 +427,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, "int", conditionalType);
     }
 
+
+    /**
+     * Gets the type of the array, and checks if it starts with "array " to ensure that it is an array.
+     * Removes the "array " prefix and returns the type.
+     * @param node
+     * @return type of array
+     */
     @Override
     public String visit(ArrayAccessNode node) {
         String arrayType = visit(node.getArray());
@@ -362,6 +450,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "array " + visit(node.getInnerNode());
     }
 
+    /**
+     * Retrives the identifier and type of function parameter.
+     * Checks if the identifier is already present in the current scope,
+     * otherwise it adds the identifier and type to the scope and returns the type
+     * @param node
+     * @return type of parameter
+     */
     @Override
     public String visit(FparamNode node) {
         String identifier = node.getIdentifier().getText();
@@ -374,7 +469,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return type;
     }
 
-
+    /**
+     * If there are more parameters, checks both the left and right side,
+     * otherwise just the left
+     * @param node
+     * @return left node, or left node and right node
+     */
     @Override
     public String visit(FparamsNode node) {
         if (node.getRight() != null) {
@@ -383,6 +483,15 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return visit(node.getLeft());
     }
 
+    /**
+     * Handles class instantiation and normal function calls.
+     * If the call has the "new" keyword, the class identifier is returned.
+     * Else, the fuction identifier is checked to see if it exists in the fTable.
+     * Visits the function parameters if there are any,
+     * returns the return type of the function.
+     * @param node
+     * @return return type of function call
+     */
     @Override
     public String visit(FunctionCallNode node) {
         String identifier = node.getFunction().getText();
@@ -423,6 +532,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return exprType;
     }
 
+    /**
+     * Function declaration, checks if the function identifier already exists
+     * Matches the function returnType with the function block return type,
+     * and adds the function w. return type + parameter types to the symbolTable.
+     * @param node
+     * @return "void"
+     */
     @Override
     public String visit(FunctionDNode node) {
         String identifier = symbolTables.peek().fLookup(node.getFunction().getText());
@@ -452,6 +568,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "void";
     }
 
+    /**
+     * Checks if the type of expression matches or inherits the type of the identifier
+     * @param node
+     * @return "void"
+     */
     @Override
     public String visit(AssignmentNode node) {
         String identifierType = visit(node.getLeft());
@@ -463,6 +584,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         throw new WrongTypeException(node.lineNumber, identifierType, expressionType);
     }
 
+    /**
+     * Handles class access by iterating through each field in the class,
+     * and checks if the currentField is a static field/method or an instance of the class.
+     *
+     * @param node
+     * @return The type of the last object
+     */
     @Override
     public String visit(ClassAccessNode node) {
         String objectType = visit(node.getObject());
@@ -507,6 +635,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return objectType;
     }
 
+    /**
+     * Adds a new class to the symbolTable and checks if the class has a superclass,
+     * if yes, adds the FTable and VTable of the super to the class symbolTable.
+     * Visits the block of the class and adds symbols for the class to the symbolTable.
+     * @param node
+     * @return "void"
+     */
     @Override
     public String visit(ClassDNode node) {
         String className = node.getName().getText();
@@ -538,6 +673,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "void";
     }
 
+    /**
+     * For a block node, Visits either functionDefinition or Define node
+     * @param node
+     * @param table
+     * @return "void"
+     */
     public String visit(BlockNode node, SymbolTable table) {
         if (node.getStatement() instanceof FunctionDNode) {
             visit((FunctionDNode) node.getStatement(), table);
@@ -553,6 +694,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "void";
     }
 
+    /**
+     * Function declaration within a scope?class?, checks if the function identifier already exists
+     * Matches the function returnType with the function block return type,
+     * and adds the function w. return type + parameter types to the symbolTable.
+     * @param node
+     * @return "void"
+     */
     public String visit(FunctionDNode node, SymbolTable table) {
         String identifier = table.fLookup(node.getFunction().getText());
         if (identifier != null) {
@@ -582,6 +730,16 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         }
     }
 
+
+    /**
+     * For defining a field within a scope?class?
+     * Checks if the identifier already exists in the innerValueTable of the symbolTable
+     * Checks for a value to assign - then finds the type of the value to check if it is compatible with the type
+     * adds the identifier along with the type to the symbolTable
+     * @param node
+     * @param table
+     * @return "void"
+     */
     public String visit(DefineNode node, SymbolTable table) {
         String identifier = node.getID().getText();
         String type = node.getType().getTypeName();
@@ -599,6 +757,15 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "void";
     }
 
+    /**
+     * For defining new identifier
+     * Checks for type array
+     * Checks for duplicate identifier within the symbolTables
+     * Checks for a value to assign - then finds the type of the value to check if it is compatible with the type
+     * adds the identifier along with the type to the symbolTable
+     * @param node
+     * @return "void"
+     */
     @Override
     public String visit(DefineNode node) {
         String type;
@@ -622,6 +789,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return "void";
     }
 
+    /**
+     * Checks if node has right expression, and finds their common Ancestor
+     * If there is a right node, sets return type to common ancestors type, else to expr1 type
+     * @param node
+     * @return
+     */
     @Override
     public String visit(ExpressionsNode node) {
         String expr1Type = visit(node.getLeft());
@@ -638,6 +811,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return expr1Type;
     }
 
+    /**
+     * Checks if an identifier is a class or a normal identifier
+     * Checks if the identifier exists in the cTable or vTable
+     * @param node
+     * @return the type of the identifier
+     */
     @Override
     public String visit(IdentifierNode node) {
         String className = symbolTables.peek().cLookup(node.getText());
@@ -653,6 +832,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return type;
     }
 
+    /**
+     * Adds "" or "static" to node
+     * @param node
+     * @return
+     */
     @Override
     public String visit(ModifierNode node) {
         if (node.getModifier() == null) {

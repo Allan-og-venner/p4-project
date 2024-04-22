@@ -88,7 +88,7 @@ type: TYPE_INT
     | TYPE_STRING
     | TYPE_VOID
     | IDENTIFIER;
-modifier : KEY_STATIC | ;
+modifier : KEY_STATIC?;
 
 /* Array rules*/
 array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
