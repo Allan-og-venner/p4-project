@@ -522,7 +522,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     /**
      * Handles class instantiation and normal function calls.
      * If the call has the "new" keyword, the class identifier is returned.
-     * Else, the fuction identifier is checked to see if it exists in the fTable.
+     * Else, the function identifier is checked to see if it exists in the fTable.
      * Visits the function parameters if there are any,
      * returns the return type of the function.
      * @param node
@@ -571,7 +571,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     /**
      * Function declaration, checks if the function identifier already exists
      * Matches the function returnType with the function block return type,
-     * and adds the function w. return type + parameter types to the symbolTable.
+     * and adds the function with return type + parameter types to the symbolTable.
      * @param node
      * @return "void"
      */
@@ -621,7 +621,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     /**
      * Handles class access by iterating through each field in the class,
      * and checks if the currentField is a static field/method or an instance of the class.
-     *
      * @param node
      * @return The type of the last object
      */
@@ -731,7 +730,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     /**
      * Function declaration within a class, checks if the function identifier already exists
      * Matches the function returnType with the function block return type,
-     * and adds the function w. return type + parameter types to the symbolTable.
+     * and adds the function with return type + parameter types to the symbolTable.
      * @param node
      * @return "void"
      */

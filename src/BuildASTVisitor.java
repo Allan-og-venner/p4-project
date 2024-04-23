@@ -655,4 +655,40 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         }
     }
 
+    @Override
+    public CardTypeNode visitCardType(ExprParser.CardTypeContext context) {
+        addVisitedNode("Visited cardType node");
+        CardTypeNode node = new CardTypeNode();
+        if (context.expr() != null) {
+            node.setExpression(visitExpr(context.expr()));
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+        if (context.IDENTIFIER().get(0) != null) {
+            IdentifierNode identifierNode = new IdentifierNode();
+            identifierNode.setText(context.IDENTIFIER().get(0).getText());
+            identifierNode.getLineNumberFromContext(context);
+            node.setIdentifier(identifierNode);
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+        if (context.IDENTIFIER().get(1) != null) {
+            IdentifierNode identifierNode = new IdentifierNode();
+            identifierNode.setText(context.IDENTIFIER().get(1).getText());
+            identifierNode.getLineNumberFromContext(context);
+            node.setMethod(identifierNode);
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+        if (context.block() != null) {
+            node.setBlocks(visitBlock(context.block()));
+        } else {
+            throw new UnsupportedOperationException("Operation not supported");
+        }
+        if (context.fparams() != null) {
+            node.setParams(visitFparams(context.fparams()));
+        }
+        return node;
+    }
+
 }

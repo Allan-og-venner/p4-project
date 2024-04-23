@@ -1,4 +1,7 @@
+import codegenExample.Card;
 import nodes.*;
+
+import javax.swing.*;
 
 public abstract class ASTVisitor<T> {
 
@@ -42,6 +45,7 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(TypeNode node);
     public abstract T visit(ExpressionsNode node);
     public abstract T visit(FparamsNode node);
+    public abstract T visit(CardTypeNode node);
 //Static implementation of visits
 
     public T visit(AccessibleObjectNode node){
@@ -90,6 +94,8 @@ public abstract class ASTVisitor<T> {
             return visit((FunctionDNode) node);
         } else if (node instanceof ClassDNode) {
             return visit((ClassDNode) node);
+        } else if (node instanceof CardTypeNode) {
+            return visit((CardTypeNode) node);
         }
         throw new IllegalArgumentException("Unknown nodes.DeclarationNode subclass");
     }

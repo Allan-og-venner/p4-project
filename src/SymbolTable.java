@@ -145,9 +145,9 @@ public class SymbolTable implements Cloneable {
 
     public Hashtable<String,String> getVTable() {return this.vTable;}
     public Hashtable<String,String> getFTable() {return this.fTable;}
+    public Hashtable<String, SymbolTable> getCTable() {return this.cTable;}
     public Hashtable<String,String> getInnerVTable() {return this.innerVTable;}
     public Hashtable<String,String> getInnerFTable() {return this.innerFTable;}
-    public Hashtable<String, SymbolTable> getCTable() {return this.cTable;}
 
     public String findClosestAncestor(String class1, String class2) {
         if (class1.equals("null")) {
