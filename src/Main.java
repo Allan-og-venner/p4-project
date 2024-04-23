@@ -11,7 +11,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-
         try {
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");
@@ -23,7 +22,7 @@ public class Main {
             TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
             System.out.println(typeChecker.visit(ast));
 
-            BuildASTVisitor.printVisitedNodes();
+            //BuildASTVisitor.printVisitedNodes();
 
         } catch (Exception e){
             System.err.print(e.getMessage());

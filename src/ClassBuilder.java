@@ -10,12 +10,12 @@ public class ClassBuilder {
     }
 
     public ClassBuilder addField(String identifier, String type) {
-        table.addValue(identifier, type);
+        table.getInnerVTable().put(identifier, type);
         return this;
     }
 
     public ClassBuilder addMethod(String identifier, String type) {
-        table.addFunction(identifier, type);
+        table.getInnerFTable().put(identifier, type);
         return this;
     }
 

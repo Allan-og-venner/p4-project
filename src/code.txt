@@ -1,9 +1,19 @@
 
+action play(Card card) -> void : "Play" {
+	print("playing");
+}
 
-cardType(ID = "plustwo" : onPlay(string playerName) {
-    "do something";
-})
+action discard(Card card) -> void : "Discard" {
+	print("discarding");
+}
 
-Card card = new Card();
+action shoot(string player) -> void : "Shoot" {
+	print("Shooting");
+}
 
-card.onPlay();
+Card card1 = new Card();
+card1.ID = "red 5";
+
+allowAction(discard(card1));
+allowAction(shoot("simon"));
+displayAllowedActions();

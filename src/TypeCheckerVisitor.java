@@ -139,7 +139,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(BlockNode node) {
         String stmType = visit(node.getStatement());
         String blockType = "void";
-        if(node.getBlocks() != null) {
+        if (node.getBlocks() != null) {
             blockType = visit(node.getBlocks());
         }
         if (node.getStatement() instanceof ReturnNode) {
@@ -147,7 +147,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             return stmType;
         }
         if (node.getStatement() instanceof ControlNode || node.getStatement() instanceof LoopNode) {
-            if(!stmType.equals("void") && !stmType.equals(blockType)) {
+            if (!stmType.equals("void") && !stmType.equals(blockType)) {
                 throw new WrongTypeException(node.getStatement().lineNumber, "Matching types",stmType + ", " + blockType);
             }
         }
@@ -539,15 +539,18 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             return identifier;
 
         } else {
+            System.out.println(identifier);
             String type = symbolTables.peek().fLookup(identifier);
+            System.out.println(type);
             ArrayList<String> types = new ArrayList<>(Arrays.asList(type.split(",")));
             if (type.equals("null")) {
                 throw new SymbolUnboundException(node.lineNumber, identifier);
             }
-            if(node.getParameter() != null) {
-                visit(node.getParameter(), types);
+            if (node.getParameter() != null) {
+                visit(node.getParameter(), new ArrayList<>(types));
             }
             node.setType(new TypeNode(types.get(0)));
+            System.out.println(types);
             return types.get(0);
         }
     }
@@ -555,7 +558,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(ExpressionsNode node, ArrayList<String> expectedTypes) {
         expectedTypes.remove(0);
         String exprType = visit(node.getLeft());
-        if(expectedTypes.isEmpty()) {
+        if (expectedTypes.isEmpty()) {
             throw new WrongTypeException(node.lineNumber, "void", exprType);
         }
         if (!symbolTable.checkInherits(exprType, expectedTypes.get(0))) {
@@ -582,8 +585,14 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
         }
         String returnType = node.getReturnType().getTypeName();
-        if (node.getIsAction() && !returnType.equals("void")) {
-            throw new WrongTypeException(node.lineNumber, "void", returnType);
+        if (node.getIsAction()) {
+            if (!returnType.equals("void")) {
+                throw new WrongTypeException(node.lineNumber, "void", returnType);
+            }
+            String stringType = visit(node.getExpr());
+            if (!stringType.equals("string")) {
+                throw new WrongTypeException(node.lineNumber, "string", stringType);
+            }
         }
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
@@ -594,7 +603,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             String returnedType = visit(node.getBlocks());
             symbolTables.pop();
             if (symbolTables.peek().checkInherits(returnedType, returnType)) {
-                symbolTables.peek().addFunction(identifier, returnType + "," + parameterTypes);
+                if (node.getIsAction()) {
+                    symbolTables.peek().addFunction(identifier, "action," + parameterTypes);
+                    System.out.println(symbolTables.peek().getInnerFTable());
+                } else {
+                    symbolTables.peek().addFunction(identifier, returnType + "," + parameterTypes);
+                }
             } else {
                 throw new WrongTypeException(node.lineNumber, returnType, returnedType);
             }
@@ -644,7 +658,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                     identifier = ((IdentifierNode) currentField).getText();
                     nextObjectType = classST.vLookup("static " + identifier);
                 }
-                if(nextObjectType == null) {
+                if (nextObjectType == null) {
                     throw new NoStaticFieldException(node.lineNumber, objectType, identifier);
                 }
                 objectType = nextObjectType;
@@ -695,7 +709,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         symbolTables.peek().addClass(className, superclassName);
         try {
             newTable = (SymbolTable) symbolTables.peek().clone();
-            if (!superclassName.equals("Object")){
+            if (!superclassName.equals("Object")) {
                 SymbolTable superNewTable = symbolTables.peek().findClassSymbolTable(superclassName);
                 newTable.getFTable().putAll(superNewTable.getInnerFTable());
                 newTable.getVTable().putAll(superNewTable.getInnerVTable());
@@ -723,7 +737,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         } else {
             visit(node.getStatement());
         }
-        if(node.getBlocks() != null) {
+        if (node.getBlocks() != null) {
             visit(node.getBlocks(), table);
         }
         node.setType(new TypeNode("void"));
@@ -738,6 +752,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      * @return "void"
      */
     public String visit(FunctionDNode node, SymbolTable table) {
+        if (node.getIsAction()) {
+            throw new WrongTypeException(node.lineNumber, "function", "action");
+        }
         String identifier = node.getFunction().getText();
         if (symbolTables.peek().fLookup(identifier) != null) {
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
@@ -746,7 +763,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         try {
             symbolTables.push((SymbolTable) table.clone());
             String parameterTypes = "";
-            if(node.getParameter() != null) {
+            if (node.getParameter() != null) {
                 parameterTypes = visit(node.getParameter());
             }
             String returnedType = visit(node.getBlocks());
@@ -803,7 +820,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(DefineNode node) {
         String type;
-        if(node.getIndex() != null) {
+        if (node.getIndex() != null) {
             type = "array " + node.getType().getTypeName();
         } else {
             type = node.getType().getTypeName();

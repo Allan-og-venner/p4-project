@@ -257,8 +257,13 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         addVisitedNode("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
-        node.setIsAction(context.KEY_ACTION() != null);
-        node.setModifier(visitModifier(context.modifier()));
+        if (context.KEY_ACTION() != null) {
+            node.setIsAction(true);
+            node.setExpr(visitExpr(context.expr()));
+        } else {
+            node.setIsAction(false);
+            node.setModifier(visitModifier(context.modifier()));
+        }
         if (context.type() != null && context.IDENTIFIER() != null) {
             node.setReturnType(visitType(context.type()));
             IdentifierNode text = new IdentifierNode();
