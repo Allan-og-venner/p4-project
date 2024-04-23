@@ -1,20 +1,9 @@
-class Cat {
-    string name;
-    Cat mate;
-}
-
-class Kitty {
-    Cat parent;
-    static Cat bestCat;
-}
 
 
-Kitty ellie = new Kitty();
+cardType(ID = "plustwo" : onPlay(string playerName) {
+    "do something";
+})
 
-string test = ellie.parent.name;
+Card card = new Card();
 
-string test2 = Kitty.bestCat.mate.name;
-
-string test3 = ellie.bestCat.mate.name;
-
-/*String test4 = Kitty.parent.name;*/
+card.onPlay();

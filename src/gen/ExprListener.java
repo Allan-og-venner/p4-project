@@ -67,6 +67,16 @@ public interface ExprListener extends ParseTreeListener {
 	 */
 	void exitAssign(ExprParser.AssignContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExprParser#cardType}.
+	 * @param ctx the parse tree
+	 */
+	void enterCardType(ExprParser.CardTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#cardType}.
+	 * @param ctx the parse tree
+	 */
+	void exitCardType(ExprParser.CardTypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExprParser#fdecl}.
 	 * @param ctx the parse tree
 	 */

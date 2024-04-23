@@ -12,14 +12,18 @@ public class SymbolTable implements Cloneable {
     private Hashtable<String, String> innerFTable = new Hashtable<String, String>();
     private Hashtable<String, SymbolTable> cTable = new Hashtable<String, SymbolTable>();
 
-    public SymbolTable() {
+    public SymbolTable createOuterSymbolTable() {
         tTable.put("int", "float");
         tTable.put("float", "");
-        tTable.put("char", "");
+        tTable.put("char", "string");
         tTable.put("string", "");
         tTable.put("void", "");
         tTable.put("Object", "");
+
+        new ClassBuilder(this).addName("Card").addField("ID", "string").buildClass(tTable, cTable);
+        return this;
     }
+
 
     public void addClass(String name) {
         tTable.put(name, "Object");

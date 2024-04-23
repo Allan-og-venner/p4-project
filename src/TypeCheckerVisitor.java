@@ -1,10 +1,7 @@
 import nodes.*;
 import org.antlr.v4.codegen.model.Loop;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 
 public class TypeCheckerVisitor extends ASTVisitor<String>{
@@ -483,6 +480,45 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         return visit(node.getLeft());
     }
 
+    @Override
+    public String visit(CardTypeNode node) {
+        String exprType = visit(node.getExpression());
+        String identifier = node.getIdentifier().getText();
+        String method = node.getMethod().getText();
+        if (!symbolTables.peek().checkInherits(exprType, "string")) {
+            throw new WrongTypeException(node.lineNumber, "string", exprType);
+        }
+        Hashtable<String, SymbolTable> cTable = symbolTables.peek().getCTable();
+        SymbolTable cardTable = cTable.get("Card");
+        try {
+            symbolTables.push((SymbolTable) cardTable.clone());
+            String parameterTypes = "";
+            if (node.getParams() != null) {
+                parameterTypes = visit(node.getParams());
+            }
+            String returnedType = visit(node.getBlocks());
+            symbolTables.pop();
+            String types = "void," + parameterTypes;
+            String expectedTypes = cardTable.fLookup(method);
+            if (expectedTypes != null) {
+                if (!types.equals("void," + parameterTypes)) {
+                    throw new WrongTypeException(node.lineNumber, expectedTypes, types);
+                }
+            } else {
+                if (symbolTables.peek().checkInherits(returnedType, "void")) {
+                    System.out.println(types);
+                    cardTable.addFunction(method, types);
+                    System.out.println("2");
+                } else {
+                    throw new WrongTypeException(node.lineNumber, "void", returnedType);
+                }
+            }
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+        }
+        return "void";
+    }
+
     /**
      * Handles class instantiation and normal function calls.
      * If the call has the "new" keyword, the class identifier is returned.
@@ -541,11 +577,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      */
     @Override
     public String visit(FunctionDNode node) {
-        String identifier = symbolTables.peek().fLookup(node.getFunction().getText());
-        if (identifier != null) {
+        String identifier = node.getFunction().getText();
+        if (symbolTables.peek().fLookup(identifier) != null) {
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
-        } else {
-            identifier = node.getFunction().getText();
         }
         String returnType = node.getReturnType().getTypeName();
         try {
@@ -695,18 +729,16 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     }
 
     /**
-     * Function declaration within a scope?class?, checks if the function identifier already exists
+     * Function declaration within a class, checks if the function identifier already exists
      * Matches the function returnType with the function block return type,
      * and adds the function w. return type + parameter types to the symbolTable.
      * @param node
      * @return "void"
      */
     public String visit(FunctionDNode node, SymbolTable table) {
-        String identifier = table.fLookup(node.getFunction().getText());
-        if (identifier != null) {
+        String identifier = node.getFunction().getText();
+        if (symbolTables.peek().fLookup(identifier) != null) {
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
-        } else {
-            identifier = node.getFunction().getText();
         }
         String returnType = node.getReturnType().getTypeName();
         try {
@@ -732,7 +764,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
 
     /**
-     * For defining a field within a scope?class?
+     * For defining a field within a class
      * Checks if the identifier already exists in the innerValueTable of the symbolTable
      * Checks for a value to assign - then finds the type of the value to check if it is compatible with the type
      * adds the identifier along with the type to the symbolTable
@@ -846,6 +878,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     }
 
     public TypeCheckerVisitor() {
+        symbolTable.createOuterSymbolTable();
         symbolTables.push(symbolTable);
     }
 }

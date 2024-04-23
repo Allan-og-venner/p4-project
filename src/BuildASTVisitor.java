@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import codegenExample.Card;
 import gen.*;
 import nodes.*;
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
@@ -182,7 +183,11 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             ClassDNode node = visitCdecl(context.cdecl());
             node.getLineNumberFromContext(context);
             return node;
-        } else {
+        } else if (context.cardType() != null) {
+            CardTypeNode node = visitCardType(context.cardType());
+            node.getLineNumberFromContext(context);
+            return node;
+        }else {
             throw new UnsupportedOperationException("Operation not supported");
         }
     }
@@ -252,6 +257,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         addVisitedNode("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
+        node.setIsAction(context.KEY_ACTION() != null);
         node.setModifier(visitModifier(context.modifier()));
         if (context.type() != null && context.IDENTIFIER() != null) {
             node.setReturnType(visitType(context.type()));

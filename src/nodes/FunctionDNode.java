@@ -6,6 +6,12 @@ public class FunctionDNode extends DeclarationNode {
     private FparamsNode parameter;
     private TypeNode returnType;
 
+    private boolean isAction;
+
+    public boolean getIsAction() {return isAction;}
+
+    public void setIsAction(boolean bool) {isAction = bool;}
+
     public ModifierNode getModifier() {
         return modifier;
     }

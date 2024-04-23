@@ -4,11 +4,14 @@ import org.antlr.v4.runtime.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 
 public class Main {
 
+
     public static void main(String[] args) {
+
+
         try {
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");

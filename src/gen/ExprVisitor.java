@@ -46,6 +46,12 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssign(ExprParser.AssignContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ExprParser#cardType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCardType(ExprParser.CardTypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ExprParser#fdecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

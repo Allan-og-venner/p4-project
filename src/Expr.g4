@@ -4,7 +4,8 @@ grammar Expr;
 prog: block EOF
     | EOF ;
 block: statement
-    | statement block;
+    | statement block
+    | KEY_SETUP COLON block;
 
 /* Statement rules*/
 statement: decl
@@ -14,9 +15,12 @@ statement: decl
     | control;
 decl: defin SEMICOLON
     | fdecl
-    | cdecl;
+    | cdecl
+    | cardType;
 defin: modifier type IDENTIFIER (L_BRACKET NUMERAL R_BRACKET)? (EQ expr)?;
 assign: value EQ expr;
+
+cardType : KEY_CARDTYPE L_PAREN IDENTIFIER EQ expr COLON IDENTIFIER L_PAREN fparams? R_PAREN L_CBRACKET block R_CBRACKET R_PAREN;
 
 /* Function rules*/
 fdecl: modifier KEY_FUNC IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET
@@ -147,6 +151,8 @@ KEY_STATIC : 'static';
 KEY_RETURNTYPE_ARROW : '->';
 KEY_NULL: 'null';
 KEY_ACTION: 'action';
+KEY_CARDTYPE: 'cardType';
+KEY_SETUP: 'setup';
 
 /* Types */
 TYPE_INT : 'int';
