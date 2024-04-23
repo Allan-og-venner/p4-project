@@ -1,6 +1,9 @@
 import nodes.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
+
 
 public class CodeBuilderVisitor extends ASTVisitor<String>{
 
@@ -9,7 +12,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private ArrayList<String> variables = new ArrayList<>();
     private String gameFunction;
     private String endFunction;
+    private int tempCounter = 0;
 
+    public String handleType(String nonRealType){
+        return switch (nonRealType) {
+            case "int" -> "Integer";
+            case "float" -> "Float";
+            case "string" -> "String";
+            default -> null;
+        };
+    }
     public String visitStart(BlockNode node) {
 
         //Make card
@@ -20,6 +32,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         StringBuilder prog = new StringBuilder("public class Main{\n\n");
 
         String setUp = visit(node);
+        for(String var : variables){
+            prog.append(var);
+        }
+
+
         prog.append(gameFunction).append("\n");
         prog.append(endFunction).append("\n");
         for(String function : functions){
@@ -38,7 +55,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(BlockNode node) {
         //visit Statement node
-        String blocks =  visit(node.getStatement()) + "\n";
+        String blocks = visit(node.getStatement()) + "\n";
         //if existing visit block node
         if (node.getBlocks() != null){
             blocks += visit(node.getBlocks());
@@ -73,31 +90,53 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(NegateNode node) {
-        return "";
+        return "!" + node.getInnerNode();
     }
 
     @Override
-    public String visit(NumberNode node) {
-        return "";
-    }
+    public String visit(NumberNode node) {return null; }
 
     @Override
     public String visit(StringNode node) {
-        return "";
+        return null;
     }
 
     @Override
     public String visit(FloatNode node) {
-        return "";
+        return null;
     }
 
     @Override
     public String visit(CharNode node) {
-        return "";
+        return null;
     }
-
     @Override
     public String visit(DefineNode node) {
+        StringBuilder var = new StringBuilder(node.getModi().getModifier());
+        if (node.getIndex() != null){
+            var.append("ArrayList<")
+                    .append(handleType(node.getType().getTypeName()))
+                    .append("> ")
+                    .append(node.getID().getText())
+                    .append(" = ")
+                    .append("new ");
+            if (node.getValue() != null) {
+                var.append(visit(node.getValue()))
+                        .append(node.getID().getText())
+                        .append(" = temp");
+
+            }
+        }
+                var.append(" ")
+                .append(node.getType().getTypeName())
+                .append(" ")
+                .append(node.getID().getText());
+        if (node.getValue() != null) {
+            var.append(" = ")
+                    .append(node.getValue());
+        }
+        variables.add(var.toString());
+
         return "";
     }
 
@@ -142,22 +181,43 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ForNode node) {
-        return "";
+        StringBuilder forString = new StringBuilder();
+        forString.append("for (")
+                .append(node.getType())
+                .append(node.getIterator())
+                .append(" : ")
+                .append(node.getArray())
+                .append(") {\n")
+                .append(node.getBlock())
+                .append("\n}");
+        return forString.toString();
     }
 
     @Override
     public String visit(WhileNode node) {
-        return "";
+        StringBuilder whileString = new StringBuilder();
+        whileString.append("while(")
+                .append(node.getCondition())
+                .append(") {\n")
+                .append(node.getBlock())
+                .append("\n}");
+        return whileString.toString();
     }
 
     @Override
     public String visit(IfNode node) {
-        return "";
+        StringBuilder ifString = new StringBuilder();
+        ifString.append("if(")
+                .append(node.getCondition())
+                .append(") {\n")
+                .append(node.getBlock())
+                .append("\n}");
+        return ifString.toString();
     }
 
     @Override
     public String visit(ReturnNode node) {
-        return "";
+        return visit(node.getInnerNode());
     }
 
     @Override
@@ -169,25 +229,62 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ContinueNode node) {
         return "";
     }
-
     @Override
     public String visit(ArrayNode node) {
-        return "";
+        StringBuilder temp = new StringBuilder("ArrayList temp = new ArrayList();\n");
+        String[] adds = visit(node.getInnerNode()).split(",");
+        for (String add : adds){
+            temp.append("temp.add(")
+                    .append(add)
+                    .append(")\n");
+        }
+        return temp.toString();
     }
 
+
+    /**
+     * NOT IMPLEMENTED
+     * 2024-04-23 14:30 - meret
+     * @param node
+     * @return
+     */
     @Override
     public String visit(ClassAccessNode node) {
-        return "";
+        StringBuilder ClassAccessString = new StringBuilder();
+        ClassAccessString.append(node.getObject());
+        for (ValueNode currentField : node.getValue()) {
+            ClassAccessString.append(".")
+                    .append(currentField);
+        }
+        ClassAccessString.append(";");
+        return ClassAccessString.toString();
     }
 
     @Override
     public String visit(ArrayAccessNode node) {
-        return "";
+        StringBuilder ArrayAccessString = new StringBuilder();
+        ArrayAccessString.append(node.getArray().getText())
+                .append(".get(")
+                .append(node.getIndex())
+                .append(");");
+        return ArrayAccessString.toString();
     }
 
+    //JEG VED DET IKKE LIGE
     @Override
     public String visit(FunctionCallNode node) {
-        return "";
+        StringBuilder funcCall = new StringBuilder();
+        if(node.getHasNew()){
+            funcCall.append("new ");
+        } else {
+            funcCall.append("Main.");
+        }
+        funcCall.append(node.getFunction().getText())
+                .append("(")
+                .append(visit(node.getParameter()))
+                .append(");");
+
+        return funcCall.toString();
     }
 
     @Override
@@ -207,7 +304,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FparamNode node) {
-        return "";
+        StringBuilder fParamString = new StringBuilder();
+        fParamString.append(node.getType().getTypeName())
+                    .append(" ")
+                    .append(node.getIdentifier().getText());
+        return fParamString.toString();
     }
 
     @Override
@@ -263,17 +364,23 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ExpressionsNode node) {
         StringBuilder expr = new StringBuilder();
-        expr.append(visit(node.getLeft()))
-                .append(", ");
+        expr.append(visit(node.getLeft()));
         if (node.getRight() != null) {
-            expr.append(visit(node.getRight()));
+            expr.append(", ")
+                .append(visit(node.getRight()));
         }
         return expr.toString();
     }
 
     @Override
     public String visit(FparamsNode node) {
-        return "";
+        StringBuilder fParamsString = new StringBuilder();
+        fParamsString.append(visit(node.getLeft()));
+        if (node.getRight() != null) {
+            fParamsString.append(", ")
+                        .append(visit(node.getRight()));
+        }
+        return fParamsString.toString();
     }
 
     @Override
