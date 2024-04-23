@@ -588,7 +588,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
             String parameterTypes = "";
-            if(node.getParameter() != null) {
+            if (node.getParameter() != null) {
                 parameterTypes = visit(node.getParameter());
             }
             String returnedType = visit(node.getBlocks());
