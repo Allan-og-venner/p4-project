@@ -5,10 +5,18 @@ import java.util.ArrayList;
 public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     private ArrayList<String> functions = new ArrayList<>();
+    private ArrayList<String> actions = new ArrayList<>();
+    private ArrayList<String> variables = new ArrayList<>();
     private String gameFunction;
     private String endFunction;
 
     public String visitStart(BlockNode node) {
+
+        //Make card
+
+        //Make action class
+
+        //Make main
         StringBuilder prog = new StringBuilder("public class Main{\n\n");
 
         String setUp = visit(node);
@@ -95,16 +103,21 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FunctionDNode node) {
-        StringBuilder function = new StringBuilder().append("public ")
-                .append(node.getReturnType().getTypeName())
-                .append(" ")
-                .append(node.getFunction().getText())
-                .append("(")
-                .append(visit(node.getParameter()))
-                .append(")")
-                .append("{\n")
-                .append(visit(node.getBlocks()))
-                .append("\n}");
+        StringBuilder function = new StringBuilder();
+        if (node.getIsAction()){
+
+        }else {
+            function.append("public ")
+                    .append(node.getReturnType().getTypeName())
+                    .append(" ")
+                    .append(node.getFunction().getText())
+                    .append("(")
+                    .append(visit(node.getParameter()))
+                    .append(")")
+                    .append("{\n")
+                    .append(visit(node.getBlocks()))
+                    .append("\n}");
+        }
         if (node.getFunction().getText() == "game"){
             if (gameFunction != ""){
                 throw new AlreadyDefinedFunctionException("Game");
@@ -189,7 +202,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(NegativeNode node) {
-        return "";
+        return "- " + node.getInnerNode();
     }
 
     @Override
@@ -260,6 +273,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FparamsNode node) {
+        return "";
+    }
+
+    @Override
+    public String visit(CardTypeNode node) {
         return "";
     }
 }
