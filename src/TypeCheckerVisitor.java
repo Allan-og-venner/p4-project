@@ -582,6 +582,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new DuplicateDefinitionException(node.lineNumber, identifier);
         }
         String returnType = node.getReturnType().getTypeName();
+        if (node.getIsAction() && !returnType.equals("void")) {
+            throw new WrongTypeException(node.lineNumber, "void", returnType);
+        }
         try {
             symbolTables.push((SymbolTable) symbolTables.peek().clone());
             String parameterTypes = "";
