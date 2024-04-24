@@ -482,39 +482,62 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(CardTypeNode node) {
+        ArrayList<String> methods = new ArrayList<>();
+        ArrayList<String> fields = new ArrayList<>();
         String exprType = visit(node.getExpression());
         String identifier = node.getIdentifier().getText();
-        String method = node.getMethod().getText();
-        if (!symbolTables.peek().checkInherits(exprType, "string")) {
-            throw new WrongTypeException(node.lineNumber, "string", exprType);
-        }
         Hashtable<String, SymbolTable> cTable = symbolTables.peek().getCTable();
         SymbolTable cardTable = cTable.get("Card");
-        try {
-            symbolTables.push((SymbolTable) cardTable.clone());
-            String parameterTypes = "";
-            if (node.getParams() != null) {
-                parameterTypes = visit(node.getParams());
+
+        for (DefineNode field : node.getFields()) {
+            String type = field.getType().getTypeName();
+            String name = field.getID().getText();
+            if (!symbolTables.peek().checkType(type)) {
+                throw new TypeNotFoundException(type);
             }
-            String returnedType = visit(node.getBlocks());
-            symbolTables.pop();
-            String types = "void," + parameterTypes;
-            String expectedTypes = cardTable.fLookup(method);
-            if (expectedTypes != null) {
-                if (!types.equals("void," + parameterTypes)) {
-                    throw new WrongTypeException(node.lineNumber, expectedTypes, types);
+            String existingType = cardTable.vLookup(name);
+            if (existingType != null && !existingType.equals(type)) {
+                throw new WrongTypeException(node.lineNumber, existingType, type);
+            }
+            if (fields.contains(name)) {
+                throw new DuplicateDefinitionException(node.lineNumber, name);
+            }
+            cardTable.addValue(name, type);
+            fields.add(name);
+        }
+        for (FunctionDNode method : node.getMethods()) {
+            String methodName = method.getFunction().getText();
+            if (!symbolTables.peek().checkInherits(exprType, "string")) {
+                throw new WrongTypeException(node.lineNumber, "string", exprType);
+            }
+            try {
+                symbolTables.push((SymbolTable) cardTable.clone());
+                String parameterTypes = "";
+                if (method.getParameter() != null) {
+                    parameterTypes = visit(method.getParameter());
                 }
-            } else {
-                if (symbolTables.peek().checkInherits(returnedType, "void")) {
-                    System.out.println(types);
-                    cardTable.addFunction(method, types);
-                    System.out.println("2");
+                String returnedType = visit(method.getBlocks());
+                symbolTables.pop();
+                String types = "void," + parameterTypes;
+                String expectedTypes = cardTable.fLookup(methodName);
+                if (expectedTypes != null) {
+                    if (!types.equals("void," + parameterTypes)) {
+                        throw new WrongTypeException(node.lineNumber, expectedTypes, types);
+                    }
                 } else {
-                    throw new WrongTypeException(node.lineNumber, "void", returnedType);
+                    if (symbolTables.peek().checkInherits(returnedType, "void")) {
+                        if (methods.contains(methodName)) {
+                            throw new DuplicateDefinitionException(node.lineNumber, methodName);
+                        }
+                        cardTable.addFunction(methodName, types);
+                        methods.add(methodName);
+                    } else {
+                        throw new WrongTypeException(node.lineNumber, "void", returnedType);
+                    }
                 }
+            } catch (CloneNotSupportedException e) {
+                System.out.println(e.getMessage());
             }
-        } catch (CloneNotSupportedException e) {
-            System.out.println(e.getMessage());
         }
         return "void";
     }

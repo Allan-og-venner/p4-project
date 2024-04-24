@@ -25,7 +25,7 @@ public class ClassBuilder {
     }
 
     public ClassBuilder addSuperClass(String name) {
-        this.name = name;
+        this.superClass = name;
         return this;
     }
 

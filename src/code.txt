@@ -1,8 +1,8 @@
 
-Deck deck = new Deck();
 
-cardType(ID = "plus"
+cardType(ID = "hej"
+    : onPlayed() {
+        amount + 1;
+    }
     : int amount
-    : onPlayed(Player player) {
-        deck.drawMany(player.nextPlayer, amount);
-    })
+)
