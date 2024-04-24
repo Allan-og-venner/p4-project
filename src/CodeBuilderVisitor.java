@@ -180,6 +180,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ClassDNode node) {
+        //#lavet #done #ladOsKøreDet
         return "";
     }
 
@@ -249,18 +250,18 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     /**
      * NOT IMPLEMENTED
      * 2024-04-23 14:30 - meret
-     * @param node
-     * @return
+     * @return  Class.cat2.cat3.Method(params?) Class.class2.cat3.cat4.methods()
      */
     @Override
     public String visit(ClassAccessNode node) {
         StringBuilder ClassAccessString = new StringBuilder();
         ClassAccessString.append(node.getObject());
-        for (ValueNode currentField : node.getValue()) {
-            ClassAccessString.append(".")
-                    .append(currentField);
+        if (node.getValue() != null){
+            for (ValueNode currentField : node.getValue()) {
+                ClassAccessString.append(".");
+                ClassAccessString.append(visit(currentField));
+            }
         }
-        ClassAccessString.append(";");
         return ClassAccessString.toString();
     }
 

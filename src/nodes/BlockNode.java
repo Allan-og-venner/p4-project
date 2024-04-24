@@ -5,15 +5,26 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import java.lang.reflect.Type;
 
 public class BlockNode {
-    public int lineNumber;
-    public void getLineNumberFromContext(ParserRuleContext context){
-        lineNumber = context.getStart().getLine();
-    }
+
+    private int lineNumber;
+
     private StatementNode statement;
 
     private BlockNode blocks;
 
     private TypeNode type;
+
+    public void getLineNumberFromContext(ParserRuleContext context){
+        lineNumber = context.getStart().getLine();
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
+    }
 
     public TypeNode getType() {
         return type;
