@@ -1,19 +1,8 @@
 
-action play(Card card) -> void : "Play" {
-	print("playing");
-}
+Deck deck = new Deck();
 
-action discard(Card card) -> void : "Discard" {
-	print("discarding");
-}
-
-action shoot(string player) -> void : "Shoot" {
-	print("Shooting");
-}
-
-Card card1 = new Card();
-card1.ID = "red 5";
-
-allowAction(discard(card1));
-allowAction(shoot("simon"));
-displayAllowedActions();
+cardType(ID = "plus"
+    : int amount
+    : onPlayed(Player player) {
+        deck.drawMany(player.nextPlayer, amount);
+    })

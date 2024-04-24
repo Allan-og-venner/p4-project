@@ -4,6 +4,8 @@ import java.util.List;
 import codegenExample.Card;
 import gen.*;
 import nodes.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     //Save the visited nodes in a list to use for testing purposes
@@ -16,6 +18,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public static List<String> getVisitedNodes() {
         return visitedNodes;
     }
+
     //Print all nodes for debugging
     public static void printVisitedNodes() {
         for (String node : visitedNodes) {
@@ -669,7 +672,8 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
-        if (context.IDENTIFIER().get(0) != null) {
+        //Identifier 0 is the identifier for the ID field
+        if (context.IDENTIFIER(0) != null) {
             IdentifierNode identifierNode = new IdentifierNode();
             identifierNode.setText(context.IDENTIFIER().get(0).getText());
             identifierNode.getLineNumberFromContext(context);
@@ -677,23 +681,35 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         } else {
             throw new UnsupportedOperationException("Operation not supported");
         }
+
+        for(TerminalNode : context.IDENTIFIER())
+        //Identifier 1 is the potential identifier for the function field
         if (context.IDENTIFIER().get(1) != null) {
             IdentifierNode identifierNode = new IdentifierNode();
             identifierNode.setText(context.IDENTIFIER().get(1).getText());
             identifierNode.getLineNumberFromContext(context);
-            node.setMethod(identifierNode);
+            node.getMethods().setMethod(identifierNode);
+            if (context.block() != null) {
+                node.setBlocks(visitBlock(context.block()));
+            } else {
+                throw new UnsupportedOperationException("Operation not supported");
+            }
+            if (context.fparams() != null) {
+                node.setParams(visitFparams(context.fparams()));
+            }
+        } else if (context.IDENTIFIER().get(2) != null) {
+            IdentifierNode identifierNode = new IdentifierNode();
+            identifierNode.setText(context.IDENTIFIER().get(1).getText());
+            identifierNode.getLineNumberFromContext(context);
+            node.setField(identifierNode);
+            if (context.type() != null) {
+                node.setType(visitType(context.type()));
+            } else {    
+                throw new UnsupportedOperationException("Operation not supported");
+            }
         } else {
             throw new UnsupportedOperationException("Operation not supported");
-        }
-        if (context.block() != null) {
-            node.setBlocks(visitBlock(context.block()));
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
-        }
-        if (context.fparams() != null) {
-            node.setParams(visitFparams(context.fparams()));
         }
         return node;
     }
-
 }
