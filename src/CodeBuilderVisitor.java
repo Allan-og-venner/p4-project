@@ -112,28 +112,32 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
     @Override
     public String visit(DefineNode node) {
-        StringBuilder var = new StringBuilder(node.getModi().getModifier());
+        StringBuilder var = new StringBuilder(node.getModi().getModifier())
+                        .append(" ");
         if (node.getIndex() != null){
-            var.append("ArrayList<")
-                    .append(handleType(node.getType().getTypeName()))
-                    .append("> ")
-                    .append(node.getID().getText())
-                    .append(" = ")
-                    .append("new ");
+                var.append(handleType(node.getType().getTypeName()))
+                        .append(" ")
+                        .append(node.getID().getText())
+                        .append(" = ")
+                        .append("new ")
+                        .append(handleType(node.getType().getTypeName()))
+                        .append("[")
+                        .append(visit(node.getIndex()))
+                        .append("]");
             if (node.getValue() != null) {
                 var.append(visit(node.getValue()))
                         .append(node.getID().getText())
                         .append(" = temp");
-
             }
-        }
-                var.append(" ")
-                .append(node.getType().getTypeName())
-                .append(" ")
-                .append(node.getID().getText());
-        if (node.getValue() != null) {
-            var.append(" = ")
-                    .append(node.getValue());
+        }else {
+                var
+                    .append(node.getType().getTypeName())
+                    .append(" ")
+                    .append(node.getID().getText());
+            if (node.getValue() != null) {
+                var.append(" = ")
+                        .append(node.getValue());
+            }
         }
         variables.add(var.toString());
 
@@ -143,9 +147,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(FunctionDNode node) {
         StringBuilder function = new StringBuilder();
-        if (node.getIsAction()){
-
-        }else {
+       // if (node.getIsAction()){
+       //
+       // }else {
             function.append("public ")
                     .append(node.getReturnType().getTypeName())
                     .append(" ")
@@ -156,7 +160,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append("{\n")
                     .append(visit(node.getBlocks()))
                     .append("\n}");
-        }
+       // }
         if (node.getFunction().getText() == "game"){
             if (gameFunction != ""){
                 throw new AlreadyDefinedFunctionException("Game");
