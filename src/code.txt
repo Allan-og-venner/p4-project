@@ -1,9 +1,5 @@
+int a = 2+2;
 
 
-cardType(ID = "plustwo" : onPlay(string playerName) {
-    "do something";
-})
 
-Card card = new Card();
-
-card.onPlay();
+func end() -> void {"hej";}

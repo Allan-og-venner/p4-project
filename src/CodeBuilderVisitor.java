@@ -37,11 +37,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
 
 
+        prog.append("\n");
         prog.append(gameFunction).append("\n");
         prog.append(endFunction).append("\n");
+
         for(String function : functions){
             prog.append(function).append("\n");
         }
+
 
         prog.append("public static void main(String[] args){\n")
                 .append(setUp)
@@ -49,6 +52,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append("\nthis.endFunction();")
                 .append("\n}\n")
                 .append("}");
+        if (gameFunction == null){
+            throw new AlreadyDefinedFunctionException("Game");
+        }
         return prog.toString();
 
     }
@@ -65,7 +71,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(AdditionNode node) {
-        return visit(node.getLeft()) + "+" + visit(node.getRight());
+        return visit(node.getLeft()) + "+" + visit(node.getRight()) +";";
     }
 
     @Override
@@ -94,28 +100,30 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
 
     @Override
-    public String visit(NumberNode node) {return null; }
+    public String visit(NumberNode node) {return node.getValue()+"";}
 
     @Override
     public String visit(StringNode node) {
-        return null;
+        return node.getValue();
     }
 
     @Override
     public String visit(FloatNode node) {
-        return null;
+        return node.getValue()+"";
     }
 
     @Override
     public String visit(CharNode node) {
-        return null;
+        return node.getValue();
     }
     @Override
     public String visit(DefineNode node) {
-        StringBuilder var = new StringBuilder(node.getModi().getModifier())
-                        .append(" ");
+        System.out.println("define");
+        StringBuilder var = new StringBuilder();
+        var.append("public ").append(visit(node.getModi())).append(" ");
+
         if (node.getIndex() != null){
-                var.append(handleType(node.getType().getTypeName()))
+            var.append(handleType(node.getType().getTypeName()))
                         .append(" ")
                         .append(node.getID().getText())
                         .append(" = ")
@@ -125,22 +133,21 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         .append(visit(node.getIndex()))
                         .append("]");
             if (node.getValue() != null) {
+
                 var.append(visit(node.getValue()))
                         .append(node.getID().getText())
                         .append(" = temp");
             }
         }else {
-                var
-                    .append(node.getType().getTypeName())
+            var.append(visit(node.getType()))
                     .append(" ")
                     .append(node.getID().getText());
             if (node.getValue() != null) {
                 var.append(" = ")
-                        .append(node.getValue());
+                        .append(visit(node.getValue()));
             }
         }
         variables.add(var.toString());
-
         return "";
     }
 
@@ -161,20 +168,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append(visit(node.getBlocks()))
                     .append("\n}");
        // }
-        if (node.getFunction().getText() == "game"){
-            if (gameFunction != ""){
-                throw new AlreadyDefinedFunctionException("Game");
-                }
-            gameFunction = function.toString();
-        } else if (node.getFunction().getText() == "end") {
-            if (endFunction != ""){
-                throw new AlreadyDefinedFunctionException("End");
-            }
-            endFunction = function.toString();
 
-        } else {
-            functions.add(function.toString());
-        }
+        functions.add(function.toString());
+
         return "";
     }
 
@@ -222,17 +218,17 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ReturnNode node) {
-        return visit(node.getInnerNode());
+        return "return " + visit(node.getInnerNode());
     }
 
     @Override
     public String visit(BreakNode node) {
-        return "";
+        return "break";
     }
 
     @Override
     public String visit(ContinueNode node) {
-        return "";
+        return "continue";
     }
     @Override
     public String visit(ArrayNode node) {
@@ -294,7 +290,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(IdentifierNode node) {
-        return "";
+        return node.getText();
     }
 
     @Override
@@ -358,12 +354,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ModifierNode node) {
-        return "";
+        if (node.getModifier() != null){
+            return node.getModifier();
+        } else {
+            return "";
+        }
     }
 
     @Override
     public String visit(TypeNode node) {
-        return "";
+        return node.getTypeName();
     }
 
     @Override
@@ -380,12 +380,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(FparamsNode node) {
         StringBuilder fParamsString = new StringBuilder();
-        fParamsString.append(visit(node.getLeft()));
-        if (node.getRight() != null) {
-            fParamsString.append(", ")
-                        .append(visit(node.getRight()));
+        if (node != null) {
+            fParamsString.append(visit(node.getLeft()));
+            if (node.getRight() != null) {
+                fParamsString.append(", ")
+                            .append(visit(node.getRight()));
+            }
+            return fParamsString.toString();
         }
-        return fParamsString.toString();
+        System.out.println("AFter");
+        return "";
     }
 
     @Override

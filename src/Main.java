@@ -21,9 +21,10 @@ public class Main {
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
             TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
-            System.out.println(typeChecker.visit(ast));
-
-            BuildASTVisitor.printVisitedNodes();
+            typeChecker.visit(ast);
+            CodeBuilderVisitor codeBuilderVisitor = new CodeBuilderVisitor();
+            String finalCode = codeBuilderVisitor.visitStart(ast);
+            System.out.println(finalCode);
 
         } catch (Exception e){
             System.err.print(e.getMessage());
