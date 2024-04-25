@@ -1,8 +1,21 @@
 
+action play(Player player, Card card) -> void : "play " {
+    print("playing");
+}
 
-cardType(ID = "hej"
-    : onPlayed() {
-        amount + 1;
-    }
-    : int amount
-)
+action discard(Player player, Card card) -> void : "discard" {
+    print("discarding");
+}
+
+action shoot(Player player1, Player player2) -> void : "shoot" {
+    print("shooting");
+}
+
+
+func game() -> void {
+    print("hej");
+}
+
+func end() -> void {
+    "heeej";
+}

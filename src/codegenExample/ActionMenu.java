@@ -2,11 +2,24 @@ package codegenExample;
 import com.sun.tools.javac.Main;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Scanner;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface MethodHash {
+    String value();
+}
 
 public class ActionMenu {
 
 
+    private ArrayList<String> indeces = new ArrayList<String>();
     private ArrayList<String> allowedNames = new ArrayList<String>();
 
     private ArrayList<Action> allowedActions = new ArrayList<Action>();
@@ -27,10 +40,12 @@ public class ActionMenu {
     public void allowAction(String action, Card card) {
         if (action.equals("play")) {
             allowedNames.add(getPlayString(card));
-            allowedActions.add(() -> System.out.println("playing " + card));
+            indeces.add(action + card);
+            allowedActions.add(() -> System.out.println("playing  " + card));
         }
         if (action.equals("discard")) {
             allowedNames.add(getDiscardString(card));
+            indeces.add(action + card);
             allowedActions.add(() -> System.out.println("discarding  " + card));
         }
     }
@@ -38,7 +53,26 @@ public class ActionMenu {
     public void allowAction(String action, String player) {
         if (action.equals("shoot")) {
             allowedNames.add(getShootString(player));
+            indeces.add(action + player);
             allowedActions.add(() -> System.out.println("shooting  " + player));
+        }
+    }
+
+    public void disallowAction(String action, String player) {
+        int index = indeces.indexOf(action + player);
+        if (index >= 0) {
+            allowedActions.remove(index);
+            allowedNames.remove(index);
+            indeces.remove(index);
+        }
+    }
+
+    public void disallowAction(String action, Card card) {
+        int index = indeces.indexOf(action + card);
+        if (index >= 0) {
+            allowedActions.remove(index);
+            allowedNames.remove(index);
+            indeces.remove(index);
         }
     }
 
@@ -71,5 +105,6 @@ public class ActionMenu {
 }
 
 interface Action {
-    void act();
+    abstract void act();
+
 }
