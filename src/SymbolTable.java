@@ -20,7 +20,7 @@ public class SymbolTable implements Cloneable {
         tTable.put("void", "");
         tTable.put("Object", "");
         tTable.put("action", "");
-        innerFTable.put("strlen", "int,");
+        innerFTable.put("strlen", "int,string");
         innerFTable.put("command print", "void,string");
         innerFTable.put("command allowAction", "void,action");
         innerFTable.put("command disallowAction", "void,action");

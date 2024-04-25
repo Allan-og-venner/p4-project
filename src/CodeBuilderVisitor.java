@@ -396,4 +396,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(CardTypeNode node) {
         return "";
     }
+
+    public CodeBuilderVisitor() {
+        functions.add("void print(String input) {System.out.print(input);}");
+        functions.add("int strlen(String input) {return input.length();}");
+    }
+
 }
