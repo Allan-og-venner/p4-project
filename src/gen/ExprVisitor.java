@@ -1,4 +1,4 @@
-package gen;// Generated from /Users/simonthordal/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
+package gen;// Generated from C:/Users/sinag/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -51,6 +51,18 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCardType(ExprParser.CardTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExprParser#cardMethod}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCardMethod(ExprParser.CardMethodContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ExprParser#cardField}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCardField(ExprParser.CardFieldContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ExprParser#fdecl}.
 	 * @param ctx the parse tree

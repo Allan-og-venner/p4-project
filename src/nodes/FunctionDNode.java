@@ -5,6 +5,7 @@ public class FunctionDNode extends DeclarationNode {
     private IdentifierNode function;
     private FparamsNode parameter;
     private TypeNode returnType;
+    private ExpressionNode expr;
 
     private boolean isAction;
 
@@ -42,6 +43,14 @@ public class FunctionDNode extends DeclarationNode {
 
     public void setParameter(FparamsNode parameter) {
         this.parameter = parameter;
+    }
+
+    public ExpressionNode getExpr() {
+        return expr;
+    }
+
+    public void setExpr(ExpressionNode expr) {
+        this.expr = expr;
     }
 
 }

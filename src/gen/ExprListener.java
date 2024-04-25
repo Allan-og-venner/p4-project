@@ -1,4 +1,4 @@
-package gen;// Generated from /Users/simonthordal/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
+package gen;// Generated from C:/Users/sinag/IdeaProjects/p4-project/src/Expr.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -76,6 +76,26 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCardType(ExprParser.CardTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExprParser#cardMethod}.
+	 * @param ctx the parse tree
+	 */
+	void enterCardMethod(ExprParser.CardMethodContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#cardMethod}.
+	 * @param ctx the parse tree
+	 */
+	void exitCardMethod(ExprParser.CardMethodContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExprParser#cardField}.
+	 * @param ctx the parse tree
+	 */
+	void enterCardField(ExprParser.CardFieldContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#cardField}.
+	 * @param ctx the parse tree
+	 */
+	void exitCardField(ExprParser.CardFieldContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExprParser#fdecl}.
 	 * @param ctx the parse tree

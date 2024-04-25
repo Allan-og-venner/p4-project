@@ -4,6 +4,8 @@ import java.util.List;
 import codegenExample.Card;
 import gen.*;
 import nodes.*;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     //Save the visited nodes in a list to use for testing purposes
@@ -16,6 +18,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public static List<String> getVisitedNodes() {
         return visitedNodes;
     }
+
     //Print all nodes for debugging
     public static void printVisitedNodes() {
         for (String node : visitedNodes) {
@@ -257,8 +260,13 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public FunctionDNode visitFdecl(ExprParser.FdeclContext context) {
         addVisitedNode("Visited functionDeclaration node");
         FunctionDNode node = new FunctionDNode();
-        node.setIsAction(context.KEY_ACTION() != null);
-        node.setModifier(visitModifier(context.modifier()));
+        if (context.KEY_ACTION() != null) {
+            node.setIsAction(true);
+            node.setExpr(visitExpr(context.expr()));
+        } else {
+            node.setIsAction(false);
+            node.setModifier(visitModifier(context.modifier()));
+        }
         if (context.type() != null && context.IDENTIFIER() != null) {
             node.setReturnType(visitType(context.type()));
             IdentifierNode text = new IdentifierNode();
@@ -657,38 +665,47 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public CardTypeNode visitCardType(ExprParser.CardTypeContext context) {
+        System.out.println("hej");
         addVisitedNode("Visited cardType node");
         CardTypeNode node = new CardTypeNode();
         if (context.expr() != null) {
             node.setExpression(visitExpr(context.expr()));
         } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            throw new UnsupportedOperationException("Operation not supported1");
         }
-        if (context.IDENTIFIER().get(0) != null) {
+        //Identifier is the identifier for the ID field
+        if (context.IDENTIFIER() != null) {
             IdentifierNode identifierNode = new IdentifierNode();
-            identifierNode.setText(context.IDENTIFIER().get(0).getText());
+            identifierNode.setText(context.IDENTIFIER().getText());
             identifierNode.getLineNumberFromContext(context);
             node.setIdentifier(identifierNode);
         } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            throw new UnsupportedOperationException("Operation not supported2");
         }
-        if (context.IDENTIFIER().get(1) != null) {
+        //Looping through every identifier, because they denote either a field or a method
+        for (int i = 0; i < context.cardMethod().size(); i++) {
+            FunctionDNode methodNode = new FunctionDNode();
             IdentifierNode identifierNode = new IdentifierNode();
-            identifierNode.setText(context.IDENTIFIER().get(1).getText());
+            identifierNode.setText(context.cardMethod(i).IDENTIFIER().getText());
             identifierNode.getLineNumberFromContext(context);
-            node.setMethod(identifierNode);
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
+            methodNode.setFunction(identifierNode);
+            methodNode.setBlocks(visitBlock(context.cardMethod(i).block()));
+            if (context.cardMethod(i).fparams() != null) {
+                methodNode.setParameter(visitFparams(context.cardMethod(i).fparams()));
+            }
+            node.getMethods().add(methodNode);
         }
-        if (context.block() != null) {
-            node.setBlocks(visitBlock(context.block()));
-        } else {
-            throw new UnsupportedOperationException("Operation not supported");
+        for (int i = 0; i < context.cardField().size(); i++) {
+                DefineNode fieldNode = new DefineNode();
+                IdentifierNode identifierNode = new IdentifierNode();
+                identifierNode.setText(context.cardField(i).IDENTIFIER().getText());
+                identifierNode.getLineNumberFromContext(context);
+                fieldNode.setID(identifierNode);
+                fieldNode.setType((visitType(context.cardField(i).type())));
+                node.getFields().add(fieldNode);
         }
-        if (context.fparams() != null) {
-            node.setParams(visitFparams(context.fparams()));
-        }
+        System.out.println(node.getMethods());
+        System.out.println(node.getFields());
         return node;
     }
-
 }

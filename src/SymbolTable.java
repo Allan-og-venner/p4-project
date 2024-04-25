@@ -19,8 +19,21 @@ public class SymbolTable implements Cloneable {
         tTable.put("string", "");
         tTable.put("void", "");
         tTable.put("Object", "");
+        tTable.put("action", "");
+        innerFTable.put("strlen", "int,");
+        innerFTable.put("command print", "void,string");
+        innerFTable.put("command allowAction", "void,action");
+        innerFTable.put("command disallowAction", "void,action");
+        innerFTable.put("command displayAllowedActions", "void,");
+        innerFTable.put("command showGameState", "void,Player");
 
         new ClassBuilder(this).addName("Card").addField("ID", "string").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Location").addField("cards", "array Card").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Deck").addSuperClass("Location").addField("visible", "int").addMethod("shuffle", "void").addMethod("draw", "void,Location").addMethod("getTop", "Card").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Hand").addSuperClass("Location").addField("player", "Player").addMethod("move", "void,int,Location").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Player").addField("hand", "Hand").addField("nextPlayer", "Player").buildClass(tTable, cTable);
+        System.out.println(tTable);
+
         return this;
     }
 
@@ -110,6 +123,12 @@ public class SymbolTable implements Cloneable {
     public String fLookup(String input) {
         if (innerFTable.containsKey(input)) {
             return innerFTable.get(input);
+        }
+        if (innerFTable.containsKey("command " + input)) {
+            return innerFTable.get("command " + input);
+        }
+        if (fTable.containsKey("command " + input)) {
+            return fTable.get("command " + input);
         }
         return fTable.get(input);
     }

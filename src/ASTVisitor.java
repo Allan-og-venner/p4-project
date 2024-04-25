@@ -48,7 +48,7 @@ public abstract class ASTVisitor<T> {
     public abstract T visit(CardTypeNode node);
 //Static implementation of visits
 
-    public T visit(AccessibleObjectNode node){
+    public T visit(AccessibleObjectNode node) throws IllegalArgumentException {
         if (node instanceof ArrayNode){
             return visit((ArrayNode)node);
         } else if (node instanceof ClassAccessNode){

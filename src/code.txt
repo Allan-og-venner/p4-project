@@ -1,5 +1,8 @@
-int a = 2+2;
 
 
-
-func end() -> void {"hej";}
+cardType(ID = "hej"
+    : onPlayed() {
+        amount + 1;
+    }
+    : int amount
+)
