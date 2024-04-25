@@ -1,7 +1,9 @@
 import nodes.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
+
 
 
 
@@ -15,13 +17,24 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private int tempCounter = 0;
 
     public String handleType(String nonRealType){
-        return switch (nonRealType) {
-            case "int" -> "Integer";
-            case "float" -> "Float";
-            case "string" -> "String";
-            default -> null;
-        };
+        String[] splitType;
+        String newType;
+        if (nonRealType.startsWith("array ")){
+            splitType = nonRealType.split("^array ");
+            nonRealType = splitType[1];
+        }
+
+
+
+         switch (nonRealType) {
+            case "int" -> newType="Integer";
+            case "float" -> newType="Float";
+            case "string" -> newType="String";
+            default -> newType=nonRealType;
+        }
+         return newType;
     }
+
     public String visitStart(BlockNode node) {
 
         //Make card
@@ -73,7 +86,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(AdditionNode node) {
-        return visit(node.getLeft()) + "+" + visit(node.getRight()) +";";
+        return visit(node.getLeft()) + "+" + visit(node.getRight());
     }
 
     @Override
@@ -102,7 +115,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
 
     @Override
-    public String visit(NumberNode node) {return node.getValue()+"";}
+    public String visit(NumberNode node) {
+        return Double.toString(((int) node.getValue()));}
 
     @Override
     public String visit(StringNode node) {
@@ -111,7 +125,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FloatNode node) {
-        return node.getValue()+"";
+        return Double.toString(node.getValue());
     }
 
     @Override
@@ -120,33 +134,28 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
     @Override
     public String visit(DefineNode node) {
-        System.out.println("define");
         StringBuilder var = new StringBuilder();
         var.append("public ").append(visit(node.getModi())).append(" ");
+        if (node.isArray()){
+            var.append("Arraylist<").append(visit(node.getType()))
+                    .append("> ")
+                    .append(node.getID().getText());
 
-        if (node.getIndex() != null){
-            var.append(handleType(node.getType().getTypeName()))
-                        .append(" ")
-                        .append(node.getID().getText())
-                        .append(" = ")
-                        .append("new ")
-                        .append(handleType(node.getType().getTypeName()))
-                        .append("[")
-                        .append(visit(node.getIndex()))
-                        .append("]");
-            if (node.getValue() != null) {
 
-                var.append(visit(node.getValue()))
-                        .append(node.getID().getText())
-                        .append(" = temp");
-            }
+                if (node.getValue() != null) {
+                    var.append(" = ")
+                            .append(visit(node.getValue()));
+                }
+                    var.append(";\n");
+
         }else {
             var.append(visit(node.getType()))
                     .append(" ")
                     .append(node.getID().getText());
             if (node.getValue() != null) {
                 var.append(" = ")
-                        .append(visit(node.getValue()));
+                        .append(visit(node.getValue()))
+                        .append("\n");
             }
         }
         variables.add(var.toString());
@@ -191,12 +200,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ForNode node) {
         StringBuilder forString = new StringBuilder();
         forString.append("for (")
-                .append(node.getType())
-                .append(node.getIterator())
+                .append(visit(node.getType()))
+                .append(visit(node.getIterator()))
                 .append(" : ")
-                .append(node.getArray())
+                .append(visit(node.getArray()))
                 .append(") {\n")
-                .append(node.getBlock())
+                .append(visit(node.getBlock()))
                 .append("\n}");
         return forString.toString();
     }
@@ -205,9 +214,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(WhileNode node) {
         StringBuilder whileString = new StringBuilder();
         whileString.append("while(")
-                .append(node.getCondition())
+                .append(visit(node.getCondition()))
                 .append(") {\n")
-                .append(node.getBlock())
+                .append(visit(node.getBlock()))
                 .append("\n}");
         return whileString.toString();
     }
@@ -216,9 +225,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(IfNode node) {
         StringBuilder ifString = new StringBuilder();
         ifString.append("if(")
-                .append(node.getCondition())
+                .append(visit(node.getCondition()))
                 .append(") {\n")
-                .append(node.getBlock())
+                .append(visit(node.getBlock()))
                 .append("\n}");
         return ifString.toString();
     }
@@ -239,13 +248,15 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
     @Override
     public String visit(ArrayNode node) {
-        StringBuilder temp = new StringBuilder("ArrayList temp = new ArrayList();\n");
-        String[] adds = visit(node.getInnerNode()).split(",");
-        for (String add : adds){
-            temp.append("temp.add(")
-                    .append(add)
-                    .append(")\n");
+        StringBuilder temp = new StringBuilder();
+        temp.append("new Arraylist<>(){{\n");
+        String[] adds = visit(node.getInnerNode()).split(", ");
+        for (String add : adds) {
+            temp.append("add(").append(add).append(");\n");
         }
+        temp.append("}}");
+
+
         return temp.toString();
     }
 
@@ -272,9 +283,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ArrayAccessNode node) {
         StringBuilder ArrayAccessString = new StringBuilder();
         ArrayAccessString.append(node.getArray().getText())
-                .append(".get(")
+                .append("[")
                 .append(node.getIndex())
-                .append(");");
+                .append("];");
         return ArrayAccessString.toString();
     }
 
@@ -370,18 +381,23 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(TypeNode node) {
-        return node.getTypeName();
+        return handleType(node.getTypeName());
     }
 
     @Override
     public String visit(ExpressionsNode node) {
         StringBuilder expr = new StringBuilder();
-        expr.append(visit(node.getLeft()));
-        if (node.getRight() != null) {
-            expr.append(", ")
-                .append(visit(node.getRight()));
+        if (node != null) {
+
+
+            expr.append(visit(node.getLeft()));
+            if (node.getRight() != null) {
+                expr.append(", ")
+                        .append(visit(node.getRight()));
+            }
+            return expr.toString();
         }
-        return expr.toString();
+        return "";
     }
 
     @Override
@@ -395,7 +411,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             return fParamsString.toString();
         }
-        System.out.println("AFter");
         return "";
     }
 

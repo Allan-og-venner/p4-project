@@ -3,14 +3,14 @@ import nodes.*;
 import org.antlr.v4.runtime.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class Main {
 
-
     public static void main(String[] args) {
-
 
         try {
             String userDir = System.getProperty("user.dir");
@@ -25,7 +25,6 @@ public class Main {
             CodeBuilderVisitor codeBuilderVisitor = new CodeBuilderVisitor();
             String finalCode = codeBuilderVisitor.visitStart(ast);
             System.out.println(finalCode);
-
         } catch (Exception e){
             System.err.print(e.getMessage());
             //e.printStackTrace();
