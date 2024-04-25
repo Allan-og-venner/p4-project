@@ -1,4 +1,17 @@
 
+
+
+
+int a[] = {1,2,3};
+
+a[2];
+
+
+
+
+
+
+
 action play(Player player, Card card) -> void : "play " {
     print("playing");
 }
