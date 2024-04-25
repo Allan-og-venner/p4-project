@@ -1,6 +1,6 @@
 import nodes.*;
 import org.antlr.v4.codegen.model.Loop;
-
+import gen.*;
 import java.util.*;
 
 
@@ -142,10 +142,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             return stmType;
         }
         if (node.getStatement() instanceof ControlNode || node.getStatement() instanceof LoopNode) {
-            if(!stmType.equals("void") && !stmType.equals(blockType)) {
-                throw new WrongTypeException(node.getStatement().getLineNumber(), "Matching types",stmType + ", " + blockType);
             if (!stmType.equals("void") && !stmType.equals(blockType)) {
-                throw new WrongTypeException(node.getStatement().lineNumber, "Matching types",stmType + ", " + blockType);
+                throw new WrongTypeException(node.getStatement().getLineNumber(), "Matching types",stmType + ", " + blockType);
             }
         }
         node.setType(new TypeNode(blockType));
@@ -482,10 +480,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             String existingType = cardTable.vLookup(name);
             if (existingType != null && !existingType.equals(type)) {
-                throw new WrongTypeException(node.lineNumber, existingType, type);
+                throw new WrongTypeException(node.getLineNumber(), existingType, type);
             }
             if (fields.contains(name)) {
-                throw new DuplicateDefinitionException(node.lineNumber, name);
+                throw new DuplicateDefinitionException(node.getLineNumber(), name);
             }
             cardTable.addValue(name, type);
             fields.add(name);
@@ -493,7 +491,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         for (FunctionDNode method : node.getMethods()) {
             String methodName = method.getFunction().getText();
             if (!symbolTables.peek().checkInherits(exprType, "string")) {
-                throw new WrongTypeException(node.lineNumber, "string", exprType);
+                throw new WrongTypeException(node.getLineNumber(), "string", exprType);
             }
             try {
                 symbolTables.push((SymbolTable) cardTable.clone());
@@ -507,7 +505,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 String expectedTypes = cardTable.fLookup(methodName);
                 if (expectedTypes != null) {
                     if (!types.equals("void," + parameterTypes)) {
-                        throw new WrongTypeException(node.lineNumber, expectedTypes, types);
+                        throw new WrongTypeException(node.getLineNumber(), expectedTypes, types);
                     }
                 } else {
                     if (symbolTables.peek().checkInherits(returnedType, "void")) {
@@ -517,7 +515,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                         cardTable.addFunction(methodName, types);
                         methods.add(methodName);
                     } else {
-                        throw new WrongTypeException(node.lineNumber, "void", returnedType);
+                        throw new WrongTypeException(node.getLineNumber(), "void", returnedType);
                     }
                 }
             } catch (CloneNotSupportedException e) {
@@ -660,7 +658,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                     nextObjectType = classST.vLookup("static " + identifier);
                 }
                 if (nextObjectType == null) {
-                    throw new NoStaticFieldException(node.lineNumber, objectType, identifier);
+                    throw new NoStaticFieldException(node.getLineNumber(), objectType, identifier);
                 }
                 objectType = nextObjectType;
             } else if (symbolTables.peek().checkClass(objectType)) {
@@ -750,7 +748,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      */
     public String visit(FunctionDNode node, SymbolTable table) {
         if (node.getIsAction()) {
-            throw new WrongTypeException(node.lineNumber, "function", "action");
+            throw new WrongTypeException(node.getLineNumber(), "function", "action");
         }
         String identifier = node.getFunction().getText();
         if (symbolTables.peek().fLookup(identifier) != null) {
