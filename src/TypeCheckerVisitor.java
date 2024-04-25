@@ -510,7 +510,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 } else {
                     if (symbolTables.peek().checkInherits(returnedType, "void")) {
                         if (methods.contains(methodName)) {
-                            throw new DuplicateDefinitionException(node.lineNumber, methodName);
+                            throw new DuplicateDefinitionException(node.getLineNumber(), methodName);
                         }
                         cardTable.addFunction(methodName, types);
                         methods.add(methodName);
@@ -561,7 +561,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         expectedTypes.remove(0);
         String exprType = visit(node.getLeft());
         if (expectedTypes.isEmpty()) {
-            throw new WrongTypeException(node.lineNumber, "void", exprType);
+            throw new WrongTypeException(node.getLineNumber(), "void", exprType);
         }
         if (!symbolTable.checkInherits(exprType, expectedTypes.get(0))) {
             throw new WrongTypeException(node.getLineNumber(), expectedTypes.get(0), exprType);
@@ -588,11 +588,11 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         String returnType = node.getReturnType().getTypeName();
         if (node.getIsAction()) {
             if (!returnType.equals("void")) {
-                throw new WrongTypeException(node.lineNumber, "void", returnType);
+                throw new WrongTypeException(node.getLineNumber(), "void", returnType);
             }
             String stringType = visit(node.getExpr());
             if (!stringType.equals("string")) {
-                throw new WrongTypeException(node.lineNumber, "string", stringType);
+                throw new WrongTypeException(node.getLineNumber(), "string", stringType);
             }
         }
         try {
