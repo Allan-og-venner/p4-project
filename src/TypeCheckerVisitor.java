@@ -812,7 +812,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(DefineNode node) {
         String type;
-        if (node.getIndex() != null) {
+        if (node.isArray()) {
             type = "array " + node.getType().getTypeName();
         } else {
             type = node.getType().getTypeName();

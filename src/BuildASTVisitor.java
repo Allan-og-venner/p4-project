@@ -704,8 +704,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 fieldNode.setType((visitType(context.cardField(i).type())));
                 node.getFields().add(fieldNode);
         }
-        System.out.println(node.getMethods());
-        System.out.println(node.getFields());
+
         return node;
     }
 }
