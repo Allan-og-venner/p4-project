@@ -54,6 +54,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append("}");
         if (gameFunction == null){
             throw new AlreadyDefinedFunctionException("Game");
+        } else if (endFunction == null) {
+            throw new AlreadyDefinedFunctionException("End");
         }
         return prog.toString();
 
@@ -157,6 +159,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
        // if (node.getIsAction()){
        //
        // }else {
+
             function.append("public ")
                     .append(node.getReturnType().getTypeName())
                     .append(" ")
@@ -168,9 +171,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append(visit(node.getBlocks()))
                     .append("\n}");
        // }
-
-        functions.add(function.toString());
-
+        if(Objects.equals(node.getFunction().getText(), "game")){
+            gameFunction = function.toString();
+        } else if (Objects.equals(node.getFunction().getText(), "end")){
+            endFunction = function.toString();
+        } else {
+            functions.add(function.toString());
+        }
         return "";
     }
 
