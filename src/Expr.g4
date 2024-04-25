@@ -17,7 +17,7 @@ decl: defin SEMICOLON
     | fdecl
     | cdecl
     | cardType;
-defin: modifier type IDENTIFIER (L_BRACKET NUMERAL R_BRACKET)? (EQ expr)?;
+defin: modifier type IDENTIFIER (L_BRACKET R_BRACKET)? (EQ expr)?;
 assign: value EQ expr;
 
 cardType : KEY_CARDTYPE L_PAREN IDENTIFIER EQ expr (COLON (cardMethod| cardField))* R_PAREN;

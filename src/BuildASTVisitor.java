@@ -217,10 +217,8 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             IdentifierNode text = new IdentifierNode();
             text.setText(context.IDENTIFIER().getText());
             node.setID(text);
-            if (context.NUMERAL() != null){
-                NumberNode index = new NumberNode();
-                index.setValue(Double.parseDouble(context.NUMERAL().getText()));
-                node.setIndex(index);
+            if(context.L_BRACKET() != null && context.R_BRACKET() != null){
+                node.setArray(true);;
             }
             if (context.expr() != null){
                 node.setValue(visitExpr(context.expr()));
@@ -665,7 +663,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     @Override
     public CardTypeNode visitCardType(ExprParser.CardTypeContext context) {
-        System.out.println("hej");
         addVisitedNode("Visited cardType node");
         CardTypeNode node = new CardTypeNode();
         if (context.expr() != null) {
@@ -704,8 +701,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 fieldNode.setType((visitType(context.cardField(i).type())));
                 node.getFields().add(fieldNode);
         }
-        System.out.println(node.getMethods());
-        System.out.println(node.getFields());
+
         return node;
     }
 }

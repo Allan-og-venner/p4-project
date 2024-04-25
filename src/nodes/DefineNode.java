@@ -3,8 +3,16 @@ package nodes;
 public class DefineNode extends DeclarationNode {
    private ModifierNode Modi;
     private IdentifierNode ID;
-    private ValueNode Index;
     private ExpressionNode Value;
+    private boolean isArray = false;
+
+    public boolean isArray() {
+        return isArray;
+    }
+
+    public void setArray(boolean array) {
+        isArray = array;
+    }
 
     public ModifierNode getModi() {
         return Modi;
@@ -20,14 +28,6 @@ public class DefineNode extends DeclarationNode {
 
     public void setID(IdentifierNode ID) {
         this.ID = ID;
-    }
-
-    public ValueNode getIndex() {
-        return Index;
-    }
-
-    public void setIndex(ValueNode index) {
-        Index = index;
     }
 
     public ExpressionNode getValue() {
