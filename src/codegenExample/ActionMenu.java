@@ -50,6 +50,8 @@ public class ActionMenu {
         }
     }
 
+
+
     public void allowAction(String action, String player) {
         if (action.equals("shoot")) {
             allowedNames.add(getShootString(player));
