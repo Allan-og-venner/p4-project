@@ -56,6 +56,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         prog.append("public class Main{\n\n");
 
         String setUp = visit(node);
+        System.out.println(setUp);
         for (String var : variables){
             prog.append(var);
         }
@@ -132,7 +133,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(NumberNode node) {
-        return Double.toString(((int) node.getValue()));}
+        return Integer.toString(((int) node.getValue()));}
 
     @Override
     public String visit(StringNode node) {
@@ -180,7 +181,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             variables.add(var.toString());
             return "";
         } else {
-            return var.toString();   
+            return var.toString();
         }
     }
 
@@ -327,7 +328,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ClassAccessNode node) {
         StringBuilder ClassAccessString = new StringBuilder();
-        ClassAccessString.append(node.getObject());
+        ClassAccessString.append(visit(node.getObject()));
         if (node.getValue() != null){
             for (ValueNode currentField : node.getValue()) {
                 ClassAccessString.append(".");
@@ -339,10 +340,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ArrayAccessNode node) {
+        System.out.println("array access");
         StringBuilder ArrayAccessString = new StringBuilder();
-        ArrayAccessString.append(node.getArray().getText())
+        ArrayAccessString.append(visit(node.getArray()))
                 .append("[")
-                .append(node.getIndex())
+                .append(visit(node.getIndex()))
                 .append("];");
         return ArrayAccessString.toString();
     }
@@ -356,7 +358,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         } else {
             funcCall.append("Main.");
         }
-        funcCall.append(node.getFunction().getText())
+        funcCall.append(visit(node.getFunction()))
                 .append("(")
                 .append(visit(node.getParameter()))
                 .append(");");
@@ -382,9 +384,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(FparamNode node) {
         StringBuilder fParamString = new StringBuilder();
-        fParamString.append(node.getType().getTypeName())
+        fParamString.append(visit(node.getType()))
                     .append(" ")
-                    .append(node.getIdentifier().getText());
+                    .append(visit(node.getIdentifier()));
         return fParamString.toString();
     }
 
@@ -446,8 +448,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ExpressionsNode node) {
         StringBuilder expr = new StringBuilder();
         if (node != null) {
-
-
             expr.append(visit(node.getLeft()));
             if (node.getRight() != null) {
                 expr.append(", ")
