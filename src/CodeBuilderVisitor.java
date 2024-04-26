@@ -16,6 +16,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
     private String gameFunction;
     private String endFunction;
+    private int scopeCount;
     private int tempCounter = 0;
 
     public String handleType(String nonRealType){
@@ -150,7 +151,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(DefineNode node) {
         StringBuilder var = new StringBuilder();
-        var.append("public ").append(visit(node.getModi())).append(" ");
+        if (scopeCount == 0) {
+            var.append("static");
+        } else {
+            var.append(visit(node.getModi()));
+        }
+        var.append(" ");
         if (node.isArray()){
             var.append("Arraylist<").append(visit(node.getType()))
                     .append("> ")
@@ -173,8 +179,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         .append("\n");
             }
         }
-        variables.add(var.toString());
-        return "";
+        if (scopeCount == 0){
+            variables.add(var.toString());
+            return "";
+        } else {
+            return var.toString();   
+        }
     }
 
     @Override
@@ -197,7 +207,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         .addToBlock("if (action.equals(\"" + actionName + "\")) {\n" +
                         "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));\n" +
                         "   indeces.add(action + " + String.join(" + ", vars) + ");\n" +
-                        "   allowedActions.add(() -> " + visit(node.getBlocks()) + "\n" +
+                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "\n" +
                         "}");
             } else {
                 actionMenu
@@ -206,7 +216,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     "\nif (action.equals(\"" + actionName + "\")) {\n" +
                         "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));\n" +
                         "   indeces.add(action + " + String.join(" + ", vars) + ");\n" +
-                        "   allowedActions.add(() -> " + visit(node.getBlocks()) + "\n" +
+                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "\n" +
                         "}");
             }
 
@@ -219,10 +229,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append(node.getFunction().getText())
                     .append("(")
                     .append(visit(node.getParameter()))
-                    .append(")")
-                    .append("{\n")
-                    .append(visit(node.getBlocks()))
+                    .append(")");
+            scopeCount++;
+            function.append(visit(node.getBlock()))
                     .append("\n}");
+            scopeCount--;
         }
         if(Objects.equals(node.getFunction().getText(), "game")){
             gameFunction = function.toString();
@@ -248,9 +259,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append(visit(node.getIterator()))
                 .append(" : ")
                 .append(visit(node.getArray()))
-                .append(") {\n")
-                .append(visit(node.getBlock()))
+                .append(") {\n");
+        scopeCount++;
+        forString.append(visit(node.getBlock()))
                 .append("\n}");
+        scopeCount--;
         return forString.toString();
     }
 
@@ -259,20 +272,25 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         StringBuilder whileString = new StringBuilder();
         whileString.append("while(")
                 .append(visit(node.getCondition()))
-                .append(") {\n")
-                .append(visit(node.getBlock()))
+                .append(") {\n");
+        scopeCount++;
+        whileString.append(visit(node.getBlock()))
                 .append("\n}");
+        scopeCount--;
         return whileString.toString();
     }
 
     @Override
     public String visit(IfNode node) {
         StringBuilder ifString = new StringBuilder();
+
         ifString.append("if(")
                 .append(visit(node.getCondition()))
-                .append(") {\n")
-                .append(visit(node.getBlock()))
+                .append(") {\n");
+        scopeCount++;
+        ifString.append(visit(node.getBlock()))
                 .append("\n}");
+        scopeCount--;
         return ifString.toString();
     }
 
@@ -461,6 +479,23 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(CardTypeNode node) {
+
+        String className = "Card" + node.getID();
+        System.out.println(className);
+        if (classes.get(className) != null) {
+            throw new DuplicateDefinitionException(node.getLineNumber(), "Card");
+        }
+        ClassStringBuilder classText = new ClassStringBuilder().addStart(className, "Card");
+
+        for (DefineNode field : node.getFields()) {
+            classText.addToBlock(visit(field));
+        }
+        for (FunctionDNode method : node.getMethods()) {
+            classText.addToBlock(visit(method));
+        }
+
+        classes.put(className, classText);
+
         return "";
     }
 
@@ -468,8 +503,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         functions.add("void print(String input) {System.out.print(input);}");
         functions.add("int strlen(String input) {return input.length();}");
 
-        classes.put("CardInterface",new ClassStringBuilder().addToBlock("interface CardInterface {"));
-        classes.put("Card",new ClassStringBuilder().addStart("Card implements CardInterface").addToBlock("String ID;"));
+        classes.put("InterfaceCard",new ClassStringBuilder().addToBlock("interface InterfaceCard {"));
+        classes.put("Card",new ClassStringBuilder().addStart("Card implements InterfaceCard").addToBlock("String ID;"));
         classes.put("Action",new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
 
         classes.put("ActionMenu",new ClassStringBuilder().addStart("ActionMenu")

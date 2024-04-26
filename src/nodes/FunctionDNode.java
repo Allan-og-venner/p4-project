@@ -7,6 +7,12 @@ public class FunctionDNode extends DeclarationNode {
     private TypeNode returnType;
     private ExpressionNode expr;
 
+    private BlockNode block;
+
+    public BlockNode getBlock() {return block;}
+
+    public void setBlock(BlockNode block) {this.block = block;}
+
     private boolean isAction;
 
     public boolean getIsAction() {return isAction;}

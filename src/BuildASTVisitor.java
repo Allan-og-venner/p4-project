@@ -274,7 +274,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 node.setParameter(visitFparams(context.fparams()));
             }
             if (context.block() != null) {
-                node.setBlocks(visitBlock(context.block()));
+                node.setBlock(visitBlock(context.block()));
             }
             } else {
                 throw new UnsupportedOperationException("Operation not supported");
@@ -327,7 +327,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             text.setText(context.IDENTIFIER(0).getText());
             node.setName(text);
             if (context.block() != null) {
-            node.setBlocks(visitBlock(context.block()));
+            node.setBlock(visitBlock(context.block()));
             }
             if (context.KEY_EXTENDS() != null) { // If there is an 'extends'
                 IdentifierNode text1 = new IdentifierNode();
@@ -665,8 +665,8 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public CardTypeNode visitCardType(ExprParser.CardTypeContext context) {
         addVisitedNode("Visited cardType node");
         CardTypeNode node = new CardTypeNode();
-        if (context.expr() != null) {
-            node.setExpression(visitExpr(context.expr()));
+        if (context.STRING() != null) {
+            node.setID((context.STRING().getText()));
         } else {
             throw new UnsupportedOperationException("Operation not supported1");
         }
@@ -685,8 +685,10 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             IdentifierNode identifierNode = new IdentifierNode();
             identifierNode.setText(context.cardMethod(i).IDENTIFIER().getText());
             identifierNode.getLineNumberFromContext(context);
+            methodNode.setModifier(new ModifierNode());
+            methodNode.setReturnType(new TypeNode("void"));
             methodNode.setFunction(identifierNode);
-            methodNode.setBlocks(visitBlock(context.cardMethod(i).block()));
+            methodNode.setBlock(visitBlock(context.cardMethod(i).block()));
             if (context.cardMethod(i).fparams() != null) {
                 methodNode.setParameter(visitFparams(context.cardMethod(i).fparams()));
             }
@@ -698,6 +700,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 identifierNode.setText(context.cardField(i).IDENTIFIER().getText());
                 identifierNode.getLineNumberFromContext(context);
                 fieldNode.setID(identifierNode);
+                fieldNode.setModi(new ModifierNode());
                 fieldNode.setType((visitType(context.cardField(i).type())));
                 node.getFields().add(fieldNode);
         }

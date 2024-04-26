@@ -469,7 +469,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(CardTypeNode node) {
         ArrayList<String> methods = new ArrayList<>();
         ArrayList<String> fields = new ArrayList<>();
-        String exprType = visit(node.getExpression());
         String identifier = node.getIdentifier().getText();
         Hashtable<String, SymbolTable> cTable = symbolTables.peek().getCTable();
         SymbolTable cardTable = cTable.get("Card");
@@ -492,16 +491,13 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         }
         for (FunctionDNode method : node.getMethods()) {
             String methodName = method.getFunction().getText();
-            if (!symbolTables.peek().checkInherits(exprType, "string")) {
-                throw new WrongTypeException(node.getLineNumber(), "string", exprType);
-            }
             try {
                 symbolTables.push((SymbolTable) cardTable.clone());
                 String parameterTypes = "";
                 if (method.getParameter() != null) {
                     parameterTypes = visit(method.getParameter());
                 }
-                String returnedType = visit(method.getBlocks());
+                String returnedType = visit(method.getBlock());
                 symbolTables.pop();
                 String types = "void," + parameterTypes;
                 String expectedTypes = cardTable.fLookup(methodName);
@@ -603,7 +599,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (node.getParameter() != null) {
                 parameterTypes = visit(node.getParameter());
             }
-            String returnedType = visit(node.getBlocks());
+            String returnedType = visit(node.getBlock());
             symbolTables.pop();
             if (symbolTables.peek().checkInherits(returnedType, returnType)) {
                 if (node.getIsAction()) {
@@ -763,7 +759,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (node.getParameter() != null) {
                 parameterTypes = visit(node.getParameter());
             }
-            String returnedType = visit(node.getBlocks());
+            String returnedType = visit(node.getBlock());
             symbolTables.pop();
             if (symbolTable.checkInherits(returnedType, returnType)) {
                 table.addFunction(visit(node.getModifier()) + identifier, returnType + "," + parameterTypes);

@@ -1,11 +1,9 @@
 package codegenExample;
 
-public class Card implements CardInterface {
+public class Card implements InterfaceCard {
     public String ID = "";
 
-    public String toString() {
-        return ID;
-    }
+    public String toString() {return ID;}
 
     @Override
     public void onPlayed(String currPlayer) {
@@ -14,23 +12,26 @@ public class Card implements CardInterface {
 }
 
 
-interface CardInterface {
+interface InterfaceCard {
     public void onPlayed(String currPlayer);
 }
 
 class Cardplustwo extends Card {
-
     @Override
     public void onPlayed(String currPlayer) {
         //implement code for onPlayed plusTwo
     }
 }
 
-class Cardskip implements CardInterface {
+class Cardskip extends Card {
     @Override
     public void onPlayed(String currPlayer) {
         //implement code for onPlayed skip
     }
+}
+
+class Cardfour extends Card {
+
 }
 
 class Animal {
@@ -39,8 +40,7 @@ class Animal {
     @Override
     public boolean equals(Object other) {
         if (other.getClass().equals(this.getClass())) {
-            if (this.name.equals(((Animal) other).name))
-                return true;
+            return (this.name.equals(((Animal) other).name));
         }
         return false;
     }

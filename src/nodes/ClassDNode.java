@@ -4,7 +4,7 @@ public class ClassDNode extends DeclarationNode {
 
     private IdentifierNode name;
     private IdentifierNode superClass;
-    private StatementNode block;
+    private BlockNode block;
 
 
     public IdentifierNode getName() {
@@ -23,11 +23,11 @@ public class ClassDNode extends DeclarationNode {
         this.superClass = superClass;
     }
 
-    public StatementNode getBlock() {
+    public BlockNode getBlock() {
         return block;
     }
 
-    public void setBlock(StatementNode block) {
+    public void setBlock(BlockNode block) {
         this.block = block;
     }
 }
