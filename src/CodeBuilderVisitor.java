@@ -159,24 +159,21 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         var.append(" ");
         if (node.isArray()){
             var.append("Arraylist<").append(visit(node.getType()))
-                    .append("> ")
-                    .append(node.getID().getText());
-
-
+                .append("> ")
+                .append(node.getID().getText());
                 if (node.getValue() != null) {
                     var.append(" = ")
-                            .append(visit(node.getValue()));
+                        .append(visit(node.getValue()));
                 }
-                    var.append(";\n");
-
-        }else {
+                var.append(";\n");
+        } else {
             var.append(visit(node.getType()))
                 .append(" ")
                 .append(node.getID().getText());
             if (node.getValue() != null) {
                 var.append(" = ")
-                        .append(visit(node.getValue()))
-                        .append("\n");
+                    .append(visit(node.getValue()))
+                    .append(";\n");
             }
         }
         if (scopeCount == 0){
@@ -222,20 +219,19 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
 
         } else {
-
             function.append("public ")
                     .append(node.getReturnType().getTypeName())
                     .append(" ")
                     .append(node.getFunction().getText())
                     .append("(")
                     .append(visit(node.getParameter()))
-                    .append(")");
+                    .append(") {");
             scopeCount++;
             function.append(visit(node.getBlock()))
                     .append("\n}");
             scopeCount--;
         }
-        if(Objects.equals(node.getFunction().getText(), "game")){
+        if (Objects.equals(node.getFunction().getText(), "game")){
             gameFunction = function.toString();
         } else if (Objects.equals(node.getFunction().getText(), "end")){
             endFunction = function.toString();
