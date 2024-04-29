@@ -710,7 +710,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 newTable.getFTable().putAll(superNewTable.getInnerFTable());
                 newTable.getVTable().putAll(superNewTable.getInnerVTable());
             }
-            visit(node.getBlocks(), newTable);
+            visit(node.getBlock(), newTable);
             symbolTables.peek().addClassSymbols(className, newTable);
         } catch (CloneNotSupportedException e) {
             System.out.println(e.getMessage());

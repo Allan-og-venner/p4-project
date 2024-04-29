@@ -2,10 +2,7 @@
 import nodes.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Objects;
-
+import java.util.*;
 
 
 public class CodeBuilderVisitor extends ASTVisitor<String>{
@@ -18,6 +15,94 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String endFunction;
     private int scopeCount;
     private int tempCounter = 0;
+
+    public String formatCode(String unformattedCode) {
+
+        /*
+        unformattedCode = unformattedCode.replaceAll("\n","");
+
+        int indentation = 0;
+
+        StringBuilder chars = new StringBuilder();
+        for (char c : unformattedCode.toCharArray()) {
+            chars.append(c);
+            if (c == '{'){
+                indentation++;
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+            if (c == '}') {
+                indentation--;
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+            if (c == ';') {
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+        }
+
+        return chars.toString();
+        */
+        
+        int indentation = 0;
+        int inParen = 0;
+        StringBuilder formattedCode = new StringBuilder();
+
+        for (char c : unformattedCode.toCharArray()) {
+            if(inParen > 0) {
+                if(c == ')') {
+                    inParen--;
+                }
+                if(c == '(') {
+                    inParen++;
+                }
+                formattedCode.append(c);
+            } else {
+                switch (c) {
+                    case '{':
+                        formattedCode.append(c);
+                        formattedCode.append('\n');
+                        indentation++;
+                        for (int i = 0; i < indentation; i++) {
+                            formattedCode.append('\t');
+                        }
+                        break;
+                    case '}':
+                        indentation--;
+                        for (int i = 0; i < indentation; i++) {
+                            formattedCode.append('\t');
+                        }
+                        formattedCode.append(c);
+                        formattedCode.append('\n');
+                        break;
+                    case ';':
+                        formattedCode.append(c);
+                        formattedCode.append('\n');
+                        for (int i = 0; i < indentation; i++) {
+                            formattedCode.append('\t');
+                        }
+                        break;
+                    case '(':
+                        formattedCode.append(c);
+                        inParen++;
+                        break;
+                    default:
+                        formattedCode.append(c);
+                        break;
+                }
+            }
+        }
+
+        return formattedCode.toString().replaceAll("@Override", "@Override\n");
+
+    }
 
     public String handleType(String nonRealType){
         String[] splitType;
@@ -93,7 +178,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(BlockNode node) {
         //visit Statement node
-        String blocks = visit(node.getStatement()) + "\n";
+        String blocks = "";
+        if(node.getStatement() != null) {
+            blocks = visit(node.getStatement());
+        }
         //if existing visit block node
         if (node.getBlocks() != null){
             blocks += visit(node.getBlocks());
@@ -173,9 +261,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append(node.getID().getText());
             if (node.getValue() != null) {
                 var.append(" = ")
-                    .append(visit(node.getValue()))
-                    .append(";\n");
+                    .append(visit(node.getValue()));
             }
+            var.append(";");
         }
         if (scopeCount == 0){
             variables.add(var.toString());
@@ -199,6 +287,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             ClassStringBuilder actionMenu = classes.get("ActionMenu");
             actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {\n" + "return " + visit(node.getExpr()) + ";\n}");
             String allowMeth = "void allowAction(String action, " + parameters + ") {";
+            String disallowMeth = "void disallowAction(String action, " + parameters + ") {";
             if (!actionMenu.getBlock().toString().contains(allowMeth)) {
                 actionMenu
                         .addToBlock(allowMeth)
@@ -207,6 +296,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "   indeces.add(action + " + String.join(" + ", vars) + ");\n" +
                         "   allowedActions.add(() -> " + visit(node.getBlock()) + "\n" +
                         "}");
+                actionMenu.addToBlock(disallowMeth)
+                        .addToBlock("int index = indeces.indexOf(action + " + String.join(" + ", vars)+ ");" +
+                                "        if (index >= 0) {" +
+                                "            allowedActions.remove(index);" +
+                                "            allowedNames.remove(index);" +
+                                "            indeces.remove(index);" +
+                                "        }");
             } else {
                 actionMenu
                     .getBlock()
@@ -236,8 +332,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             gameFunction = function.toString();
         } else if (Objects.equals(node.getFunction().getText(), "end")){
             endFunction = function.toString();
-        } else {
+        } else if (scopeCount == 0){
             functions.add(function.toString());
+        } else {
+            return function.toString();
         }
         return "";
     }
@@ -475,7 +573,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(CardTypeNode node) {
-
+        scopeCount++;
         String className = "Card" + node.getID();
         System.out.println(className);
         if (classes.get(className) != null) {
@@ -487,11 +585,25 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             classText.addToBlock(visit(field));
         }
         for (FunctionDNode method : node.getMethods()) {
-            classText.addToBlock(visit(method));
+            String methName = "public "
+                    + ((method.getModifier().getModifier() == null)  ? "" : (method.getModifier() + " "))
+                    + method.getReturnType().getTypeName() + " "
+                    + method.getFunction().getText()
+                    + "(" + visit(method.getParameter()) + ")";
+            if (!classes.get("Card").getBlock().toString().contains(methName)) {
+                FunctionDNode emptyMeth = new FunctionDNode();
+                emptyMeth.setModifier(method.getModifier());
+                emptyMeth.setReturnType(method.getReturnType());
+                emptyMeth.setFunction(method.getFunction());
+                emptyMeth.setParameter(method.getParameter());
+                emptyMeth.setBlock(new BlockNode());
+                classes.get("Card").addToBlock(visit(emptyMeth));
+            }
+            classText.addToBlock("@Override" + visit(method));
         }
 
         classes.put(className, classText);
-
+        scopeCount--;
         return "";
     }
 

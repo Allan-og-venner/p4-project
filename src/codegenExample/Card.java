@@ -1,20 +1,16 @@
 package codegenExample;
 
-public class Card implements InterfaceCard {
+public class Card {
     public String ID = "";
 
     public String toString() {return ID;}
 
-    @Override
+
     public void onPlayed(String currPlayer) {
         //Empty because not defined
     }
 }
 
-
-interface InterfaceCard {
-    public void onPlayed(String currPlayer);
-}
 
 class Cardplustwo extends Card {
     @Override

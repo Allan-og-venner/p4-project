@@ -24,7 +24,8 @@ public class Main {
             typeChecker.visit(ast);
             CodeBuilderVisitor codeBuilderVisitor = new CodeBuilderVisitor();
             String finalCode = codeBuilderVisitor.visitStart(ast);
-            System.out.println(finalCode);
+            String finalfinalCode = codeBuilderVisitor.formatCode(finalCode);
+            System.out.println(finalfinalCode);
         } catch (Exception e){
             System.err.print(e.getMessage());
             //e.printStackTrace();
