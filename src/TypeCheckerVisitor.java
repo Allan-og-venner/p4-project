@@ -641,7 +641,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ClassAccessNode node) {
         String objectType = visit(node.getObject());
-        System.out.println(objectType);
+        //System.out.println(objectType);
         for (ValueNode currentField : node.getValue()) {
             if (objectType.startsWith("Class ")) {
                 objectType = objectType.replaceFirst("^Class ", "");
@@ -795,7 +795,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
         }
         table.addValue( visit(node.getModi()) + identifier,type);
-        node.setType(new TypeNode("void"));
+        node.setType(new TypeNode(type));
         return "void";
     }
 

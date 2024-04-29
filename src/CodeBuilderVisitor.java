@@ -15,7 +15,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
-
+    private String currentClass = "";
     public String formatCode(String unformattedCode) {
 
         /*
@@ -106,20 +106,21 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     public String handleType(String nonRealType){
         String[] splitType;
-        String newType;
+        String newType =nonRealType;
         if (nonRealType.startsWith("array ")){
             splitType = nonRealType.split("^array ");
             nonRealType = splitType[1];
+            switch (nonRealType) {
+                case "int" -> newType="Integer";
+                case "float" -> newType="Float";
+                case "string" -> newType="String";
+                default -> newType=nonRealType;
+            }
         }
 
 
 
-         switch (nonRealType) {
-            case "int" -> newType="Integer";
-            case "float" -> newType="Float";
-            case "string" -> newType="String";
-            default -> newType=nonRealType;
-        }
+
          return newType;
     }
 
@@ -141,7 +142,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         prog.append("public class Main{");
 
         String setUp = visit(node);
-        System.out.println(setUp);
         for (String var : variables){
             prog.append(var);
         }
@@ -264,6 +264,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             var.append(";");
         }
+
+        if(!Objects.equals(currentClass, "")){
+            classFields.get(currentClass).add(node.getID().getText());
+        }
+
         if (scopeCount == 0){
             variables.add(var.toString());
             return "";
@@ -282,7 +287,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             for(String param : parameters.split(",")) {
                 vars.add(paramToVar(param));
             }
-            System.out.println(vars);
+            //System.out.println(vars);
             ClassStringBuilder actionMenu = classes.get("ActionMenu");
             actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {" + "return " + visit(node.getExpr()) + ";}");
             String allowMeth = "void allowAction(String action, " + parameters + ") {";
@@ -614,7 +619,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(CardTypeNode node) {
         scopeCount++;
         String className = "Card" + node.getID();
-        System.out.println(className);
+        //System.out.println(className);
         if (classes.get(className) != null) {
             throw new DuplicateDefinitionException(node.getLineNumber(), "Card");
         }
