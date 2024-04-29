@@ -14,7 +14,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
-    private int tempCounter = 0;
 
     public String formatCode(String unformattedCode) {
 
@@ -437,7 +436,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ArrayAccessNode node) {
-        System.out.println("array access");
         StringBuilder ArrayAccessString = new StringBuilder();
         ArrayAccessString.append(visit(node.getArray()))
                 .append("[")
@@ -566,7 +564,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             return fParamsString.toString();
         }
-        System.out.println("AFter booty");
         return "";
     }
 
