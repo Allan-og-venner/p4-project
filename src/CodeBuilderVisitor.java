@@ -138,7 +138,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         //Make action class
 
         //Make main
-        prog.append("public class Main{\n\n");
+        prog.append("public class Main{");
 
         String setUp = visit(node);
         System.out.println(setUp);
@@ -147,16 +147,15 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
 
 
-        prog.append("\n");
-        prog.append(gameFunction).append("\n");
-        prog.append(endFunction).append("\n");
+        prog.append(gameFunction);
+        prog.append(endFunction);
 
         for (String function : functions){
-            prog.append(function).append("\n");
+            prog.append(function);
         }
 
 
-        prog.append("public static void main(String[] args){\n")
+        prog.append("public static void main(String[] args){")
                 .append(setUp)
                 .append("while(true){").append("this.gameFunction()}")
                 .append("this.endFunction();")
@@ -169,7 +168,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
 
         for (String i : classes.keySet()){
-            prog.append(classes.get(i).close()).append("\n");
+            prog.append(classes.get(i).close()).append("");
         }
 
         return prog.toString();
@@ -254,7 +253,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     var.append(" = ")
                         .append(visit(node.getValue()));
                 }
-                var.append(";\n");
+                var.append(";");
         } else {
             var.append(visit(node.getType()))
                 .append(" ")
@@ -285,16 +284,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             System.out.println(vars);
             ClassStringBuilder actionMenu = classes.get("ActionMenu");
-            actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {\n" + "return " + visit(node.getExpr()) + ";\n}");
+            actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {" + "return " + visit(node.getExpr()) + ";}");
             String allowMeth = "void allowAction(String action, " + parameters + ") {";
             String disallowMeth = "void disallowAction(String action, " + parameters + ") {";
             if (!actionMenu.getBlock().toString().contains(allowMeth)) {
                 actionMenu
                         .addToBlock(allowMeth)
-                        .addToBlock("if (action.equals(\"" + actionName + "\")) {\n" +
-                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));\n" +
-                        "   indeces.add(action + " + String.join(" + ", vars) + ");\n" +
-                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "\n" +
+                        .addToBlock("if (action.equals(\"" + actionName + "\")) {" +
+                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
+                        "   indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "   allowedActions.add(() -> " + visit(node.getBlock()) +
                         "}");
                 actionMenu.addToBlock(disallowMeth)
                         .addToBlock("int index = indeces.indexOf(action + " + String.join(" + ", vars)+ ");" +
@@ -307,10 +306,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 actionMenu
                     .getBlock()
                     .insert(actionMenu.getBlock().indexOf(allowMeth) + allowMeth.length(),
-                    "\nif (action.equals(\"" + actionName + "\")) {\n" +
-                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));\n" +
-                        "   indeces.add(action + " + String.join(" + ", vars) + ");\n" +
-                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "\n" +
+                    "if (action.equals(\"" + actionName + "\")) {" +
+                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
+                        "   indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "" +
                         "}");
             }
 
@@ -325,7 +324,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append(") {");
             scopeCount++;
             function.append(visit(node.getBlock()))
-                    .append("\n}");
+                    .append("}");
             scopeCount--;
         }
         if (Objects.equals(node.getFunction().getText(), "game")){
@@ -354,10 +353,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append(visit(node.getIterator()))
                 .append(" : ")
                 .append(visit(node.getArray()))
-                .append(") {\n");
+                .append(") {");
         scopeCount++;
         forString.append(visit(node.getBlock()))
-                .append("\n}");
+                .append("}");
         scopeCount--;
         return forString.toString();
     }
@@ -367,10 +366,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         StringBuilder whileString = new StringBuilder();
         whileString.append("while(")
                 .append(visit(node.getCondition()))
-                .append(") {\n");
+                .append(") {");
         scopeCount++;
         whileString.append(visit(node.getBlock()))
-                .append("\n}");
+                .append("}");
         scopeCount--;
         return whileString.toString();
     }
@@ -381,10 +380,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
         ifString.append("if(")
                 .append(visit(node.getCondition()))
-                .append(") {\n");
+                .append(") {");
         scopeCount++;
         ifString.append(visit(node.getBlock()))
-                .append("\n}");
+                .append("}");
         scopeCount--;
         return ifString.toString();
     }
@@ -406,10 +405,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayNode node) {
         StringBuilder temp = new StringBuilder();
-        temp.append("new Arraylist<>(){{\n");
+        temp.append("new Arraylist<>(){{");
         String[] adds = visit(node.getInnerNode()).split(", ");
         for (String add : adds) {
-            temp.append("add(").append(add).append(");\n");
+            temp.append("add(").append(add).append(");");
         }
         temp.append("}}");
 
@@ -610,42 +609,39 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public CodeBuilderVisitor() {
         functions.add("void print(String input) {System.out.print(input);}");
         functions.add("int strlen(String input) {return input.length();}");
+        classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
+        classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
 
-        classes.put("InterfaceCard",new ClassStringBuilder().addToBlock("interface InterfaceCard {"));
-        classes.put("Card",new ClassStringBuilder().addStart("Card implements InterfaceCard").addToBlock("String ID;"));
-        classes.put("Action",new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
-
-        classes.put("ActionMenu",new ClassStringBuilder().addStart("ActionMenu")
+        classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
-                "private ArrayList<String> indeces = new ArrayList<String>();\n" +
-                "private ArrayList<String> allowedNames = new ArrayList<String>();\n" +
+                "private ArrayList<String> indeces = new ArrayList<String>();" +
+                "private ArrayList<String> allowedNames = new ArrayList<String>();" +
                 "private ArrayList<Action> allowedActions = new ArrayList<Action>();")
         .addToBlock(
-                "public void displayAllowedActions() {\n" +
-                "    for (int i = 0; i < allowedNames.size(); i++) {\n" +
-                "        System.out.println(i+1 + \" - \" + allowedNames.get(i));\n" +
-                "    }\n" +
-                "    int choice = choice(allowedNames.size());\n" +
-                "    allowedActions.get(choice-1).act();\n" +
+                "public void displayAllowedActions() {" +
+                "for (int i = 0; i < allowedNames.size(); i++) {" +
+                "System.out.println(i+1 + \" - \" + allowedNames.get(i));" +
+                "}" +
+                "int choice = choice(allowedNames.size());" +
+                "allowedActions.get(choice-1).act();" +
                 "}")
         .addToBlock(
-                "public int choice(int choices){\n" +
-                "   int choice = -1;\n" +
-                "   \n" +
-                "   while (choice < 1 || choice > choices) {\n" +
-                "       Scanner sc = new Scanner(System.in);\n" +
-                "       while (!sc.hasNextInt()){\n" +
-                "           sc.next();\n" +
-                "           System.out.print(\"Not a number\\n\");\n" +
-                "       }\n" +
-                "       choice = sc.nextInt();\n" +
-                "       if (choice > choices){\n" +
-                "           System.out.print(\"Number too big, try again\\n\");\n" +
-                "       } else if (choice < 1){\n" +
-                "           System.out.print(\"Number too small, try again\\n\");\n" +
-                "       }\n" +
-                "   }\n" +
-                "   return choice;\n" +
+                "public int choice(int choices){" +
+                "int choice = -1;" +
+                "while (choice < 1 || choice > choices) {" +
+                "Scanner sc = new Scanner(System.in);" +
+                "while (!sc.hasNextInt()){" +
+                "sc.next();" +
+                "System.out.print(\"Not a number\\n\");" +
+                "}" +
+                "choice = sc.nextInt();" +
+                "if (choice > choices){" +
+                "System.out.print(\"Number too big, try again\\n\");" +
+                "} else if (choice < 1){" +
+                "System.out.print(\"Number too small, try again\\n\");" +
+                "}" +
+                "}" +
+                "return choice;" +
                 "}"));
     }
 
