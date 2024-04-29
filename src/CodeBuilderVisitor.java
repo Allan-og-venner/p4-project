@@ -11,6 +11,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private ArrayList<String> actions = new ArrayList<>();
     private ArrayList<String> variables = new ArrayList<>();
     private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
+    private Hashtable<String, ArrayList<String>> classFields = new Hashtable<>();
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
@@ -340,8 +341,50 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ClassDNode node) {
-        //#lavet #done #ladOsKøreDet
-        return "";
+        StringBuilder classD = new StringBuilder();
+        classD.append("class ").append(visit(node.getName()));
+        if (node.getSuperClass() != null){
+            classD.append(" extends ").append(visit(node.getSuperClass()));
+        }
+
+        classD.append("{\n");
+        scopeCount++;
+        String tmp = currentClass;
+        currentClass = visit(node.getName());
+        classFields.put(currentClass, new ArrayList<>());
+        classD.append(visit(node.getBlock()));
+        System.out.println(classFields.get(currentClass));
+        scopeCount--;
+        StringBuilder instancefields = new StringBuilder();
+        for (String instancefield: classFields.get(currentClass)){
+
+            if(!instancefields.isEmpty()) {
+                instancefields.append(" && ");
+            }
+            instancefields.append("this." + instancefield +".equals((("+ visit(node.getName()).toString() + ") other)." + instancefield + ")");
+        }
+        System.out.println(instancefields);
+
+        if (!classFields.get(currentClass).isEmpty()) {
+            classD.append("\n public boolean equals(Object other) {\n" +
+                    "        if (other.getClass().equals(this.getClass())) {\n");
+
+            classD.append("            return (" + instancefields + ");\n" +
+                    "        }\n" +
+                    "        return false;\n" +
+                    "    }");
+        } else {
+            classD.append("\n public boolean equals(Object other) {\n" +
+                    "        if (other.getClass().equals(this.getClass())) {\n");
+
+            classD.append("            return true;\n" +
+                    "        }\n" +
+                    "        return false;\n" +
+                    "    }");
+        }
+
+        currentClass = tmp;
+        return classD.toString();
     }
 
     @Override
