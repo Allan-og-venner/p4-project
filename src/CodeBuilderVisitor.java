@@ -73,10 +73,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
         prog.append("public static void main(String[] args){\n")
                 .append(setUp)
-                .append("while(true){\n").append("this.gameFunction()\n}")
-                .append("\nthis.endFunction();")
-                .append("\n}\n")
-                .append("}");
+                .append("while(true){").append("this.gameFunction()}")
+                .append("this.endFunction();")
+                .append("}")
+                .append("}}");
         if (gameFunction == null){
             throw new AlreadyDefinedFunctionException("Game");
         } else if (endFunction == null) {
