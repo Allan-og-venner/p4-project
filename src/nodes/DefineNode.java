@@ -1,7 +1,7 @@
 package nodes;
 
 public class DefineNode extends DeclarationNode {
-   private ModifierNode Modi;
+    private ModifierNode Modi;
     private IdentifierNode ID;
     private ExpressionNode Value;
     private boolean isArray = false;

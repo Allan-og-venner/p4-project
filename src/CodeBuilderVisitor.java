@@ -15,92 +15,79 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String endFunction;
     private int scopeCount;
 
+    private boolean peekNextNonWhitespaceCharIs(String source, int startPos, char expected) {
+        int pos = startPos;
+        while (pos < source.length() && Character.isWhitespace(source.charAt(pos))) {
+            pos++;
+        }
+        return pos < source.length() && source.charAt(pos) == expected;
+    }
+
     public String formatCode(String unformattedCode) {
-
-        /*
-        unformattedCode = unformattedCode.replaceAll("\n","");
-
-        int indentation = 0;
-
-        StringBuilder chars = new StringBuilder();
-        for (char c : unformattedCode.toCharArray()) {
-            chars.append(c);
-            if (c == '{'){
-                indentation++;
-                chars.append('\n');
-                for (int i = 0; i < indentation; i++) {
-                    chars.append('\t');
-                }
-            }
-            if (c == '}') {
-                indentation--;
-                chars.append('\n');
-                for (int i = 0; i < indentation; i++) {
-                    chars.append('\t');
-                }
-            }
-            if (c == ';') {
-                chars.append('\n');
-                for (int i = 0; i < indentation; i++) {
-                    chars.append('\t');
-                }
-            }
-        }
-
-        return chars.toString();
-        */
-        
-        int indentation = 0;
-        int inParen = 0;
         StringBuilder formattedCode = new StringBuilder();
+        int indentation = 0;
+        boolean isNewLineNeeded = false;
+        boolean inForLoopDeclaration = false;
+        int parenthesesDepth = 0;
 
-        for (char c : unformattedCode.toCharArray()) {
-            if(inParen > 0) {
-                if(c == ')') {
-                    inParen--;
-                }
-                if(c == '(') {
-                    inParen++;
-                }
-                formattedCode.append(c);
-            } else {
-                switch (c) {
-                    case '{':
-                        formattedCode.append(c);
-                        formattedCode.append('\n');
-                        indentation++;
-                        for (int i = 0; i < indentation; i++) {
-                            formattedCode.append('\t');
-                        }
-                        break;
-                    case '}':
-                        indentation--;
-                        for (int i = 0; i < indentation; i++) {
-                            formattedCode.append('\t');
-                        }
-                        formattedCode.append(c);
-                        formattedCode.append('\n');
-                        break;
-                    case ';':
-                        formattedCode.append(c);
-                        formattedCode.append('\n');
-                        for (int i = 0; i < indentation; i++) {
-                            formattedCode.append('\t');
-                        }
-                        break;
-                    case '(':
-                        formattedCode.append(c);
-                        inParen++;
-                        break;
-                    default:
-                        formattedCode.append(c);
-                        break;
+        char[] codeChars = unformattedCode.toCharArray();
+        for (int i = 0; i < codeChars.length; i++) {
+            char c = codeChars[i];
+
+            if (!inForLoopDeclaration && i + 3 < codeChars.length && new String(codeChars, i, 3).equals("for")) {
+                if (!Character.isJavaIdentifierPart(codeChars[i - 1])) {
+                    inForLoopDeclaration = true;
                 }
             }
+
+            if (isNewLineNeeded && !inForLoopDeclaration && c != '}' && c != ';' && !Character.isWhitespace(c)) {
+                formattedCode.append('\n');
+                formattedCode.append("\t".repeat(Math.max(0, indentation)));
+                isNewLineNeeded = false;
+            }
+
+            switch (c) {
+                case '{':
+                    formattedCode.append(c).append('\n');
+                    indentation++;
+                    formattedCode.append("\t".repeat(Math.max(0, indentation)));
+                    break;
+                case '}':
+                    indentation--;
+                    formattedCode.append('\n');
+                    formattedCode.append("\t".repeat(Math.max(0, indentation)));
+                    formattedCode.append(c);
+                    if (!peekNextNonWhitespaceCharIs(unformattedCode, i + 1, '}')) {
+                        isNewLineNeeded = true;
+                    }
+                    break;
+                case ';':
+                    formattedCode.append(c);
+                    if (!inForLoopDeclaration) {
+                        isNewLineNeeded = true;
+                    }
+                    break;
+                case '(':
+                    if (inForLoopDeclaration) {
+                        parenthesesDepth++;
+                    }
+                    formattedCode.append(c);
+                    break;
+                case ')':
+                    if (inForLoopDeclaration) {
+                        parenthesesDepth--;
+                        if (parenthesesDepth == 0) {
+                            inForLoopDeclaration = false;
+                        }
+                    }
+                    formattedCode.append(c);
+                    break;
+                default:
+                    formattedCode.append(c);
+                    break;
+            }
         }
-
         return formattedCode.toString().replaceAll("@Override", "@Override\n");
-
     }
 
     public String handleType(String nonRealType){
@@ -137,7 +124,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         //Make action class
 
         //Make main
-        prog.append("public class Main{");
+        prog.append("public class Main {");
 
         String setUp = visit(node);
         System.out.println(setUp);
@@ -154,13 +141,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
 
 
-        prog.append("public static void main(String[] args){")
+        prog.append("public static void main(String[] args) {")
                 .append(setUp)
-                .append("while(true){").append("this.gameFunction()}")
+                .append("while (true) {").append("this.gameFunction() }")
                 .append("this.endFunction();")
-                .append("}")
                 .append("}}");
-        if (gameFunction == null){
+        if (gameFunction == null) {
             throw new AlreadyDefinedFunctionException("Game");
         } else if (endFunction == null) {
             throw new AlreadyDefinedFunctionException("End");
@@ -245,7 +231,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
         var.append(" ");
         if (node.isArray()){
-            var.append("Arraylist<").append(visit(node.getType()))
+            var.append("ArrayList<").append(visit(node.getType()))
                 .append("> ")
                 .append(node.getID().getText());
                 if (node.getValue() != null) {
@@ -274,14 +260,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(FunctionDNode node) {
         StringBuilder function = new StringBuilder();
-        if (node.getIsAction()){
+        if (node.getIsAction()) {
             String parameters = visit(node.getParameter());
             String actionName = node.getFunction().getText();
             ArrayList<String> vars = new ArrayList<>();
-            for(String param : parameters.split(",")) {
+            for (String param : parameters.split(",")) {
                 vars.add(paramToVar(param));
             }
-            System.out.println(vars);
+            // System.out.println(vars);
             ClassStringBuilder actionMenu = classes.get("ActionMenu");
             actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {" + "return " + visit(node.getExpr()) + ";}");
             String allowMeth = "void allowAction(String action, " + parameters + ") {";
@@ -290,25 +276,25 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 actionMenu
                         .addToBlock(allowMeth)
                         .addToBlock("if (action.equals(\"" + actionName + "\")) {" +
-                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "   indeces.add(action + " + String.join(" + ", vars) + ");" +
-                        "   allowedActions.add(() -> " + visit(node.getBlock()) +
+                        "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
+                        "indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "allowedActions.add(() -> " + visit(node.getBlock()) +
                         "}");
                 actionMenu.addToBlock(disallowMeth)
                         .addToBlock("int index = indeces.indexOf(action + " + String.join(" + ", vars)+ ");" +
-                                "        if (index >= 0) {" +
-                                "            allowedActions.remove(index);" +
-                                "            allowedNames.remove(index);" +
-                                "            indeces.remove(index);" +
-                                "        }");
+                                "if (index >= 0) {" +
+                                "allowedActions.remove(index);" +
+                                "allowedNames.remove(index);" +
+                                "indeces.remove(index);" +
+                                "}");
             } else {
                 actionMenu
                     .getBlock()
                     .insert(actionMenu.getBlock().indexOf(allowMeth) + allowMeth.length(),
                     "if (action.equals(\"" + actionName + "\")) {" +
-                        "   allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "   indeces.add(action + " + String.join(" + ", vars) + ");" +
-                        "   allowedActions.add(() -> " + visit(node.getBlock()) + "" +
+                        "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
+                        "indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "allowedActions.add(() -> " + visit(node.getBlock()) +
                         "}");
             }
 
@@ -326,9 +312,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append("}");
             scopeCount--;
         }
-        if (Objects.equals(node.getFunction().getText(), "game")){
+        if (Objects.equals(node.getFunction().getText(), "game")) {
             gameFunction = function.toString();
-        } else if (Objects.equals(node.getFunction().getText(), "end")){
+        } else if (Objects.equals(node.getFunction().getText(), "end")) {
             endFunction = function.toString();
         } else if (scopeCount == 0){
             functions.add(function.toString());
@@ -363,7 +349,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(WhileNode node) {
         StringBuilder whileString = new StringBuilder();
-        whileString.append("while(")
+        whileString.append("while (")
                 .append(visit(node.getCondition()))
                 .append(") {");
         scopeCount++;
@@ -377,7 +363,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(IfNode node) {
         StringBuilder ifString = new StringBuilder();
 
-        ifString.append("if(")
+        ifString.append("if (")
                 .append(visit(node.getCondition()))
                 .append(") {");
         scopeCount++;
@@ -404,7 +390,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayNode node) {
         StringBuilder temp = new StringBuilder();
-        temp.append("new Arraylist<>(){{");
+        temp.append("new ArrayList<>() {{");
         String[] adds = visit(node.getInnerNode()).split(", ");
         for (String add : adds) {
             temp.append("add(").append(add).append(");");
@@ -627,14 +613,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "int choice = -1;" +
                 "while (choice < 1 || choice > choices) {" +
                 "Scanner sc = new Scanner(System.in);" +
-                "while (!sc.hasNextInt()){" +
+                "while (!sc.hasNextInt()) {" +
                 "sc.next();" +
                 "System.out.print(\"Not a number\\n\");" +
                 "}" +
                 "choice = sc.nextInt();" +
-                "if (choice > choices){" +
+                "if (choice > choices) {" +
                 "System.out.print(\"Number too big, try again\\n\");" +
-                "} else if (choice < 1){" +
+                "} else if (choice < 1) {" +
                 "System.out.print(\"Number too small, try again\\n\");" +
                 "}" +
                 "}" +

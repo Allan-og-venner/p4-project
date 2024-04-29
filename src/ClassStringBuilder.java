@@ -4,7 +4,7 @@ public class ClassStringBuilder {
     private StringBuilder block = new StringBuilder();
 
     public ClassStringBuilder addStart(String name) {
-        start = "class " + name + "{";
+        start = "class " + name + " {";
         return this;
     }
 
@@ -14,7 +14,7 @@ public class ClassStringBuilder {
     }
 
     public ClassStringBuilder addToBlock(String string) {
-        block.append(string).append("\n");
+        block.append(string);
         return this;
     }
 
@@ -23,7 +23,7 @@ public class ClassStringBuilder {
     }
 
     public String close() {
-        return (!(start == null) ? start : "") + "\n" + block + "\n" + end;
+        return (!(start == null) ? start : "") + block + end;
     }
 
 }
