@@ -4,17 +4,29 @@ import nodes.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-
+/**
+ * CodeBuilderVisitor is a visitor class that visits the AST and builds Java code.
+ * It has methods to visit different nodes in the AST.
+ * It builds the code using a StringBuilder.
+ * */
 public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     private ArrayList<String> functions = new ArrayList<>();
     private ArrayList<String> actions = new ArrayList<>();
     private ArrayList<String> variables = new ArrayList<>();
     private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
+    private Hashtable<String, ArrayList<String>> classFields = new Hashtable<>();
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
-
+    private String currentClass = "";
+    /**
+     * FormatCode is a method that takes unformatted code as input and returns formatted code.
+     * It is used to ensure correct and uniform formatting
+     * @param unformattedCode
+     * @return formattedCode
+     */
+    
     private boolean peekNextNonWhitespaceCharIs(String source, int startPos, char expected) {
         int pos = startPos;
         while (pos < source.length() && Character.isWhitespace(source.charAt(pos))) {
@@ -22,7 +34,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
         return pos < source.length() && source.charAt(pos) == expected;
     }
-
     public String formatCode(String unformattedCode) {
         StringBuilder formattedCode = new StringBuilder();
         int indentation = 0;
@@ -90,32 +101,48 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         return formattedCode.toString().replaceAll("@Override", "@Override\n");
     }
 
+    /**
+     * handleType is a method that takes a nonRealType as input and returns a real type.
+     * It is used to handle the different types for arrays because the syntax for int, float, string is different in
+     * Java and needs to be converted.
+     * @param nonRealType the type to be converted
+     * @return newType the converted type
+     */
     public String handleType(String nonRealType){
         String[] splitType;
-        String newType;
+        String newType =nonRealType;
         if (nonRealType.startsWith("array ")){
             splitType = nonRealType.split("^array ");
             nonRealType = splitType[1];
-        }
-
-
-
-         switch (nonRealType) {
-            case "int" -> newType="Integer";
-            case "float" -> newType="Float";
-            case "string" -> newType="String";
-            default -> newType=nonRealType;
+            switch (nonRealType) {
+                case "int" -> newType="Integer";
+                case "float" -> newType="Float";
+                case "string" -> newType="String";
+                default -> newType=nonRealType;
+            }
         }
          return newType;
     }
 
+    /**
+     * Used in functionDNode to convert parameters to variables:
+     * only save the parameters name and not the datatype in order to use
+     * it in the function body
+     * @param param
+     * @return param but converted to a variable with regex
+     */
     public String paramToVar(String param) {
         return param
                 .replaceFirst("^.* ", "")
                 .replaceAll("[\\[\\]]", "");
     }
 
-
+    /**
+     * visitStart is a method that visits the start node of the AST.
+     * It is used to start the visitation of the AST.
+     * @param node the start node
+     * @return the code built from the AST
+     */
     public String visitStart(BlockNode node) {
 
         StringBuilder prog = new StringBuilder();
@@ -127,7 +154,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         prog.append("public class Main {");
 
         String setUp = visit(node);
-        System.out.println(setUp);
         for (String var : variables){
             prog.append(var);
         }
@@ -146,12 +172,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append("while (true) {").append("this.gameFunction() }")
                 .append("this.endFunction();")
                 .append("}}");
+        //If no game and end functions declared, throw exception
         if (gameFunction == null) {
             throw new AlreadyDefinedFunctionException("Game");
         } else if (endFunction == null) {
             throw new AlreadyDefinedFunctionException("End");
         }
 
+        //what does this do exactly? mvh meret
         for (String i : classes.keySet()){
             prog.append(classes.get(i).close()).append("");
         }
@@ -159,6 +187,15 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         return prog.toString();
 
     }
+
+    /**
+     * Visit is a method that visits a node in the AST.
+     * It is used to visit the different nodes in the AST.
+     * The following visit methods are used to then implement the behaviour of the
+     * different nodes in the AST.
+     * @param node the node to be visited
+     * @return the code built from the node
+     */
     @Override
     public String visit(BlockNode node) {
         //visit Statement node
@@ -224,6 +261,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(DefineNode node) {
         StringBuilder var = new StringBuilder();
+        //scopeCount is used to determine which scope is currently being visited
         if (scopeCount == 0) {
             var.append("static");
         } else {
@@ -249,6 +287,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             var.append(";");
         }
+
+        if(!Objects.equals(currentClass, "")){
+            classFields.get(currentClass).add(node.getID().getText());
+        }
+
         if (scopeCount == 0){
             variables.add(var.toString());
             return "";
@@ -326,8 +369,50 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ClassDNode node) {
-        //#lavet #done #ladOsKøreDet
-        return "";
+        StringBuilder classD = new StringBuilder();
+        classD.append("class ").append(visit(node.getName()));
+        if (node.getSuperClass() != null){
+            classD.append(" extends ").append(visit(node.getSuperClass()));
+        }
+
+        classD.append("{\n");
+        scopeCount++;
+        String tmp = currentClass;
+        currentClass = visit(node.getName());
+        classFields.put(currentClass, new ArrayList<>());
+        classD.append(visit(node.getBlock()));
+        System.out.println(classFields.get(currentClass));
+        scopeCount--;
+        StringBuilder instancefields = new StringBuilder();
+        for (String instancefield: classFields.get(currentClass)){
+
+            if(!instancefields.isEmpty()) {
+                instancefields.append(" && ");
+            }
+            instancefields.append("this." + instancefield +".equals((("+ visit(node.getName()).toString() + ") other)." + instancefield + ")");
+        }
+        System.out.println(instancefields);
+
+        if (!classFields.get(currentClass).isEmpty()) {
+            classD.append("\n public boolean equals(Object other) {\n" +
+                    "        if (other.getClass().equals(this.getClass())) {\n");
+
+            classD.append("            return (" + instancefields + ");\n" +
+                    "        }\n" +
+                    "        return false;\n" +
+                    "    }");
+        } else {
+            classD.append("\n public boolean equals(Object other) {\n" +
+                    "        if (other.getClass().equals(this.getClass())) {\n");
+
+            classD.append("            return true;\n" +
+                    "        }\n" +
+                    "        return false;\n" +
+                    "    }");
+        }
+
+        currentClass = tmp;
+        return classD.toString();
     }
 
     @Override
@@ -387,6 +472,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ContinueNode node) {
         return "continue";
     }
+
+    /**
+     * When visiting a node of type ArrayNode, the method will create a new ArrayList and add the inner nodes to it.
+     * This is done in order to convert from the custom array type to the way arrays are typed in Java
+     * @param node
+     * @return
+     */
     @Override
     public String visit(ArrayNode node) {
         StringBuilder temp = new StringBuilder();
@@ -430,7 +522,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         return ArrayAccessString.toString();
     }
 
-    //JEG VED DET IKKE LIGE
     @Override
     public String visit(FunctionCallNode node) {
         StringBuilder funcCall = new StringBuilder();
@@ -553,6 +644,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         return "";
     }
 
+    /**
+     * The card type is used to specify a card in the game.
+     * The syntax for defining a card is as follows:
+     * cardType(ID = "skip"
+     *     : onPlayed(Player player) {
+     *         "do something";
+     *     })
+     * @param node
+     * @return
+     */
     @Override
     public String visit(CardTypeNode node) {
         scopeCount++;
