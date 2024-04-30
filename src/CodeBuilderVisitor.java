@@ -15,7 +15,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private ArrayList<String> actions = new ArrayList<>();
     private ArrayList<String> variables = new ArrayList<>();
     private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
-    private Hashtable<String, ArrayList<String>> classFields = new Hashtable<>();
+    private Hashtable<String, ArrayList<Pair<String,String>>> classFields = new Hashtable<>();
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
@@ -220,7 +220,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
 
         if (!Objects.equals(currentClass, "")) {
-            classFields.get(currentClass).add(node.getID().getText());
+            classFields.get(currentClass).add(new Pair<>(node.getType().getTypeName(),node.getID().getText()));
         }
 
         if (scopeCount == 0) {
@@ -314,7 +314,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         System.out.println(classFields.get(currentClass));
         scopeCount--;
         StringBuilder instancefields = new StringBuilder();
-        for (String instancefield: classFields.get(currentClass)) {
+        String regex = "int|string|char|float";
+        for (Pair instancefield: classFields.get(currentClass)) {
             if (!instancefields.isEmpty()) {
                 instancefields.append(" && ");
             }
@@ -643,6 +644,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public CodeBuilderVisitor() {
         functions.add("void print(String input) {System.out.print(input);}");
         functions.add("int strlen(String input) {return input.length();}");
+        functions.add("public ArrayList<String> generatePlayerList(String... args) {" +
+                "ArrayList<String> players = new ArrayList<>();" +
+                "for (String arg : args) {" +
+                "players.add(arg);" +
+                "}" +
+                "return players;" +
+                "}");
         classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
         classes.put("Location",new ClassStringBuilder()

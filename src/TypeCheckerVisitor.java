@@ -1,7 +1,9 @@
 import nodes.*;
 import org.antlr.v4.codegen.model.Loop;
 import gen.*;
+import org.antlr.v4.runtime.misc.Pair;
 import java.util.*;
+
 
 
 public class TypeCheckerVisitor extends ASTVisitor<String>{
@@ -472,6 +474,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(CardTypeNode node) {
         ArrayList<String> methods = new ArrayList<>();
         ArrayList<String> fields = new ArrayList<>();
+
         String identifier = node.getIdentifier().getText();
         Hashtable<String, SymbolTable> cTable = symbolTables.peek().getCTable();
         SymbolTable cardTable = cTable.get("Card");
