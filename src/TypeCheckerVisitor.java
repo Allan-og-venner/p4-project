@@ -28,6 +28,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             }
             node.setType(new TypeNode("int"));
             return "int";
+        } else if (type1.matches("string|char") && type2.matches("string|char")){
+            node.setType(new TypeNode("string"));
+            return "string";
         }
         throw new WrongTypeException(node.getLineNumber(), "number and number", type1 + ", " + type2);
     }
