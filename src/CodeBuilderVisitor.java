@@ -130,6 +130,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(AdditionNode node) {
+        if (node.getLeft() instanceof CharNode || node.getRight() instanceof CharNode){
+            return visit(node.getLeft())+ "+" + visit(node.getRight())+ "+" + '"' ;
+        }
         return visit(node.getLeft()) + "+" + visit(node.getRight());
     }
 
@@ -502,6 +505,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(NOTEQNode node) {
+        if ((node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode) ||
+                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)){
+            return "!(" + visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + "))";
+        } else if(!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode ||
+                (!(node.getLeft() instanceof ClassAccessNode) && node.getRight() instanceof ClassAccessNode)){
+            return "!(" + visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + "))";
+        }
         return visit(node.getLeft()) + "!=" + visit(node.getRight());
     }
 
@@ -517,6 +527,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(EQEQNode node) {
+
+        if (node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode ||
+                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)){
+            return visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + ")";
+        } else if(!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode){
+            return visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + ")";
+        }
         return visit(node.getLeft()) + "==" + visit(node.getRight());
     }
 
