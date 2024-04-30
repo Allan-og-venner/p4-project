@@ -618,6 +618,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         return "";
     }
 
+    /**
+     * Constructor for all the built in classes that are standard part of set up
+     */
     public CodeBuilderVisitor() {
         functions.add("void print(String input) {System.out.print(input);}");
         functions.add("int strlen(String input) {return input.length();}");
