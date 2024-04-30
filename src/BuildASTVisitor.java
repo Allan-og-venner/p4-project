@@ -57,6 +57,10 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             DeclarationNode node = visitDecl(context.decl());
             node.getLineNumberFromContext(context);
             return node;
+        } else if (context.call() != null) {
+            FunctionCallNode node = (FunctionCallNode) visitCall(context.call());
+            node.getLineNumberFromContext(context);
+            return node;
         } else if (context.assign() != null) {
             AssignmentNode node = visitAssign(context.assign());
             node.getLineNumberFromContext(context);
