@@ -1,28 +1,10 @@
 
-
-
-
-int a[] = {1,2,3};
-
-a[2];
-
-
-
-
-
-
-
-action play(Player player, Card card) -> void : "play " {
-    print("playing");
-}
-
-action discard(Player player, Card card) -> void : "discard" {
-    print("discarding");
-}
-
-action shoot(Player player1, Player player2) -> void : "shoot" {
-    print("shooting");
-}
+cardType(ID = "plus"
+    : int amount
+    : onPlayed(Player player) {
+        amount;
+    }
+)
 
 
 func game() -> void {
@@ -30,5 +12,5 @@ func game() -> void {
 }
 
 func end() -> void {
-    "heeej";
+    print("heeej");
 }
