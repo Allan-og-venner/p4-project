@@ -10,6 +10,7 @@ block: statement
 /* Statement rules*/
 statement: decl
     | call SEMICOLON
+    | method SEMICOLON
     | assign SEMICOLON
     | command SEMICOLON
     | control;
@@ -20,7 +21,7 @@ decl: defin SEMICOLON
 defin: modifier type IDENTIFIER (L_BRACKET R_BRACKET)? (EQ expr)?;
 assign: value EQ expr;
 
-cardType : KEY_CARDTYPE L_PAREN IDENTIFIER EQ STRING (COLON (cardMethod| cardField))* R_PAREN;
+cardType : KEY_CARDTYPE L_PAREN (IDENTIFIER EQ STRING)? (COLON (cardMethod| cardField))* R_PAREN;
 cardMethod : IDENTIFIER L_PAREN fparams? R_PAREN L_CBRACKET block R_CBRACKET;
 cardField : type IDENTIFIER;
 
@@ -102,6 +103,7 @@ arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
 classAccess: accessibleObject( PERIOD accessibleValue)*;
+method: accessibleObject(PERIOD accessibleValue)* PERIOD call;
 accessibleValue: call
     | IDENTIFIER;
 

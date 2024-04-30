@@ -587,21 +587,27 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      *         "do something";
      *     })
      * @param node
-     * @return
+     * @return ""
      */
     @Override
     public String visit(CardTypeNode node) {
         currentStatement = node;
         scopeCount++;
-        String className = "Card" + node.getID();
-        System.out.println(className);
-        if (classes.get(className) != null) {
-            throw new DuplicateDefinitionException(node.getLineNumber(), "Card");
+        String className = "";
+        ClassStringBuilder classText = null;
+        if (node.getIdentifier() != null) {
+            className = "Card" + node.getID();
+            System.out.println(className);
+            if (classes.get(className) != null) {
+                throw new DuplicateDefinitionException(node.getLineNumber(), "Card");
+            }
+            classText = new ClassStringBuilder().addStart(className, "Card");
         }
-        ClassStringBuilder classText = new ClassStringBuilder().addStart(className, "Card");
-
         for (DefineNode field : node.getFields()) {
-            classText.addToBlock("public " + visit(field));
+            String fieldText = visit(field);
+            if(classes.get("Card").getBlock().indexOf(fieldText) == -1) {
+                classes.get("Card").addToBlock(visit(field));
+            }
         }
         for (FunctionDNode method : node.getMethods()) {
             String methName = "public "
@@ -609,18 +615,28 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     + method.getReturnType().getTypeName() + " "
                     + method.getFunction().getText()
                     + "(" + visit(method.getParameter()) + ")";
-            if (!classes.get("Card").getBlock().toString().contains(methName)) {
-                FunctionDNode emptyMeth = new FunctionDNode();
-                emptyMeth.setModifier(method.getModifier());
-                emptyMeth.setReturnType(method.getReturnType());
-                emptyMeth.setFunction(method.getFunction());
-                emptyMeth.setParameter(method.getParameter());
-                emptyMeth.setBlock(new BlockNode());
-                classes.get("Card").addToBlock(visit(emptyMeth));
+            if (node.getIdentifier() != null) {
+                if (!classes.get("Card").getBlock().toString().contains(methName)) {
+                    FunctionDNode emptyMeth = new FunctionDNode();
+                    emptyMeth.setModifier(method.getModifier());
+                    emptyMeth.setReturnType(method.getReturnType());
+                    emptyMeth.setFunction(method.getFunction());
+                    emptyMeth.setParameter(method.getParameter());
+                    emptyMeth.setBlock(new BlockNode());
+                    classes.get("Card").addToBlock(visit(emptyMeth));
+                }
+                classText.addToBlock("@Override" + visit(method));
+            } else {
+                if (!classes.get("Card").getBlock().toString().contains(methName)) {
+                    classes.get("Card").addToBlock(visit(method));
+                } else {
+                    throw new DuplicateDefinitionException(node.getLineNumber(), method.getFunction().getText());
+                }
             }
-            classText.addToBlock("@Override" + visit(method));
         }
-        classes.put(className, classText);
+        if(node.getIdentifier() != null) {
+            classes.put(className, classText);
+        }
         scopeCount--;
 
         return "";

@@ -29,7 +29,7 @@ public class SymbolTable implements Cloneable {
 
         new ClassBuilder(this).addName("Card").addField("ID", "string").buildClass(tTable, cTable);
         new ClassBuilder(this).addName("Location").addField("cards", "array Card").buildClass(tTable, cTable);
-        new ClassBuilder(this).addName("Deck").addSuperClass("Location").addField("visible", "int").addMethod("shuffle", "void").addMethod("draw", "void,Location").addMethod("getTop", "Card").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Deck").addSuperClass("Location").addField("visible", "int").addMethod("shuffle", "void").addMethod("draw", "void,Location").addMethod("getTop", "Card").addMethod("add", "void,Card,int").buildClass(tTable, cTable);
         new ClassBuilder(this).addName("Hand").addSuperClass("Location").addField("player", "Player").addMethod("move", "void,int,Location").buildClass(tTable, cTable);
         new ClassBuilder(this).addName("Player").addField("hand", "Hand").addField("nextPlayer", "Player").buildClass(tTable, cTable);
 

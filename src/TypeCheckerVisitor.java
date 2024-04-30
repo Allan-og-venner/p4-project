@@ -21,16 +21,16 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(AdditionNode node) {
         String type1 = visit(node.getLeft());
         String type2 = visit(node.getRight());
-        if (type1.matches("int|float") && type2.matches("int|float")) {
+        if (type1.matches("string|char") || type2.matches("string|char")){
+            node.setType(new TypeNode("string"));
+            return "string";
+        } else if (type1.matches("int|float") && type2.matches("int|float")) {
             if (type1.equals("float") || type2.equals("float")) {
                 node.setType(new TypeNode("float"));
                 return "float";
             }
             node.setType(new TypeNode("int"));
             return "int";
-        } else if (type1.matches("string|char") && type2.matches("string|char")){
-            node.setType(new TypeNode("string"));
-            return "string";
         }
         throw new WrongTypeException(node.getLineNumber(), "number and number", type1 + ", " + type2);
     }
@@ -472,10 +472,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(CardTypeNode node) {
         ArrayList<String> methods = new ArrayList<>();
         ArrayList<String> fields = new ArrayList<>();
-        String identifier = node.getIdentifier().getText();
+
         Hashtable<String, SymbolTable> cTable = symbolTables.peek().getCTable();
         SymbolTable cardTable = cTable.get("Card");
-
         for (DefineNode field : node.getFields()) {
             String type = field.getType().getTypeName();
             String name = field.getID().getText();
