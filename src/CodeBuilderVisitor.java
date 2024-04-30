@@ -1,5 +1,6 @@
 
 import nodes.*;
+import org.antlr.v4.runtime.misc.Pair;
 import java.util.*;
 
 /**
@@ -18,6 +19,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String endFunction;
     private int scopeCount;
     private String currentClass = "";
+    private int playerAddedCalled;
 
     private StatementNode currentStatement = null;
 
@@ -72,6 +74,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         //Make action class
 
         //Make main
+        prog.append("import java.util.*;");
         prog.append("public class Main {");
 
         String setUp = visit(node);
@@ -93,9 +96,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append("}}");
         //If no game and end functions declared, throw exception
         if (gameFunction == null) {
-            throw new AlreadyDefinedFunctionException("Game");
+            throw new MissingDefinitionException("Game");
         } else if (endFunction == null) {
-            throw new AlreadyDefinedFunctionException("End");
+            throw new MissingDefinitionException("End");
+        }
+        if (playerAddedCalled == 0){
+            throw new MissingDefinitionException("Players");
         }
 
         //Loop through all classes to add a closing curly bracket and add to the program
@@ -298,7 +304,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         if (node.getSuperClass() != null) {
             classD.append(" extends ").append(visit(node.getSuperClass()));
         }
-
+        classD.append(" {");
         scopeCount++;
         String tmp = currentClass;
         currentClass = visit(node.getName());
@@ -311,7 +317,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             if (!instancefields.isEmpty()) {
                 instancefields.append(" && ");
             }
-            instancefields.append("this." + instancefield +".equals((("+ visit(node.getName()).toString() + ") other)." + instancefield + ")");
+            if (instancefield.a.toString().matches(regex)){
+                instancefields.append("this." + instancefield.b +"==(("+ visit(node.getName()) + ") other)." + instancefield.b);
+            } else {
+                instancefields.append("this." + instancefield.b +".equals((("+ visit(node.getName()) + ") other)." + instancefield.b + ")");
+            }
         }
         System.out.println(instancefields);
 
@@ -332,7 +342,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     "return false;" +
                     "}");
         }
-
+        classD.append("}");
         currentClass = tmp;
         return classD.toString();
     }
@@ -454,6 +464,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append("(")
                 .append(visit(node.getParameter()))
                 .append(");");
+
+        if (visit(node.getFunction()).equals("generatePlayerList")){playerAddedCalled++;}
 
         return funcCall.toString();
     }
@@ -583,11 +595,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      * The card type is used to specify a card in the game.
      * The syntax for defining a card is as follows:
      * cardType(ID = "skip"
-     *     : onPlayed(Player player) {
+     *     : onPlayed(Player player1) {
      *         "do something";
      *     })
-     * @param node
-     * @return ""
      */
     @Override
     public String visit(CardTypeNode node) {
@@ -650,6 +660,43 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         functions.add("int strlen(String input) {return input.length();}");
         classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
+        classes.put("Location",new ClassStringBuilder()
+                .addToBlock("interface Location {new ArrayList<Card> cards = new ArrayList<>();}"));
+        classes.put("Deck",new ClassStringBuilder().addStart("Deck","Location"));
+        classes.put("Hand",new ClassStringBuilder().addStart("Hand","Location"));
+        classes.put("PlayArea",new ClassStringBuilder().addStart("PlayArea","Location"));
+        classes.put("Player", new ClassStringBuilder().addStart("Player")
+                .addToBlock("String name;")
+                .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count){Player tmp = this.nextPlayer;" +
+                        "for (int i = 0; i < count; i++) {" +
+                        "tmp = tmp.nextPlayer;" +
+                        "}" +
+                        "return tmp;}"));
+        classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location Hand){" +
+                "Hand.cards.add(this.cards[0]);" +
+                "this.cards[0].remove;" +
+                "}")
+                .addToBlock("public Card getTop(){return this.cards[0]}")
+                .addToBlock("public void drawMany(Location Hand, int amountToDraw){" +
+                        "for(int i = 0; i < amount; i++)" +
+                        "Hand.cards.add(0, this.cards[0]);" +
+                        "this.cards[0].remove;" +
+                        "}" +
+                        "}")
+                .addToBlock("public void shuffle(){" +
+                        "Collections.shuffle(this.cards);" +
+                        "}");
+        classes.get("Hand").addToBlock("String name;")
+                .addToBlock("int maxSize;")
+                .addToBlock("Player owner;")
+                .addToBlock("public void move(int cardNum, Location moveToLocation){" +
+                        "moveToLocation.cards.add(0, this.cards[cardNum]);" +
+                        "this.cards[cardNum].remove();" +
+                        "}");
+        classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation){" +
+                "moveToLocation.cards.add(0, this.cards[cardNum]);" +
+                "this.cards[cardNum].remove();" +
+                "}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
                 "private ArrayList<String> indeces = new ArrayList<String>();" +
