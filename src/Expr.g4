@@ -9,7 +9,6 @@ block: statement
 
 /* Statement rules*/
 statement: decl
-    | expr SEMICOLON
     | assign SEMICOLON
     | command SEMICOLON
     | control;
