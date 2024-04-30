@@ -152,10 +152,6 @@ public class ExprParser extends Parser {
 			setState(68);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case NOT:
-			case PLUS:
-			case MINUS:
-			case L_PAREN:
 			case L_CBRACKET:
 			case KEY_NEW:
 			case KEY_CLASS:
@@ -290,8 +286,8 @@ public class ExprParser extends Parser {
 		public DeclContext decl() {
 			return getRuleContext(DeclContext.class,0);
 		}
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
+		public CallContext call() {
+			return getRuleContext(CallContext.class,0);
 		}
 		public TerminalNode SEMICOLON() { return getToken(ExprParser.SEMICOLON, 0); }
 		public AssignContext assign() {
@@ -340,7 +336,7 @@ public class ExprParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(80);
-				expr(0);
+				call();
 				setState(81);
 				match(SEMICOLON);
 				}
@@ -2885,7 +2881,7 @@ public class ExprParser extends Parser {
 		"HI\u0003\u0002\u0001\u0000IN\u0001\u0000\u0000\u0000JK\u0005+\u0000\u0000"+
 		"KL\u0005\u0018\u0000\u0000LN\u0003\u0002\u0001\u0000MF\u0001\u0000\u0000"+
 		"\u0000MG\u0001\u0000\u0000\u0000MJ\u0001\u0000\u0000\u0000N\u0003\u0001"+
-		"\u0000\u0000\u0000O[\u0003\u0006\u0003\u0000PQ\u0003$\u0012\u0000QR\u0005"+
+		"\u0000\u0000\u0000O[\u0003\u0006\u0003\u0000PQ\u0003\u001a\r\u0000QR\u0005"+
 		"\u0016\u0000\u0000R[\u0001\u0000\u0000\u0000ST\u0003\n\u0005\u0000TU\u0005"+
 		"\u0016\u0000\u0000U[\u0001\u0000\u0000\u0000VW\u0003\u001c\u000e\u0000"+
 		"WX\u0005\u0016\u0000\u0000X[\u0001\u0000\u0000\u0000Y[\u0003\u001e\u000f"+
