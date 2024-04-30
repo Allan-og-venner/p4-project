@@ -243,6 +243,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(AdditionNode node) {
+        if (node.getLeft() instanceof CharNode || node.getRight() instanceof CharNode){
+            return visit(node.getLeft())+ "+" + visit(node.getRight())+ "+" + '"' ;
+        }
         return visit(node.getLeft()) + "+" + visit(node.getRight());
     }
 
