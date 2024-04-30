@@ -1,7 +1,5 @@
 
 import nodes.*;
-
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -20,13 +18,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String endFunction;
     private int scopeCount;
     private String currentClass = "";
-    /**
-     * FormatCode is a method that takes unformatted code as input and returns formatted code.
-     * It is used to ensure correct and uniform formatting
-     * @param unformattedCode
-     * @return formattedCode
-     */
-    
+
     private boolean peekNextNonWhitespaceCharIs(String source, int startPos, char expected) {
         int pos = startPos;
         while (pos < source.length() && Character.isWhitespace(source.charAt(pos))) {
@@ -34,7 +26,46 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
         return pos < source.length() && source.charAt(pos) == expected;
     }
+    /**
+     * FormatCode is a method that takes unformatted code as input and returns formatted code.
+     * It is used to ensure correct and uniform formatting
+     * @param unformattedCode String of text to be formatted correctly
+     * @return formattedCode
+     */
     public String formatCode(String unformattedCode) {
+
+        unformattedCode = unformattedCode.replaceAll("\n","");
+/*
+        int indentation = 0;
+
+        StringBuilder chars = new StringBuilder();
+        for (char c : unformattedCode.toCharArray()) {
+            chars.append(c);
+            if (c == '{'){
+                indentation++;
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+            if (c == '}') {
+                indentation--;
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+            if (c == ';') {
+                chars.append('\n');
+                for (int i = 0; i < indentation; i++) {
+                    chars.append('\t');
+                }
+            }
+        }
+
+        return chars.toString();
+        */
+
         StringBuilder formattedCode = new StringBuilder();
         int indentation = 0;
         boolean isNewLineNeeded = false;
@@ -494,11 +525,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
 
 
-    /**
-     * NOT IMPLEMENTED
-     * 2024-04-23 14:30 - meret
-     * @return  Class.cat2.cat3.Method(params?) Class.class2.cat3.cat4.methods()
-     */
+
     @Override
     public String visit(ClassAccessNode node) {
         StringBuilder ClassAccessString = new StringBuilder();
