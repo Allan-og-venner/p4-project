@@ -182,7 +182,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FloatNode node) {
-        return Double.toString(node.getValue());
+        return node.getValue()+"f";
     }
 
     @Override
@@ -671,10 +671,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      * Constructor for all the built in classes that are standard part of set up
      */
     public CodeBuilderVisitor() {
+        variables.add("static ArrayList<Player> players = new ArrayList<>();");
         functions.add("static void print(String input) {System.out.print(input);}");
         functions.add("static int strlen(String input) {return input.length();}");
-        functions.add("public static ArrayList<Player> generatePlayerList(ArrayList<String> args) {" +
-                "ArrayList<Player> players = new ArrayList<>();" +
+        functions.add("public static void generatePlayerList(ArrayList<String> args) {" +
                 "for (int i = 0; i<args.size(); i++) {" +
                 "Player tmp = new Player();" +
                 "tmp.name = args.get(i);" +
@@ -683,7 +683,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "players.get(i-1).nextPlayer = players.get(i);" +
                 "}}" +
                 "players.get(args.size()-1).nextPlayer = players.get(0);" +
-                "return players;" +
                 "}");
         classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
@@ -697,6 +696,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .addToBlock("String name;")
                 .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count) { " +
                         "Player tmp = this.nextPlayer;" +
+                        "count = (players.size()+count)%players.size();" +
                         "for (int i = 0; i < count; i++) {" +
                         "tmp = tmp.nextPlayer;" +
                         "}" +
