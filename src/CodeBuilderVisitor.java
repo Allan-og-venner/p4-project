@@ -84,15 +84,21 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
         prog.append(gameFunction);
         prog.append(endFunction);
-
+        for (String mainClass : mainClasses) {
+            prog.append(mainClass);
+        }
+        //Loop through all classes to add a closing curly bracket and add to the program
+        for (String i : classes.keySet()) {
+            prog.append(classes.get(i).close());
+        }
         for (String function : functions) {
             prog.append(function);
         }
 
         prog.append("public static void main(String[] args) {")
                 .append(setUp)
-                .append("while (true) {").append("this.game() }")
-                .append("this.end();")
+                .append("while (true) {").append("Main.game(); }")
+                .append("Main.end();")
                 .append("}}");
         //If no game and end functions declared, throw exception
         if (gameFunction == null) {
@@ -104,10 +110,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             throw new MissingDefinitionException("Players");
         }
 
-        //Loop through all classes to add a closing curly bracket and add to the program
-        for (String i : classes.keySet()) {
-            prog.append(classes.get(i).close());
-        }
+
 
         return prog.toString();
     }
@@ -234,6 +237,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(FunctionDNode node) {
         currentStatement = node;
         StringBuilder function = new StringBuilder();
+        if (scopeCount == 0) {
+            function.append("static ");
+        }
         if (node.getIsAction()) {
             String parameters = visit(node.getParameter());
             String actionName = node.getFunction().getText();
@@ -300,6 +306,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(ClassDNode node) {
         currentStatement = node;
         StringBuilder classD = new StringBuilder();
+        if (scopeCount == 0){
+            classD.append("static ");
+        }
         classD.append("class ").append(visit(node.getName()));
         if (node.getSuperClass() != null) {
             classD.append(" extends ").append(visit(node.getSuperClass()));
@@ -479,7 +488,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(AssignmentNode node) {
         currentStatement = node;
-        return visit(node.getLeft()) + "=" + visit(node.getRight());
+        return visit(node.getLeft()) + "=" + visit(node.getRight())+";";
     }
 
     @Override
@@ -561,7 +570,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(TypeNode node) {
-        return handleType(node.getTypeName());
+        String tmp = handleType(node.getTypeName());
+         if (tmp.equals("string")){
+            return "String";
+         }else {
+            return tmp;
+        }
     }
 
     @Override
@@ -663,8 +677,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "ArrayList<Player> players = new ArrayList<>();" +
                 "for (int i = 0; i<args.size(); i++) {" +
                 "Player tmp = new Player();" +
-                "tmp.name = args.get(i)" +
-                "players.add(tmp)" +
+                "tmp.name = args.get(i);" +
+                "players.add(tmp);" +
                 "if (i > 0) {" +
                 "players.get(i-1).nextPlayer = players.get(i);" +
                 "}}" +
@@ -688,14 +702,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "}" +
                         "return tmp;}"));
         classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location Hand){" +
-                "Hand.cards.add(super.cards[0]);" +
-                "super.cards[0].remove;" +
+                "Hand.cards.add(super.cards.get(0));" +
+                "super.cards.remove(0);" +
                 "}")
-                .addToBlock("public Card getTop() {return super.cards[0]}")
+                .addToBlock("public Card getTop() {return super.cards.get(0);}")
                 .addToBlock("public void drawMany(Location Hand, int amountToDraw) {" +
-                        "for (int i = 0; i < amountToDraw; i++)" +
+                        "for (int i = 0; i < amountToDraw; i++){" +
                         "Hand.cards.add(0, super.cards.get(0));" +
-                        "super.cards[0].remove;" +
+                        "super.cards.remove(0);" +
                         "}" +
                         "}")
                 .addToBlock("public void shuffle(){" +
@@ -706,11 +720,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .addToBlock("Player owner;")
                 .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
                         "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
-                        "super.cards.get(cardNum).remove();" +
+                        "super.cards.remove(cardNum);" +
                         "}");
         classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation) {" +
-                "moveToLocation.cards.add(0, super.cards[cardNum]);" +
-                "super.cards[cardNum].remove();" +
+                "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
+                "super.cards.remove(0);" +
                 "}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
