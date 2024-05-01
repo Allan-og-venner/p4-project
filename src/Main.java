@@ -1,22 +1,19 @@
-/*
+
 import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.*;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 public class Main {
 
-    public static String[] stingybing(String... strings) {
-        return strings;
-    }
+
 
     public static void main(String[] args) {
         try {
-            ArrayList<String> strings = new ArrayList<>();
-            stingybing("1","2");
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");
             ExprLexer lexer = new ExprLexer(in);
@@ -29,6 +26,9 @@ public class Main {
             CodeBuilderVisitor codeBuilderVisitor = new CodeBuilderVisitor();
             String finalCode = codeBuilderVisitor.visitStart(ast);
             String finalfinalCode = CodeFormatter.formatCode(finalCode);
+            FileWriter myWriter = new FileWriter(userDir+"/src/Test/Main.java");
+            myWriter.write(finalfinalCode);
+            myWriter.close();
             System.out.println(finalfinalCode);
         } catch (Exception e){
             System.err.print(e.getMessage());
@@ -37,4 +37,4 @@ public class Main {
 
     }
 
-}*/
+}
