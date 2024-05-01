@@ -706,12 +706,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 )
         );
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
-        classes.put("Location",new ClassStringBuilder()
+        classes.put("Location", new ClassStringBuilder()
                         .addStart("Location")
                 .addToBlock("ArrayList<Card> cards = new ArrayList<>();"));
-        classes.put("Deck",new ClassStringBuilder().addStart("Deck","Location"));
-        classes.put("Hand",new ClassStringBuilder().addStart("Hand","Location"));
-        classes.put("PlayArea",new ClassStringBuilder().addStart("PlayArea","Location"));
+        classes.put("Deck", new ClassStringBuilder().addStart("Deck","Location"));
+        classes.put("Hand", new ClassStringBuilder().addStart("Hand","Location"));
+        classes.put("PlayArea", new ClassStringBuilder().addStart("PlayArea","Location"));
         classes.put("Player", new ClassStringBuilder().addStart("Player")
                 .addToBlock("String name;")
                 .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count) { " +
@@ -720,7 +720,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "for (int i = 0; i < count; i++) {" +
                         "tmp = tmp.nextPlayer;" +
                         "}" +
-                        "return tmp;}"));
+                        "return tmp;}"
+                )
+        );
         classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location Hand){" +
                 "Hand.cards.add(super.cards.get(0));" +
                 "super.cards.remove(0);" +
