@@ -3,6 +3,10 @@ package codegenExample;
 public class Card {
     public String ID = "";
 
+    public static void main(String[] args) {
+        Card card = new Card();
+    }
+
     public String toString() {return ID;}
 
 

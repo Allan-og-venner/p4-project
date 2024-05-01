@@ -1,3 +1,4 @@
+/*
 import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.*;
@@ -8,8 +9,14 @@ import java.util.List;
 import java.util.Scanner;
 public class Main {
 
+    public static String[] stingybing(String... strings) {
+        return strings;
+    }
+
     public static void main(String[] args) {
         try {
+            ArrayList<String> strings = new ArrayList<>();
+            stingybing("1","2");
             String userDir = System.getProperty("user.dir");
             CharStream in = CharStreams.fromFileName(userDir+"/src/code.txt");
             ExprLexer lexer = new ExprLexer(in);
@@ -30,4 +37,4 @@ public class Main {
 
     }
 
-}
+}*/

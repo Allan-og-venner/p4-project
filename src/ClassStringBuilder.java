@@ -4,7 +4,7 @@ public class ClassStringBuilder {
     private StringBuilder block = new StringBuilder();
 
     public ClassStringBuilder addStart(String name) {
-        start = "class " + name + " {";
+        start = "static class " + name + " {";
         return this;
     }
 

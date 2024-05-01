@@ -91,8 +91,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
         prog.append("public static void main(String[] args) {")
                 .append(setUp)
-                .append("while (true) {").append("this.gameFunction() }")
-                .append("this.endFunction();")
+                .append("while (true) {").append("this.game() }")
+                .append("this.end();")
                 .append("}}");
         //If no game and end functions declared, throw exception
         if (gameFunction == null) {
@@ -328,7 +328,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
         if (!classFields.get(currentClass).isEmpty()) {
             classD.append("public boolean equals(Object other) {" +
-                    "if (other.getClass().equals(this.getClass())) {");
+                    "if (other.getClass().equals(super.getClass())) {");
 
             classD.append("return (" + instancefields + ");" +
                     "}" +
@@ -336,7 +336,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     "}");
         } else {
             classD.append("public boolean equals(Object other) {" +
-                    "if (other.getClass().equals(this.getClass())) {");
+                    "if (other.getClass().equals(super.getClass())) {");
 
             classD.append("return true;" +
                     "}" +
@@ -397,7 +397,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ReturnNode node) {
         currentStatement = node;
-        return "return " + visit(node.getInnerNode());
+        return "return " + visit(node.getInnerNode()) + ";";
     }
 
     @Override
@@ -657,53 +657,60 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      * Constructor for all the built in classes that are standard part of set up
      */
     public CodeBuilderVisitor() {
-        functions.add("void print(String input) {System.out.print(input);}");
-        functions.add("int strlen(String input) {return input.length();}");
-        functions.add("public ArrayList<String> generatePlayerList(String... args) {" +
-                "ArrayList<String> players = new ArrayList<>();" +
-                "for (String arg : args) {" +
-                "players.add(arg);" +
-                "}" +
+        functions.add("static void print(String input) {System.out.print(input);}");
+        functions.add("static int strlen(String input) {return input.length();}");
+        functions.add("public static ArrayList<Player> generatePlayerList(ArrayList<String> args) {" +
+                "ArrayList<Player> players = new ArrayList<>();" +
+                "for (int i = 0; i<args.size(); i++) {" +
+                "Player tmp = new Player();" +
+                "tmp.name = args.get(i)" +
+                "players.add(tmp)" +
+                "if (i > 0) {" +
+                "players.get(i-1).nextPlayer = players.get(i);" +
+                "}}" +
+                "players.get(args.size()-1).nextPlayer = players.get(0);" +
                 "return players;" +
                 "}");
         classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
         classes.put("Location",new ClassStringBuilder()
-                .addToBlock("interface Location {new ArrayList<Card> cards = new ArrayList<>();}"));
+                        .addStart("Location")
+                .addToBlock("ArrayList<Card> cards = new ArrayList<>();"));
         classes.put("Deck",new ClassStringBuilder().addStart("Deck","Location"));
         classes.put("Hand",new ClassStringBuilder().addStart("Hand","Location"));
         classes.put("PlayArea",new ClassStringBuilder().addStart("PlayArea","Location"));
         classes.put("Player", new ClassStringBuilder().addStart("Player")
                 .addToBlock("String name;")
-                .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count){Player tmp = this.nextPlayer;" +
+                .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count) { " +
+                        "Player tmp = this.nextPlayer;" +
                         "for (int i = 0; i < count; i++) {" +
                         "tmp = tmp.nextPlayer;" +
                         "}" +
                         "return tmp;}"));
         classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location Hand){" +
-                "Hand.cards.add(this.cards[0]);" +
-                "this.cards[0].remove;" +
+                "Hand.cards.add(super.cards[0]);" +
+                "super.cards[0].remove;" +
                 "}")
-                .addToBlock("public Card getTop(){return this.cards[0]}")
-                .addToBlock("public void drawMany(Location Hand, int amountToDraw){" +
-                        "for(int i = 0; i < amount; i++)" +
-                        "Hand.cards.add(0, this.cards[0]);" +
-                        "this.cards[0].remove;" +
+                .addToBlock("public Card getTop() {return super.cards[0]}")
+                .addToBlock("public void drawMany(Location Hand, int amountToDraw) {" +
+                        "for (int i = 0; i < amountToDraw; i++)" +
+                        "Hand.cards.add(0, super.cards.get(0));" +
+                        "super.cards[0].remove;" +
                         "}" +
                         "}")
                 .addToBlock("public void shuffle(){" +
-                        "Collections.shuffle(this.cards);" +
+                        "Collections.shuffle(super.cards);" +
                         "}");
         classes.get("Hand").addToBlock("String name;")
                 .addToBlock("int maxSize;")
                 .addToBlock("Player owner;")
-                .addToBlock("public void move(int cardNum, Location moveToLocation){" +
-                        "moveToLocation.cards.add(0, this.cards[cardNum]);" +
-                        "this.cards[cardNum].remove();" +
+                .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
+                        "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
+                        "super.cards.get(cardNum).remove();" +
                         "}");
-        classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation){" +
-                "moveToLocation.cards.add(0, this.cards[cardNum]);" +
-                "this.cards[cardNum].remove();" +
+        classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation) {" +
+                "moveToLocation.cards.add(0, super.cards[cardNum]);" +
+                "super.cards[cardNum].remove();" +
                 "}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
