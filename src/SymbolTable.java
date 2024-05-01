@@ -25,8 +25,9 @@ public class SymbolTable implements Cloneable {
         innerFTable.put("command allowAction", "void,action");
         innerFTable.put("command disallowAction", "void,action");
         innerFTable.put("command displayAllowedActions", "void,");
+        innerFTable.put("command disallowAllActions", "void,");
         innerFTable.put("command showGameState", "void,Player");
-        innerFTable.put("generatePlayerList", "array Player,array string");
+        innerFTable.put("command generatePlayerList", "array Player,array string");
 
         new ClassBuilder(this).addName("Card").addField("ID", "string").buildClass(tTable, cTable);
         new ClassBuilder(this).addName("Location").addField("cards", "array Card").buildClass(tTable, cTable);

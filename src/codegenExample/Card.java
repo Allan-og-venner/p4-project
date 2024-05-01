@@ -1,13 +1,19 @@
 package codegenExample;
 
-public class Card {
+public class Card implements Cloneable{
     public String ID = "";
 
-    public static void main(String[] args) {
-        Card card = new Card();
-    }
-
     public String toString() {return ID;}
+
+    @Override
+    public Card clone() {
+        try {
+            return (Card) super.clone();
+        } catch (CloneNotSupportedException e) {
+            System.err.println("Clone of card not supportedp");
+            return null;
+        }
+    }
 
 
     public void onPlayed(String currPlayer) {

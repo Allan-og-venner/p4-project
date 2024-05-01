@@ -78,6 +78,12 @@ public class ActionMenu {
         }
     }
 
+    public void disallowAllActions() {
+        allowedActions.clear();
+        allowedNames.clear();
+        indeces.clear();
+    }
+
     public void displayAllowedActions() {
         for (int i = 0; i < allowedNames.size(); i++) {
             System.out.println(i+1 + " - " + allowedNames.get(i));

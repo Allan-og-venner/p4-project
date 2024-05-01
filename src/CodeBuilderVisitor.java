@@ -692,7 +692,19 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}}" +
                 "players.get(args.size()-1).nextPlayer = players.get(0);" +
                 "}");
-        classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;"));
+        classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;")
+                .addToBlock("public String toString() {return ID;}" +
+                        "@Override" +
+                        "public Card clone() {" +
+                        "try {" +
+                        "return (Card) super.clone();" +
+                        "} catch (CloneNotSupportedException e) {" +
+                        "System.err.println(\"Clone of card not supported\");" +
+                        "return null;" +
+                        "}" +
+                        "}"
+                )
+        );
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
         classes.put("Location",new ClassStringBuilder()
                         .addStart("Location")
@@ -722,7 +734,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "}")
                 .addToBlock("public void shuffle(){" +
                         "Collections.shuffle(super.cards);" +
-                        "}");
+                        "}")
+                .addToBlock("public void add(Card card, int number) {" +
+                        "for (int i = 0; i < number; i++) {" +
+                        "super.cards.add(0, card.clone());" +
+                        "}}");
         classes.get("Hand").addToBlock("String name;")
                 .addToBlock("int maxSize;")
                 .addToBlock("Player owner;")
@@ -741,12 +757,18 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "private ArrayList<Action> allowedActions = new ArrayList<Action>();")
         .addToBlock(
                 "public void displayAllowedActions() {" +
+                        "if (allowedNames.size() > 0){" +
                 "for (int i = 0; i < allowedNames.size(); i++) {" +
                 "System.out.println(i+1 + \" - \" + allowedNames.get(i));" +
                 "}" +
                 "int choice = choice(allowedNames.size());" +
                 "allowedActions.get(choice-1).act();" +
-                "}")
+                "}}")
+        .addToBlock("public void disallowAllActions() {" +
+                "        allowedActions.clear();" +
+                "        allowedNames.clear();" +
+                "        indeces.clear();" +
+                "    }")
         .addToBlock(
                 "public int choice(int choices) {" +
                 "int choice = -1;" +
