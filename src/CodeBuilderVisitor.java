@@ -11,6 +11,7 @@ import java.util.*;
 public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     private ArrayList<String> functions = new ArrayList<>();
+    private ArrayList<String> mainClasses = new ArrayList<>();
     private ArrayList<String> actions = new ArrayList<>();
     private ArrayList<String> variables = new ArrayList<>();
     private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
@@ -354,7 +355,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
         classD.append("}");
         currentClass = tmp;
-        return classD.toString();
+
+        if (scopeCount == 0) {
+            mainClasses.add(classD.toString());
+        } else {
+            return classD.toString();
+        }
+
+        return "";
     }
 
     @Override
