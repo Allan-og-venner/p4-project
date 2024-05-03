@@ -10,19 +10,18 @@ import java.util.*;
  * */
 public class CodeBuilderVisitor extends ASTVisitor<String>{
 
-    private ArrayList<String> functions = new ArrayList<>();
-    private ArrayList<String> mainClasses = new ArrayList<>();
-    private ArrayList<String> actions = new ArrayList<>();
-    private ArrayList<String> variables = new ArrayList<>();
-    private Hashtable<String, ClassStringBuilder> classes = new Hashtable<String, ClassStringBuilder>();
-    private Hashtable<String, ArrayList<Pair<String,String>>> classFields = new Hashtable<>();
+    private final ArrayList<String> functions = new ArrayList<>();
+    private final ArrayList<String> mainClasses = new ArrayList<>();
+    private final ArrayList<String> variables = new ArrayList<>();
+    private final Hashtable<String, ClassStringBuilder> classes = new Hashtable<>();
+    private final Hashtable<String, ArrayList<Pair<String,String>>> classFields = new Hashtable<>();
     private String gameFunction;
     private String endFunction;
     private int scopeCount;
     private String currentClass = "";
     private int playerAddedCalled;
 
-    private StatementNode currentStatement = null;
+    private  StatementNode currentStatement = null;
 
 
     /**
@@ -52,7 +51,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      * Used in functionDNode to convert parameters to variables:
      * only save the parameters name and not the datatype in order to use
      * it in the function body
-     * @param param
+     * @param param the particular String to be formatted
      * @return param but converted to a variable with regex
      */
     public String paramToVar(String param) {
@@ -206,21 +205,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             var.append("ArrayList<").append(visit(node.getType()))
                 .append("> ")
                 .append(node.getID().getText());
-                if (node.getValue() != null) {
-                    var.append(" = ")
-                        .append(visit(node.getValue()));
-                }
-                var.append(";");
         } else {
             var.append(visit(node.getType()))
                 .append(" ")
                 .append(node.getID().getText());
-            if (node.getValue() != null) {
-                var.append(" = ")
-                    .append(visit(node.getValue()));
-            }
-            var.append(";");
         }
+        if (node.getValue() != null) {
+            var.append(" = ")
+                .append(visit(node.getValue()));
+        }
+        var.append(";");
 
         if (!Objects.equals(currentClass, "")) {
             classFields.get(currentClass).add(new Pair<>(node.getType().getTypeName(),node.getID().getText()));
@@ -258,15 +252,15 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         .addToBlock(allowMeth)
                         .addToBlock("if (action.equals(\"" + actionName + "\")) {" +
                         "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "indexes.add(action + " + String.join(" + ", vars) + ");" +
                         "allowedActions.add(() -> " + visit(node.getBlock()) +
                         "}");
                 actionMenu.addToBlock(disallowMeth)
-                        .addToBlock("int index = indeces.indexOf(action + " + String.join(" + ", vars)+ ");" +
+                        .addToBlock("int index = indexes.indexOf(action + " + String.join(" + ", vars)+ ");" +
                                 "if (index >= 0) {" +
                                 "allowedActions.remove(index);" +
                                 "allowedNames.remove(index);" +
-                                "indeces.remove(index);" +
+                                "indices.remove(index);" +
                                 "}");
             } else {
                 actionMenu
@@ -274,7 +268,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .insert(actionMenu.getBlock().indexOf(allowMeth) + allowMeth.length(),
                     "if (action.equals(\"" + actionName + "\")) {" +
                         "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "indeces.add(action + " + String.join(" + ", vars) + ");" +
+                        "indexes.add(action + " + String.join(" + ", vars) + ");" +
                         "allowedActions.add(() -> " + visit(node.getBlock()) +
                         "}");
             }
@@ -322,28 +316,28 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         classD.append(visit(node.getBlock()));
         System.out.println(classFields.get(currentClass));
         scopeCount--;
-        StringBuilder instancefields = new StringBuilder();
+        StringBuilder instanceFields = new StringBuilder();
         String regex = "int|string|char|float";
-        for (Pair instancefield: classFields.get(currentClass)) {
-            if (!instancefields.isEmpty()) {
-                instancefields.append(" && ");
+        for (Pair<String,String> instanceField: classFields.get(currentClass)) {
+            if (!instanceFields.isEmpty()) {
+                instanceFields.append(" && ");
             }
-            if (instancefield.a.toString().matches(regex)){
-                instancefields.append("this." + instancefield.b +"==(("+ visit(node.getName()) + ") other)." + instancefield.b);
+            if (instanceField.a.matches(regex)){
+                instanceFields.append("this.").append(instanceField.b).append("==((").append(visit(node.getName())).append(") other).").append(instanceField.b);
             } else {
-                instancefields.append("this." + instancefield.b +".equals((("+ visit(node.getName()) + ") other)." + instancefield.b + ")");
+                instanceFields.append("this.").append(instanceField.b).append(".equals(((").append(visit(node.getName())).append(") other).").append(instanceField.b).append(")");
             }
         }
-        System.out.println(instancefields);
+        System.out.println(instanceFields);
 
         if (!classFields.get(currentClass).isEmpty()) {
             classD.append("public boolean equals(Object other) {" +
                     "if (other.getClass().equals(super.getClass())) {");
 
-            classD.append("return (" + instancefields + ");" +
-                    "}" +
-                    "return false;" +
-                    "}");
+            classD.append("return (").append(instanceFields).append(");")
+                    .append("}")
+                    .append("return false;")
+                    .append("}");
         } else {
             classD.append("public boolean equals(Object other) {" +
                     "if (other.getClass().equals(super.getClass())) {");
@@ -432,8 +426,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     /**
      * When visiting a node of type ArrayNode, the method will create a new ArrayList and add the inner nodes to it.
      * This is done in order to convert from the custom array type to the way arrays are typed in Java
-     * @param node
-     * @return
+     * @param node ArrayNode to be translated
+     * @return the newly generated array as a string
      */
     @Override
     public String visit(ArrayNode node) {
@@ -462,12 +456,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ArrayAccessNode node) {
-        StringBuilder ArrayAccessString = new StringBuilder();
-        ArrayAccessString.append(visit(node.getArray()))
-                .append("[")
-                .append(visit(node.getIndex()))
-                .append("];");
-        return ArrayAccessString.toString();
+        return visit(node.getArray()) +
+                "[" +
+                visit(node.getIndex()) +
+                "];";
     }
 
     @Override
@@ -507,11 +499,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FparamNode node) {
-        StringBuilder fParamString = new StringBuilder();
-        fParamString.append(visit(node.getType()))
-                    .append(" ")
-                    .append(visit(node.getIdentifier()));
-        return fParamString.toString();
+        return visit(node.getType()) +
+                " " +
+                visit(node.getIdentifier());
     }
 
     @Override
@@ -659,6 +649,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     emptyMeth.setBlock(new BlockNode());
                     classes.get("Card").addToBlock(visit(emptyMeth));
                 }
+                //Maybe add null check
                 classText.addToBlock("@Override" + visit(method));
             } else {
                 if (!classes.get("Card").getBlock().toString().contains(methName)) {
@@ -677,7 +668,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
 
     /**
-     * Constructor for all the built in classes that are standard part of set up
+     * Constructor for all the built-in classes that are standard part of set up
      */
     public CodeBuilderVisitor() {
         variables.add("static ArrayList<Player> players = new ArrayList<>();");
@@ -796,7 +787,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
-                "private ArrayList<String> indeces = new ArrayList<String>();" +
+                "private ArrayList<String> indexes = new ArrayList<String>();" +
                 "private ArrayList<String> allowedNames = new ArrayList<String>();" +
                 "private ArrayList<Action> allowedActions = new ArrayList<Action>();")
         .addToBlock(
@@ -809,10 +800,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "allowedActions.get(choice-1).act();" +
                 "}}")
         .addToBlock("public void disallowAllActions() {" +
-                "allowedActions.clear();" +
-                "allowedNames.clear();" +
-                "indeces.clear();" +
-                "}")
+                "        allowedActions.clear();" +
+                "        allowedNames.clear();" +
+                "        indexes.clear();" +
+                "    }")
         .addToBlock(
                 "public int choice(int choices) {" +
                 "int choice = -1;" +
