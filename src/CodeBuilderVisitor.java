@@ -483,8 +483,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .append(visit(node.getParameter()))
                 .append(");");
 
-        if (visit(node.getFunction()).equals("generatePlayerList")){playerAddedCalled++;}
-
+        if (visit(node.getFunction()).equals("generatePlayerList")) {
+            playerAddedCalled++;
+        }
         return funcCall.toString();
     }
 
@@ -707,11 +708,32 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         );
         classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
         classes.put("Location", new ClassStringBuilder()
-                        .addStart("Location")
-                .addToBlock("ArrayList<Card> cards = new ArrayList<>();"));
-        classes.put("Deck", new ClassStringBuilder().addStart("Deck","Location"));
+                .addStart("Location")
+                .addToBlock("String name;")
+                .addToBlock("ArrayList<Card> cards = new ArrayList<>();")
+                .addToBlock("int numberOfCards() {return cards.size();}"));
+        classes.put("Deck", new ClassStringBuilder().addStart("Deck","Location")
+                .addToBlock("public Deck() {" +
+                        "GameState.decks.add(this);" +
+                        "}"));
         classes.put("Hand", new ClassStringBuilder().addStart("Hand","Location"));
-        classes.put("PlayArea", new ClassStringBuilder().addStart("PlayArea","Location"));
+        classes.put("PlayArea", new ClassStringBuilder().addStart("PlayArea","Location")
+                .addToBlock("@Override" +
+                        "public String toString() {" +
+                        "StringBuilder string = new StringBuilder();" +
+                        "string.append(name).append(\"\\n\");" +
+                        "for (Card card : cards) {" +
+                        "string.append(\"- \").append(card).append(\"\\n\");" +
+                        "}" +
+                        "return string.toString();" +
+                        "}" +
+                        "public PlayArea() {" +
+                        "GameState.playAreas.add(this);" +
+                        "}")
+                .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
+                        "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
+                        "super.cards.remove(cardNum);" +
+                        "}"));
         classes.put("Player", new ClassStringBuilder().addStart("Player")
                 .addToBlock("String name;")
                 .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count) { " +
@@ -723,14 +745,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "return tmp;}"
                 )
         );
-        classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location Hand){" +
-                "Hand.cards.add(super.cards.get(0));" +
+        classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location hand){" +
+                "hand.cards.add(super.cards.get(0));" +
                 "super.cards.remove(0);" +
                 "}")
                 .addToBlock("public Card getTop() {return super.cards.get(0);}")
-                .addToBlock("public void drawMany(Location Hand, int amountToDraw) {" +
+                .addToBlock("public void drawMany(Location hand, int amountToDraw) {" +
                         "for (int i = 0; i < amountToDraw; i++){" +
-                        "Hand.cards.add(0, super.cards.get(0));" +
+                        "hand.cards.add(0, super.cards.get(0));" +
                         "super.cards.remove(0);" +
                         "}" +
                         "}")
@@ -740,14 +762,34 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .addToBlock("public void add(Card card, int number) {" +
                         "for (int i = 0; i < number; i++) {" +
                         "super.cards.add(0, card.clone());" +
-                        "}}");
+                        "}}")
+                .addToBlock("@Override" +
+                        "public String toString() {" +
+                        "StringBuilder string = new StringBuilder();" +
+                        "string.append(name).append(\" - \")" +
+                        ".append((visible == 1) ? getTop() : \"hidden (\")" +
+                        ".append(cards.size())" +
+                        ".append(\" \")" +
+                        ".append((cards.size() == 1) ? \"card\" : \"cards\");" +
+                        "return string.toString();" +
+                        "}");
         classes.get("Hand").addToBlock("String name;")
                 .addToBlock("int maxSize;")
                 .addToBlock("Player owner;")
                 .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
                         "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
                         "super.cards.remove(cardNum);" +
-                        "}");
+                        "}")
+                .addToBlock("@Override" +
+                        "public String toString() {" +
+                        "StringBuilder string = new StringBuilder();" +
+                        "string.append(\"This hand\\n\");" +
+                        "for (Card card : cards) {" +
+                        "string.append(\"- \").append(card).append(\"\\n\");" +
+                        "}" +
+                        "return string.toString();" +
+                        "}")
+                .addToBlock("public Hand() {GameState.hands.add(this);}");
         classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation) {" +
                 "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
                 "super.cards.remove(0);" +
@@ -759,7 +801,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "private ArrayList<Action> allowedActions = new ArrayList<Action>();")
         .addToBlock(
                 "public void displayAllowedActions() {" +
-                        "if (allowedNames.size() > 0){" +
+                "if (allowedNames.size() > 0){" +
                 "for (int i = 0; i < allowedNames.size(); i++) {" +
                 "System.out.println(i+1 + \" - \" + allowedNames.get(i));" +
                 "}" +
@@ -767,10 +809,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "allowedActions.get(choice-1).act();" +
                 "}}")
         .addToBlock("public void disallowAllActions() {" +
-                "        allowedActions.clear();" +
-                "        allowedNames.clear();" +
-                "        indeces.clear();" +
-                "    }")
+                "allowedActions.clear();" +
+                "allowedNames.clear();" +
+                "indeces.clear();" +
+                "}")
         .addToBlock(
                 "public int choice(int choices) {" +
                 "int choice = -1;" +
@@ -788,6 +830,34 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}" +
                 "}" +
                 "return choice;" +
+                "}"));
+        classes.put("GameState", new ClassStringBuilder().addToBlock("class GameState {" +
+                "static final ArrayList<Deck> decks = new ArrayList<>();" +
+                "static final ArrayList<Hand> hands = new ArrayList<>();" +
+                "static final ArrayList<PlayArea> playAreas = new ArrayList<>();" +
+                "public static void showGameState(Player player) {" +
+                "for (Hand hand : hands) {" +
+                "if (!hand.cards.isEmpty()) {" +
+                "if (hand.owner.equals(player)) {" +
+                "System.out.println(hand);" +
+                "} else {" +
+                "System.out.print(player.name);" +
+                "System.out.print((player.name.endsWith(\"s\")) ? \"'\" : \"'s\");" +
+                "System.out.println(\"hand - \" + player.hand.cards.size() + \" cards\");" +
+                "}" +
+                "}" +
+                "}" +
+                "for (PlayArea playArea : playAreas) {" +
+                "if (playArea.cards.isEmpty()) {" +
+                "System.out.println(playArea.toString());" +
+                "}" +
+                "}" +
+                "for (Deck deck : decks) {" +
+                "if (deck.cards.isEmpty()) {" +
+                "System.out.println(deck.toString());" +
+                "}" +
+                "}" +
+                "}" +
                 "}"));
     }
 

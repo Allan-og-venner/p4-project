@@ -18,7 +18,6 @@ public class SymbolTable implements Cloneable {
         tTable.put("char", "string");
         tTable.put("string", "");
         tTable.put("void", "");
-        tTable.put("Object", "");
         tTable.put("action", "");
         innerFTable.put("strlen", "int,string");
         innerFTable.put("command print", "void,string");
@@ -29,11 +28,13 @@ public class SymbolTable implements Cloneable {
         innerFTable.put("command showGameState", "void,Player");
         innerFTable.put("command generatePlayerList", "array Player,array string");
 
+        new ClassBuilder(this).addName("PlayArea").addSuperClass("Location").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Object").addMethod("toString", "string").buildClass(tTable, cTable);
         new ClassBuilder(this).addName("Card").addField("ID", "string").buildClass(tTable, cTable);
-        new ClassBuilder(this).addName("Location").addField("cards", "array Card").buildClass(tTable, cTable);
-        new ClassBuilder(this).addName("Deck").addSuperClass("Location").addField("visible", "int").addMethod("shuffle", "void").addMethod("draw", "void,Location").addMethod("getTop", "Card").addMethod("add", "void,Card,int").buildClass(tTable, cTable);
-        new ClassBuilder(this).addName("Hand").addSuperClass("Location").addField("player", "Player").addMethod("move", "void,int,Location").buildClass(tTable, cTable);
-        new ClassBuilder(this).addName("Player").addField("hand", "Hand").addField("nextPlayer", "Player").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Location").addField("name", "string").addField("cards", "array Card").addMethod("numberOfCards","int").addMethod("move", "void,int,Location").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Deck").addSuperClass("Location").addField("visible", "int").addMethod("shuffle", "void").addMethod("draw", "void,Location").addMethod("drawMany", "void,Location,int").addMethod("getTop", "Card").addMethod("add", "void,Card,int").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Hand").addSuperClass("Location").addField("owner", "Player").addField("maxSize","int").addMethod("move", "void,int,Location").buildClass(tTable, cTable);
+        new ClassBuilder(this).addName("Player").addField("hand", "Hand").addMethod("findNextPlayer","Player,int").addField("nextPlayer", "Player").buildClass(tTable, cTable);
 
         return this;
     }

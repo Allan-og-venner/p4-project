@@ -36,6 +36,9 @@ public class ActionMenu {
         return "Shoot " + player;
     }
 
+    public void ShowGameState(Player player) {
+
+    }
 
     public void allowAction(String action, Card card) {
         if (action.equals("play")) {
@@ -112,7 +115,105 @@ public class ActionMenu {
     }
 }
 
+class GameState {
+    static final ArrayList<Deck> decks = new ArrayList<>();
+    static final ArrayList<Hand> hands = new ArrayList<>();
+    static final ArrayList<PlayArea> playAreas = new ArrayList<>();
+
+    public static void showGameState(Player player) {
+        for (Hand hand : hands) {
+            if (!hand.cards.isEmpty()) {
+                if (hand.owner.equals(player)) {
+                    System.out.println(hand);
+                } else {
+                    System.out.print(player.name);
+                    System.out.print((player.name.endsWith("s")) ? "'" : "'s");
+                    System.out.println("hand - " + player.hand.cards.size() + " cards");
+                }
+            }
+        }
+        for (PlayArea playArea : playAreas) {
+            if (playArea.cards.isEmpty()) {
+                System.out.println(playArea.toString());
+            }
+        }
+        for (Deck deck : decks) {
+            if (deck.cards.isEmpty()) {
+                System.out.println(deck.toString());
+            }
+        }
+    }
+}
+
+class PlayArea extends Location {
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append(name).append("\n");
+        for (Card card : cards) {
+            string.append("- ").append(card).append("\n");
+        }
+        return string.toString();
+    }
+
+    public PlayArea() {
+        GameState.playAreas.add(this);
+    }
+}
+
+class Location {
+    String name;
+    ArrayList<Card> cards = new ArrayList<>();
+}
+
+class Hand extends Location {
+    Player owner;
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append("This hand\n");
+        for (Card card : cards) {
+            string.append("- ").append(card).append("\n");
+        }
+        return string.toString();
+    }
+
+    public Hand() {
+        GameState.hands.add(this);
+    }
+}
+
+class Deck extends Location {
+    int visible;
+    public Card getTop() {
+        return cards.get(0);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append(name).append(" - ")
+                .append((visible == 1) ? getTop() : "hidden (")
+                .append(cards.size())
+                .append(" ")
+                .append((cards.size() == 1) ? "card" : "cards");
+        return string.toString();
+    }
+
+    public Deck() {
+        GameState.decks.add(this);
+    }
+}
+
+class Player {
+    String name;
+    Hand hand = new Hand();
+
+    public Player() {
+    }
+}
+
 interface Action {
     abstract void act();
-
 }

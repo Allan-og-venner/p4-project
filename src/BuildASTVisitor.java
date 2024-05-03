@@ -551,10 +551,11 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             ArrayNode node = visitArray(context.array());
             node.getLineNumberFromContext(context);
             return node;
-        } else if (context.classAccess() != null) {
-            ClassAccessNode node = visitClassAccess(context.classAccess());
-            node.getLineNumberFromContext(context);
-            return node;
+        } else if (context.access() != null) {
+            //FIIXXXXX
+            //ClassAccessNode node = visitClassAccess(context.access());
+            //node.getLineNumberFromContext(context);
+            return null;
         } else if (context.NUMERAL() != null) {
             NumberNode node = new NumberNode();
             node.setValue(Double.parseDouble(context.NUMERAL().getText()));

@@ -81,7 +81,7 @@ value: NUMERAL
     | array
     | STRING
     | CHAR
-    | classAccess;
+    | access;
 accessibleObject: IDENTIFIER
     | call
     | arrayAccess;
@@ -97,12 +97,14 @@ type: TYPE_INT
     | IDENTIFIER;
 modifier : KEY_STATIC?;
 
+access: accessibleObject (L_BRACKET expr R_BRACKET | PERIOD value)*;
+
 /* Array rules*/
 array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
 /* Class rules */
-classAccess: accessibleObject( PERIOD accessibleValue)*;
+classAccess: accessibleObject( PERIOD accessibleValue)+;
 method: accessibleObject(PERIOD accessibleValue)* PERIOD call;
 accessibleValue: call
     | IDENTIFIER;
