@@ -17,8 +17,6 @@ import java.lang.annotation.Target;
 }
 
 public class ActionMenu {
-
-
     private ArrayList<String> indeces = new ArrayList<String>();
     private ArrayList<String> allowedNames = new ArrayList<String>();
 
@@ -52,8 +50,6 @@ public class ActionMenu {
             allowedActions.add(() -> System.out.println("discarding  " + card));
         }
     }
-
-
 
     public void allowAction(String action, String player) {
         if (action.equals("shoot")) {
@@ -97,17 +93,16 @@ public class ActionMenu {
 
     public int choice(int choices){
         int choice = -1;
-
         while (choice < 1 || choice > choices) {
             Scanner sc = new Scanner(System.in);
-            while (!sc.hasNextInt()){
+            while (!sc.hasNextInt()) {
                 sc.next();
                 System.out.print("Not a number\n");
             }
             choice = sc.nextInt();
-            if (choice > choices){
+            if (choice > choices) {
                 System.out.print("Number too big, try again\n");
-            } else if (choice < 1){
+            } else if (choice < 1) {
                 System.out.print("Number too small, try again\n");
             }
         }
