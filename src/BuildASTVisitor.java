@@ -282,9 +282,9 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             if (context.block() != null) {
                 node.setBlock(visitBlock(context.block()));
             }
-            } else {
-                throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
-            }
+        } else {
+            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+        }
         node.getLineNumberFromContext(context);
         return node;
     }
@@ -732,14 +732,14 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getMethods().add(methodNode);
         }
         for (int i = 0; i < context.cardField().size(); i++) {
-                DefineNode fieldNode = new DefineNode();
-                IdentifierNode identifierNode = new IdentifierNode();
-                identifierNode.setText(context.cardField(i).IDENTIFIER().getText());
-                identifierNode.getLineNumberFromContext(context);
-                fieldNode.setID(identifierNode);
-                fieldNode.setModi(new ModifierNode());
-                fieldNode.setType((visitType(context.cardField(i).type())));
-                node.getFields().add(fieldNode);
+            DefineNode fieldNode = new DefineNode();
+            IdentifierNode identifierNode = new IdentifierNode();
+            identifierNode.setText(context.cardField(i).IDENTIFIER().getText());
+            identifierNode.getLineNumberFromContext(context);
+            fieldNode.setID(identifierNode);
+            fieldNode.setModi(new ModifierNode());
+            fieldNode.setType((visitType(context.cardField(i).type())));
+            node.getFields().add(fieldNode);
         }
 
         return node;
