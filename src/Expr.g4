@@ -97,7 +97,7 @@ type: TYPE_INT
     | IDENTIFIER;
 modifier : KEY_STATIC?;
 
-access: accessibleObject accessing*;
+access: accessibleObject accessing+;
 accessing: (L_BRACKET expr R_BRACKET | PERIOD accessibleValue);
 
 /* Array rules*/

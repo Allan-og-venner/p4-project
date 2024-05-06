@@ -1,6 +1,5 @@
 
 import nodes.*;
-import org.antlr.v4.codegen.model.decl.Decl;
 import org.antlr.v4.runtime.misc.Pair;
 import java.util.*;
 
@@ -22,13 +21,11 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     private String currentClass = "";
     private int playerAddedCalled;
 
-    private  StatementNode currentStatement = null;
-
     /**
      * Correctly converts a function call used as an action to parameters
      * play(card) becomes "play", card
      * @param node The first parameter for AllowAction or DisallowAction
-     * @return
+     * @return a string
      */
     public String callToParam(ExpressionsNode node) {
         if (node == null)
@@ -215,7 +212,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     }
     @Override
     public String visit(DefineNode node) {
-        currentStatement = node;
         StringBuilder var = new StringBuilder();
         //scopeCount is used to determine which scope is currently being visited
         if (scopeCount == 0) {
@@ -254,7 +250,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(FunctionDNode node) {
-        currentStatement = node;
         StringBuilder function = new StringBuilder();
         if (scopeCount == 0) {
             function.append("static ");
@@ -328,7 +323,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ClassDNode node) {
-        currentStatement = node;
         StringBuilder classD = new StringBuilder();
         if (scopeCount == 0){
             classD.append("static ");
@@ -390,7 +384,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ForNode node) {
-        currentStatement = node;
         StringBuilder forString = new StringBuilder();
         forString.append("for (")
                 .append(visit(node.getType()))
@@ -408,7 +401,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(WhileNode node) {
-        currentStatement = node;
         StringBuilder whileString = new StringBuilder();
         whileString.append("while (")
                 .append(visit(node.getCondition()))
@@ -422,7 +414,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(IfNode node) {
-        currentStatement = node;
         StringBuilder ifString = new StringBuilder();
 
         ifString.append("if (")
@@ -437,19 +428,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(ReturnNode node) {
-        currentStatement = node;
         return "return " + visit(node.getInnerNode());
     }
 
     @Override
     public String visit(BreakNode node) {
-        currentStatement = node;
         return "break";
     }
 
     @Override
     public String visit(ContinueNode node) {
-        currentStatement = node;
         return "continue";
     }
 
@@ -527,7 +515,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(AssignmentNode node) {
-        currentStatement = node;
         return visit(node.getLeft()) + "=" + visit(node.getRight())+";";
     }
 
@@ -654,7 +641,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
      */
     @Override
     public String visit(CardTypeNode node) {
-        currentStatement = node;
         scopeCount++;
         String className = "";
         ClassStringBuilder classText = null;
@@ -725,8 +711,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         functions.add("static int strlen(String input) {return input.length();}");
         functions.add("public static void generatePlayerList(ArrayList<String> args) {" +
                 "for (int i = 0; i<args.size(); i++) {" +
-                "Player tmp = new Player();" +
-                "tmp.name = args.get(i);" +
+                "Player tmp = new Player(args.get(i));" +
                 "players.add(tmp);" +
                 "if (i > 0) {" +
                 "players.get(i-1).nextPlayer = players.get(i);" +
@@ -784,7 +769,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "tmp = tmp.nextPlayer;" +
                         "}" +
                         "return tmp;}"
-                )
+                ).addToBlock("Player(String name){this.name = name;this.hand = new Hand(this);}")
         );
         classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location hand){" +
                 "hand.cards.add(super.cards.get(0));" +
@@ -830,6 +815,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "}" +
                         "return string.toString();" +
                         "}")
+                .addToBlock("public Hand(Player player) {GameState.hands.add(this);this.owner = player;}")
                 .addToBlock("public Hand() {GameState.hands.add(this);}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
