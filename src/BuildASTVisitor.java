@@ -6,6 +6,8 @@ import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import javax.naming.OperationNotSupportedException;
+
 public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
 
     //Save the visited nodes in a list to use for testing purposes
@@ -552,10 +554,9 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else if (context.access() != null) {
-            //FIIXXXXX
-            //ClassAccessNode node = visitClassAccess(context.access());
-            //node.getLineNumberFromContext(context);
-            return null;
+            ValueNode node = visitAccess(context.access());
+            node.getLineNumberFromContext(context);
+            return node;
         } else if (context.NUMERAL() != null) {
             NumberNode node = new NumberNode();
             node.setValue(Double.parseDouble(context.NUMERAL().getText()));
@@ -599,19 +600,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         return node;
     }
 
-    @Override
-    public ClassAccessNode visitClassAccess(ExprParser.ClassAccessContext context) {
-        addVisitedNode("Visited class access node");
-        ClassAccessNode node = new ClassAccessNode();
-        node.setObject(visitAccessibleObject(context.accessibleObject()));
-        node.setValue(new ArrayList<>());
-        for (ExprParser.AccessibleValueContext i : context.accessibleValue()) {
-            node.getValue().add(visitAccessibleValue(i));
-        }
-        node.getLineNumberFromContext(context);
-        return node;
-    }
-
     public ClassAccessNode visitMethod(ExprParser.MethodContext context) {
         addVisitedNode("Visited method node");
         ClassAccessNode node = new ClassAccessNode();
@@ -643,6 +631,41 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             return nameNode;
         } else {
             throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+        }
+    }
+
+    @Override
+    public ValueNode visitAccess(ExprParser.AccessContext context) {
+        addVisitedNode("Visited access node");
+        int accesses = context.accessing().size();
+        if (context.accessing(0).L_BRACKET() != null && accesses == 1) {
+            ExprParser.AccessingContext arrayContext = context.accessing(0);
+            ArrayAccessNode node = new ArrayAccessNode();
+            node.setArray(visitAccessibleObject(context.accessibleObject()));
+            node.setIndex(visitExpr(arrayContext.expr()));
+            node.getLineNumberFromContext(context);
+            return node;
+        } else {
+            ClassAccessNode node = new ClassAccessNode();
+            node.setObject(visitAccessibleObject(context.accessibleObject()));
+            ValueNode lastNode = node.getObject();
+            for (int i = 0; i < accesses; i++) {;
+                ExprParser.AccessingContext ctx = context.accessing(i);
+                if (ctx.PERIOD() != null) {
+                    ValueNode objectNode = visitAccessibleValue(ctx.accessibleValue());
+                    lastNode = objectNode;
+                    node.getValue().add(objectNode);
+                } else if (ctx.L_BRACKET() != null) {
+                    ArrayAccessNode arrayNode = new ArrayAccessNode();
+                    arrayNode.setArray(lastNode);
+                    arrayNode.setIndex(visitExpr(ctx.expr()));
+                    node.getValue().set(node.getValue().size() - 1, arrayNode);
+                } else {
+                    throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+                }
+            }
+            node.getLineNumberFromContext(context);
+            return node;
         }
     }
 
@@ -700,7 +723,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             identifierNode.setText(context.cardMethod(i).IDENTIFIER().getText());
             identifierNode.getLineNumberFromContext(context);
             methodNode.setModifier(new ModifierNode());
-            methodNode.setReturnType(new TypeNode("void"));
+            methodNode.setReturnType(visitType(context.cardMethod(i).type()));
             methodNode.setFunction(identifierNode);
             methodNode.setBlock(visitBlock(context.cardMethod(i).block()));
             if (context.cardMethod(i).fparams() != null) {

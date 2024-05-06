@@ -27,10 +27,17 @@ public class ClassBuilder {
 
     public ClassBuilder addSuperClass(String name) {
         this.superClass = name;
+        if (table.findClassSymbolTable(superClass) != null) {
+            table.getInnerFTable().putAll(table.findClassSymbolTable(superClass).getInnerFTable());
+            table.getFTable().putAll(table.findClassSymbolTable(superClass).getFTable());
+            table.getInnerVTable().putAll(table.findClassSymbolTable(superClass).getInnerVTable());
+            table.getVTable().putAll(table.findClassSymbolTable(superClass).getVTable());
+        }
         return this;
     }
 
     public void buildClass(Hashtable<String, String> tTable, Hashtable<String, SymbolTable> cTable) {
+        table.getTypes().put(name, superClass);
         tTable.put(name, superClass);
         cTable.put(name, table);
     }

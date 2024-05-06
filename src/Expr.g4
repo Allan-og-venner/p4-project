@@ -22,7 +22,7 @@ defin: modifier type IDENTIFIER (L_BRACKET R_BRACKET)? (EQ expr)?;
 assign: value EQ expr;
 
 cardType : KEY_CARDTYPE L_PAREN (IDENTIFIER EQ STRING)? (COLON (cardMethod| cardField))* R_PAREN;
-cardMethod : IDENTIFIER L_PAREN fparams? R_PAREN L_CBRACKET block R_CBRACKET;
+cardMethod : IDENTIFIER L_PAREN fparams? R_PAREN KEY_RETURNTYPE_ARROW type L_CBRACKET block R_CBRACKET;
 cardField : type IDENTIFIER;
 
 /* Function rules*/
@@ -97,14 +97,13 @@ type: TYPE_INT
     | IDENTIFIER;
 modifier : KEY_STATIC?;
 
-access: accessibleObject (L_BRACKET expr R_BRACKET | PERIOD value)*;
+access: accessibleObject accessing*;
+accessing: (L_BRACKET expr R_BRACKET | PERIOD accessibleValue);
 
 /* Array rules*/
 array: L_CBRACKET R_CBRACKET | L_CBRACKET exprs R_CBRACKET;
 arrayAccess: IDENTIFIER L_BRACKET expr R_BRACKET;
 
-/* Class rules */
-classAccess: accessibleObject( PERIOD accessibleValue)+;
 method: accessibleObject(PERIOD accessibleValue)* PERIOD call;
 accessibleValue: call
     | IDENTIFIER;

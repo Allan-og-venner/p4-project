@@ -1,5 +1,6 @@
 
 import nodes.*;
+import org.antlr.v4.codegen.model.decl.Decl;
 import org.antlr.v4.runtime.misc.Pair;
 import java.util.*;
 
@@ -23,6 +24,23 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     private  StatementNode currentStatement = null;
 
+    /**
+     * Correctly converts a function call used as an action to parameters
+     * play(card) becomes "play", card
+     * @param node The first parameter for AllowAction or DisallowAction
+     * @return
+     */
+    public String callToParam(ExpressionsNode node) {
+        if (node == null)
+            return "";
+        if (node.getLeft() != null && node.getLeft() instanceof FunctionCallNode) {
+            return "\"" + ((FunctionCallNode)node.getLeft()).getFunction().getText()
+                    + "\"" +
+                    (((FunctionCallNode) node.getLeft()).getParameter() != null ? ", " + visit(((FunctionCallNode) node.getLeft()).getParameter()) : "");
+
+        }
+        else throw new RuntimeException(node.getLineNumber() + " - Action called wrong");
+    }
 
     /**
      * handleType is a method that takes a nonRealType as input and returns a real type.
@@ -43,6 +61,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 case "string" -> newType = "String";
                 default -> newType = nonRealType;
             }
+        //Even if outside array, string should be changed to String, as string does not exist in Java
+        } else if(nonRealType.equals("string")) {
+            return "String";
         }
         return newType;
     }
@@ -92,13 +113,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             prog.append(classes.get(i).close());
         }
         for (String function : functions) {
+            System.out.println(function);
             prog.append(function);
         }
 
         prog.append("public static void main(String[] args) {")
                 .append(setUp)
                 .append("while (true) {").append("Main.game(); }")
-                .append("Main.end();")
                 .append("}}");
         //If no game and end functions declared, throw exception
         if (gameFunction == null) {
@@ -130,6 +151,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         if (node.getStatement() != null) {
             blocks = visit(node.getStatement());
         }
+        if(!(node.getStatement() instanceof CardTypeNode || node.getStatement() instanceof FunctionDNode || node.getStatement() instanceof ClassDNode || node.getStatement() instanceof LoopNode))
+            blocks += ";";
+
         //if existing visit block node
         if (node.getBlocks() != null) {
             blocks += visit(node.getBlocks());
@@ -244,37 +268,42 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             }
             // System.out.println(vars);
             ClassStringBuilder actionMenu = classes.get("ActionMenu");
-            actionMenu.addToBlock("String get" + actionName + "String(" + parameters + ") {" + "return " + visit(node.getExpr()) + ";}");
-            String allowMeth = "void allowAction(String action, " + parameters + ") {";
-            String disallowMeth = "void disallowAction(String action, " + parameters + ") {";
+            actionMenu.addToBlock("static String get" + actionName + "String(" + parameters + ") {" + "return " + visit(node.getExpr()) + ";}");
+            String allowMeth = "static void allowAction(String action" + (parameters.isBlank() ? "" : ", ") + parameters + ") {";
+            String disallowMeth = "static void disallowAction(String action" + (parameters.isBlank() ? "" : ", ") + parameters + ") {";
             if (!actionMenu.getBlock().toString().contains(allowMeth)) {
                 actionMenu
-                        .addToBlock(allowMeth)
-                        .addToBlock("if (action.equals(\"" + actionName + "\")) {" +
-                        "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "indexes.add(action + " + String.join(" + ", vars) + ");" +
-                        "allowedActions.add(() -> " + visit(node.getBlock()) +
-                        "}");
-                actionMenu.addToBlock(disallowMeth)
-                        .addToBlock("int index = indexes.indexOf(action + " + String.join(" + ", vars)+ ");" +
-                                "if (index >= 0) {" +
-                                "allowedActions.remove(index);" +
-                                "allowedNames.remove(index);" +
-                                "indices.remove(index);" +
-                                "}");
+                .addToBlock(allowMeth)
+                .addToBlock("if (action.equals(\"" + actionName + "\")) {" +
+                "allowedNames.add(get" + actionName + "String(" + String.join(", ", vars) + "));" +
+                "indexes.add(action " + ((vars.isEmpty()) ? " + " + String.join(" + ", vars) : "")  + ");");
+                scopeCount++;
+                actionMenu.addToBlock("allowedActions.add(() -> {" + visit(node.getBlock()) +
+                        "});}}");
+                scopeCount--;
+                actionMenu
+                .addToBlock(disallowMeth)
+                .addToBlock("int index = indexes.indexOf(action " + ((vars.isEmpty()) ? " + " + String.join(" + ", vars) : "")+ ");" +
+                        "if (index >= 0) {" +
+                        "allowedActions.remove(index);" +
+                        "allowedNames.remove(index);" +
+                        "indexes.remove(index);" +
+                        "}}");
             } else {
                 actionMenu
                     .getBlock()
                     .insert(actionMenu.getBlock().indexOf(allowMeth) + allowMeth.length(),
                     "if (action.equals(\"" + actionName + "\")) {" +
-                        "allowedNames.add(getPlayString(" + String.join(", ", vars) + "));" +
-                        "indexes.add(action + " + String.join(" + ", vars) + ");" +
-                        "allowedActions.add(() -> " + visit(node.getBlock()) +
-                        "}");
+                        "allowedNames.add(get" + actionName + "String(" + String.join(", ", vars) + "));" +
+                            "indexes.add(action " + ((vars.isEmpty()) ? " + " + String.join(" + ", vars) : "")  + ");");
+                        scopeCount++;
+                        actionMenu.addToBlock("allowedActions.add(() -> {" + visit(node.getBlock()) +
+                                "});}}");
+                        scopeCount--;
             }
         } else {
             function.append("public ")
-                    .append(node.getReturnType().getTypeName())
+                    .append(handleType(node.getReturnType().getTypeName()))
                     .append(" ")
                     .append(node.getFunction().getText())
                     .append("(")
@@ -284,15 +313,15 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             function.append(visit(node.getBlock()))
                     .append("}");
             scopeCount--;
-        }
-        if (Objects.equals(node.getFunction().getText(), "game")) {
-            gameFunction = function.toString();
-        } else if (Objects.equals(node.getFunction().getText(), "end")) {
-            endFunction = function.toString();
-        } else if (scopeCount == 0) {
-            functions.add(function.toString());
-        } else {
-            return function.toString();
+            if (Objects.equals(node.getFunction().getText(), "game")) {
+                gameFunction = function.toString();
+            } else if (Objects.equals(node.getFunction().getText(), "end")) {
+                endFunction = function.toString();
+            } else if (scopeCount == 0) {
+                functions.add(function.toString());
+            } else {
+                return function.toString();
+            }
         }
         return "";
     }
@@ -365,6 +394,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         StringBuilder forString = new StringBuilder();
         forString.append("for (")
                 .append(visit(node.getType()))
+                .append(" ")
                 .append(visit(node.getIterator()))
                 .append(" : ")
                 .append(visit(node.getArray()))
@@ -408,7 +438,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ReturnNode node) {
         currentStatement = node;
-        return "return " + visit(node.getInnerNode()) + ";";
+        return "return " + visit(node.getInnerNode());
     }
 
     @Override
@@ -457,23 +487,32 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayAccessNode node) {
         return visit(node.getArray()) +
-                "[" +
+                ".get(" +
                 visit(node.getIndex()) +
-                "];";
+                ")";
     }
 
     @Override
     public String visit(FunctionCallNode node) {
         StringBuilder funcCall = new StringBuilder();
+        if(node.getFunction().getText().equals("showGameState")) {
+            funcCall.append("GameState.");
+        } else if(node.getFunction().getText().matches("allowAction|disallowAction|disallowAllActions|displayAllowedActions")) {
+            funcCall.append("ActionMenu.");
+            funcCall.append(visit(node.getFunction()))
+                    .append("(")
+                    .append(callToParam(node.getParameter()))
+                    .append(")");
+            return funcCall.toString();
+        }
+
         if (node.getHasNew()) {
             funcCall.append("new ");
-        } else {
-            funcCall.append("Main.");
         }
         funcCall.append(visit(node.getFunction()))
                 .append("(")
                 .append(visit(node.getParameter()))
-                .append(");");
+                .append(")");
 
         if (visit(node.getFunction()).equals("generatePlayerList")) {
             playerAddedCalled++;
@@ -629,14 +668,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         }
         for (DefineNode field : node.getFields()) {
             String fieldText = visit(field);
-            if(classes.get("Card").getBlock().indexOf(fieldText) == -1) {
+            if (classes.get("Card").getBlock().indexOf(fieldText) == -1) {
                 classes.get("Card").addToBlock(visit(field));
             }
         }
         for (FunctionDNode method : node.getMethods()) {
             String methName = "public "
                     + ((method.getModifier().getModifier() == null)  ? "" : (method.getModifier() + " "))
-                    + method.getReturnType().getTypeName() + " "
+                    + handleType(method.getReturnType().getTypeName()) + " "
                     + method.getFunction().getText()
                     + "(" + visit(method.getParameter()) + ")";
             if (node.getIdentifier() != null) {
@@ -650,9 +689,19 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     classes.get("Card").addToBlock(visit(emptyMeth));
                 }
                 //Maybe add null check
-                classText.addToBlock("@Override" + visit(method));
+                classText.addToBlock("@Override").addToBlock(visit(method));
             } else {
-                if (!classes.get("Card").getBlock().toString().contains(methName)) {
+                if (method.getFunction().getText().equals("toString")) {
+                    int index = classes.get("Card").getBlock().indexOf("public String toString() {return ID;}");
+                    int endIndex = index + "public String toString() {return ID;}".length();
+                    if(index >= 0) {
+                        System.out.println(index);
+                        System.out.println(endIndex);
+                        classes.get("Card").getBlock().replace(index, endIndex, visit(method));
+                    } else {
+                        throw new DuplicateDefinitionException(node.getLineNumber(), method.getFunction().getText());
+                    }
+                } else if (!classes.get("Card").getBlock().toString().contains(methName)) {
                     classes.get("Card").addToBlock(visit(method));
                 } else {
                     throw new DuplicateDefinitionException(node.getLineNumber(), method.getFunction().getText());
@@ -686,18 +735,18 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}");
         classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;")
                 .addToBlock("public String toString() {return ID;}" +
-                        "@Override" +
-                        "public Card clone() {" +
-                        "try {" +
-                        "return (Card) super.clone();" +
-                        "} catch (CloneNotSupportedException e) {" +
-                        "System.err.println(\"Clone of card not supported\");" +
-                        "return null;" +
-                        "}" +
-                        "}"
+                    "@Override" +
+                    "public Card clone() {" +
+                    "try {" +
+                    "return (Card) super.clone();" +
+                    "} catch (CloneNotSupportedException e) {" +
+                    "System.err.println(\"Clone of card not supported\");" +
+                    "return null;" +
+                    "}" +
+                    "}"
                 )
         );
-        classes.put("Action", new ClassStringBuilder().addToBlock("interface Action {abstract void act();"));
+        classes.put("Action", new ClassStringBuilder().addToBlock("static interface Action {abstract void act();"));
         classes.put("Location", new ClassStringBuilder()
                 .addStart("Location")
                 .addToBlock("String name;")
@@ -727,6 +776,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "}"));
         classes.put("Player", new ClassStringBuilder().addStart("Player")
                 .addToBlock("String name;")
+                .addToBlock("Hand hand;")
                 .addToBlock("Player nextPlayer;").addToBlock("public Player findNextPlayer(int count) { " +
                         "Player tmp = this.nextPlayer;" +
                         "count = (players.size()+count)%players.size();" +
@@ -781,17 +831,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "return string.toString();" +
                         "}")
                 .addToBlock("public Hand() {GameState.hands.add(this);}");
-        classes.get("PlayArea").addToBlock("public void move(int cardNum, Location moveToLocation) {" +
-                "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
-                "super.cards.remove(0);" +
-                "}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
-                "private ArrayList<String> indexes = new ArrayList<String>();" +
-                "private ArrayList<String> allowedNames = new ArrayList<String>();" +
-                "private ArrayList<Action> allowedActions = new ArrayList<Action>();")
+                "private static ArrayList<String> indexes = new ArrayList<String>();" +
+                "private static ArrayList<String> allowedNames = new ArrayList<String>();" +
+                "private static ArrayList<Action> allowedActions = new ArrayList<Action>();")
         .addToBlock(
-                "public void displayAllowedActions() {" +
+                "public static void displayAllowedActions() {" +
                 "if (allowedNames.size() > 0){" +
                 "for (int i = 0; i < allowedNames.size(); i++) {" +
                 "System.out.println(i+1 + \" - \" + allowedNames.get(i));" +
@@ -799,13 +845,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "int choice = choice(allowedNames.size());" +
                 "allowedActions.get(choice-1).act();" +
                 "}}")
-        .addToBlock("public void disallowAllActions() {" +
+        .addToBlock("public static void disallowAllActions() {" +
                 "        allowedActions.clear();" +
                 "        allowedNames.clear();" +
                 "        indexes.clear();" +
                 "    }")
         .addToBlock(
-                "public int choice(int choices) {" +
+                "public static int choice(int choices) {" +
                 "int choice = -1;" +
                 "while (choice < 1 || choice > choices) {" +
                 "Scanner sc = new Scanner(System.in);" +
@@ -822,7 +868,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}" +
                 "return choice;" +
                 "}"));
-        classes.put("GameState", new ClassStringBuilder().addToBlock("class GameState {" +
+        classes.put("GameState", new ClassStringBuilder().addToBlock("static class GameState {" +
                 "static final ArrayList<Deck> decks = new ArrayList<>();" +
                 "static final ArrayList<Hand> hands = new ArrayList<>();" +
                 "static final ArrayList<PlayArea> playAreas = new ArrayList<>();" +
@@ -846,7 +892,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "for (Deck deck : decks) {" +
                 "if (deck.cards.isEmpty()) {" +
                 "System.out.println(deck.toString());" +
-                "}" +
                 "}" +
                 "}" +
                 "}"));

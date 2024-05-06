@@ -27,11 +27,11 @@ public class Main {
             String finalCode = codeBuilderVisitor.visitStart(ast);
             String finalfinalCode = CodeFormatter.formatCode(finalCode);
             FileWriter myWriter = new FileWriter(userDir+"/src/Test/Main.java");
-            myWriter.write(finalfinalCode);
+            myWriter.write("package Test;\n" + finalfinalCode);
             myWriter.close();
-            System.out.println(finalfinalCode);
+            //System.out.println(finalfinalCode);
         } catch (Exception e){
-            System.err.print(e.getMessage());
+            System.err.println(e.getMessage());
             //e.printStackTrace();
         }
 

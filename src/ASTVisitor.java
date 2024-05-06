@@ -109,6 +109,8 @@ public abstract class ASTVisitor<T> {
             return visit((NegateNode) node);
         } else if (node instanceof NegativeNode) {
             return visit((NegativeNode) node);
+        } else if (node instanceof ExpressionsNode) {
+            return visit ((ExpressionsNode) node);
         }
         throw new IllegalArgumentException("Unknown nodes.ExpressionNode subclass");
     }

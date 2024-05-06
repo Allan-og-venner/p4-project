@@ -9,7 +9,7 @@ public class ClassStringBuilder {
     }
 
     public ClassStringBuilder addStart(String name, String superClass) {
-        start = "class " + name + " extends " + superClass + " {";
+        start = "static class " + name + " extends " + superClass + " {";
         return this;
     }
 
