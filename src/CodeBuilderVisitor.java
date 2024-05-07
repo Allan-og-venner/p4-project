@@ -39,6 +39,14 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         else throw new RuntimeException(node.getLineNumber() + " - Action called wrong");
     }
 
+    public String boolToInt(String boolExp){
+        return "-(\"false\".indexOf(\"\" + ("+ boolExp +")))";
+    }
+
+    public String intToBool(String intExp){
+        return "((" + intExp + ") == 0 ? false : true )";
+    }
+
     /**
      * handleType is a method that takes a nonRealType as input and returns a real type.
      * It is used to handle the different types for arrays because the syntax for int, float, string is different in
@@ -255,9 +263,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             if(node.getType().getTypeName().matches("int|float")) {
                 var.append(" = 0");
             } else if (node.getType().getTypeName().equals("char")) {
-                var.append(" = ''");
-            } else if (node.getType().getTypeName().equals("string")) {
                 var.append(" = '\\0'");
+            } else if (node.getType().getTypeName().equals("string")) {
+                var.append(" = \"\"");
             } else {
                 var.append(" = null");
             }
@@ -362,7 +370,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         System.out.println(classFields.get(currentClass));
         scopeCount--;
         StringBuilder instanceFields = new StringBuilder();
-        String regex = "int|string|char|float";
+        String regex = "int|char|float";
         for (Pair<String,String> instanceField: classFields.get(currentClass)) {
             if (!instanceFields.isEmpty()) {
                 instanceFields.append(" && ");
@@ -427,7 +435,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(WhileNode node) {
         StringBuilder whileString = new StringBuilder();
         whileString.append("while (")
-                .append(visit(node.getCondition()))
+                .append(intToBool(visit(node.getCondition())))
                 .append(") {");
         scopeCount++;
         whileString.append(visit(node.getBlock()))
@@ -440,7 +448,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(IfNode node) {
         StringBuilder ifString = new StringBuilder();
         ifString.append("if (")
-                .append(visit(node.getCondition()))
+                .append(intToBool(visit(node.getCondition())))
                 .append(") {");
         scopeCount++;
         ifString.append(visit(node.getBlock()))
@@ -555,57 +563,48 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
 
     @Override
     public String visit(LessThanNode node) {
-        return visit(node.getLeft()) + "<" + visit(node.getRight());
+        return boolToInt(visit(node.getLeft()) + "<" + visit(node.getRight()));
     }
 
     @Override
     public String visit(GreaterThanNode node) {
-        return visit(node.getLeft()) + ">" + visit(node.getRight());
+        return boolToInt(visit(node.getLeft()) + ">" + visit(node.getRight()));
     }
 
     @Override
     public String visit(LTEQNode node) {
-        return visit(node.getLeft()) + "<=" + visit(node.getRight());
+        return boolToInt(visit(node.getLeft()) + "<=" + visit(node.getRight()));
     }
 
     @Override
     public String visit(GTEQNode node) {
-        return visit(node.getLeft()) + ">=" + visit(node.getRight());
+        return boolToInt(visit(node.getLeft()) + ">=" + visit(node.getRight()));
     }
 
     @Override
     public String visit(NOTEQNode node) {
-        if ((node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode) ||
-                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)) {
-            return "!(" + visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + "))";
-        } else if(!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode ||
-                (!(node.getLeft() instanceof ClassAccessNode) && node.getRight() instanceof ClassAccessNode)) {
-            return "!(" + visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + "))";
-        }
-        return visit(node.getLeft()) + "!=" + visit(node.getRight());
+        if (node.getLeft().getType().getTypeName().matches("int|float|char"))
+            return boolToInt(visit(node.getLeft()) + "==" + visit(node.getRight()));
+        return boolToInt(visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + ")");
     }
 
     @Override
     public String visit(ANDNode node) {
-        return visit(node.getLeft()) + "&&" + visit(node.getRight());
+        return boolToInt(intToBool(visit(node.getLeft())) + "&&" + intToBool(visit(node.getRight())));
     }
 
     @Override
     public String visit(ORNode node) {
-        return visit(node.getLeft()) + "||" + visit(node.getRight());
+        return boolToInt(intToBool(visit(node.getLeft())) + "||" + intToBool(visit(node.getRight())));
     }
 
     @Override
     public String visit(EQEQNode node) {
-
-        if (node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode ||
-                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)) {
-            return visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + ")";
-        } else if (!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode) {
-            return visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + ")";
-        }
-        return visit(node.getLeft()) + "==" + visit(node.getRight());
+        if (node.getLeft().getType().getTypeName().matches("int|float|char"))
+            return boolToInt(visit(node.getLeft()) + "==" + visit(node.getRight()));
+        return boolToInt(visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + ")");
     }
+
 
     @Override
     public String visit(ModifierNode node) {
@@ -801,7 +800,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "tmp = tmp.nextPlayer;" +
                         "}" +
                         "return tmp;}"
-                ).addToBlock("String toString() {return this.name}")
+                ).addToBlock("public String toString() {return this.name;}")
                 .addToBlock("public boolean equals(Object other){return this.name.equals(((Player) other).name);}")
                 .addToBlock("Player(String name){this.name = name;this.hand = new Hand(this);}")
         );

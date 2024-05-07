@@ -435,7 +435,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ArrayNode node) {
         String type = visit(node.getInnerNode());
-        node.setType(new TypeNode(type));
+        node.setType(new TypeNode("array " +type));
         return "array " + type;
     }
 
