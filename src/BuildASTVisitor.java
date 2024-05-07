@@ -5,6 +5,7 @@ import codegenExample.Card;
 import gen.*;
 import nodes.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.junit.Ignore;
 
 import javax.naming.OperationNotSupportedException;
 
