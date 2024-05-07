@@ -137,7 +137,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      */
     @Override
     public String visit(BlockNode node) {
-        System.out.println(node.getLineNumber());
         String stmType = visit(node.getStatement());
         String blockType = "void";
         if (node.getBlocks() != null) {
@@ -655,7 +654,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ClassAccessNode node) {
         String objectType = visit(node.getObject());
-        System.out.println(node.getValue().size());
         for (ValueNode currentField : node.getValue()) {
             if (objectType.startsWith("Class ")) {
                 objectType = objectType.replaceFirst("^Class ", "");
@@ -691,9 +689,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                     }
                 } else if (currentField instanceof IdentifierNode) {
                     identifier = ((IdentifierNode) currentField).getText();
-                    System.out.println("OBJECT TYPE " + objectType);
                     objectType = classST.vLookup(identifier);
-                    System.out.println("OBJECT TYPE " + objectType);
                 } else if (currentField instanceof ArrayAccessNode) {
                     symbolTables.push(classST);
                     objectType = visit(currentField);
@@ -850,7 +846,6 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         if (node.getValue() != null) {
             String exprType = visit(node.getValue());
             if (!symbolTable.checkInherits(exprType, type)) {
-                System.out.println("bye");
                 throw new WrongTypeException(node.getLineNumber(), type, exprType);
             }
         }
@@ -916,9 +911,5 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public TypeCheckerVisitor() {
         symbolTable.createOuterSymbolTable();
         symbolTables.push(symbolTable);
-        System.out.println("Ftable\n"+symbolTable.getInnerFTable()+"\n"+symbolTable.getFTable());
-        System.out.println("Vtable\n"+symbolTable.getInnerFTable()+"\n"+symbolTable.getFTable());
-        System.out.println("Ctable\n"+symbolTable.getCTable());
-        System.out.println("TTable\n"+symbolTable.getTypes());
     }
 }

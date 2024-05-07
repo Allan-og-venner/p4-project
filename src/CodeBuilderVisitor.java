@@ -215,7 +215,25 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         StringBuilder var = new StringBuilder();
         //scopeCount is used to determine which scope is currently being visited
         if (scopeCount == 0) {
+            StringBuilder ass = new StringBuilder();
             var.append("static");
+            var.append(" ");
+            if (node.isArray()) {
+                var.append("ArrayList<").append(visit(node.getType()))
+                        .append("> ")
+                        .append(node.getID().getText());
+            } else {
+                var.append(visit(node.getType()))
+                        .append(" ")
+                        .append(node.getID().getText());
+                ass.append(node.getID().getText());
+            }
+            variables.add(var.append(";").toString());
+            if (node.getValue() != null) {
+                ass.append(" = ")
+                        .append(visit(node.getValue()));
+                return ass.append(";").toString();
+            } else return "";
         } else {
             var.append(visit(node.getModi()));
         }
@@ -233,6 +251,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         if (node.getValue() != null) {
             var.append(" = ")
                 .append(visit(node.getValue()));
+        } else {
+            if(node.getType().getTypeName().matches("int|float")) {
+                var.append(" = 0");
+            } else if (node.getType().getTypeName().equals("char")) {
+                var.append(" = ''");
+            } else if (node.getType().getTypeName().equals("string")) {
+                var.append(" = '\\0'");
+            } else {
+                var.append(" = null");
+            }
         }
         var.append(";");
 
@@ -240,12 +268,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             classFields.get(currentClass).add(new Pair<>(node.getType().getTypeName(),node.getID().getText()));
         }
 
-        if (scopeCount == 0) {
-            variables.add(var.toString());
-            return "";
-        } else {
-            return var.toString();
-        }
+        return var.toString();
     }
 
     @Override
@@ -305,17 +328,16 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     .append(visit(node.getParameter()))
                     .append(") {");
             scopeCount++;
-            function.append(visit(node.getBlock()))
-                    .append("}");
+            function.append(visit(node.getBlock()));
             scopeCount--;
             if (Objects.equals(node.getFunction().getText(), "game")) {
-                gameFunction = function.toString();
+                gameFunction = function.append("}").toString();
             } else if (Objects.equals(node.getFunction().getText(), "end")) {
-                endFunction = function.toString();
+                endFunction = function.append("System.exit(0);").append("}").toString();
             } else if (scopeCount == 0) {
-                functions.add(function.toString());
+                functions.add(function.append("}").toString());
             } else {
-                return function.toString();
+                return function.append("}").toString();
             }
         }
         return "";
@@ -357,15 +379,17 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
             classD.append("public boolean equals(Object other) {" +
                     "if (other.getClass().equals(super.getClass())) {");
 
-            classD.append("return (").append(instanceFields).append(");")
-                    .append("}")
-                    .append("return false;")
-                    .append("}");
+            classD.append("return (")
+                    .append(instanceFields).append(");")
+                    .append(
+                        "}" +
+                        "return false;" +
+                        "}"
+                    );
         } else {
             classD.append("public boolean equals(Object other) {" +
-                    "if (other.getClass().equals(super.getClass())) {");
-
-            classD.append("return true;" +
+                    "if (other.getClass().equals(super.getClass())) " +
+                    "return true;" +
                     "}" +
                     "return false;" +
                     "}");
@@ -415,7 +439,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(IfNode node) {
         StringBuilder ifString = new StringBuilder();
-
         ifString.append("if (")
                 .append(visit(node.getCondition()))
                 .append(") {");
@@ -483,9 +506,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(FunctionCallNode node) {
         StringBuilder funcCall = new StringBuilder();
-        if(node.getFunction().getText().equals("showGameState")) {
+        if (node.getFunction().getText().equals("showGameState")) {
             funcCall.append("GameState.");
-        } else if(node.getFunction().getText().matches("allowAction|disallowAction|disallowAllActions|displayAllowedActions")) {
+        } else if (node.getFunction().getText().matches("allowAction|disallowAction|disallowAllActions|displayAllowedActions")) {
             funcCall.append("ActionMenu.");
             funcCall.append(visit(node.getFunction()))
                     .append("(")
@@ -553,10 +576,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     @Override
     public String visit(NOTEQNode node) {
         if ((node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode) ||
-                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)){
+                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)) {
             return "!(" + visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + "))";
         } else if(!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode ||
-                (!(node.getLeft() instanceof ClassAccessNode) && node.getRight() instanceof ClassAccessNode)){
+                (!(node.getLeft() instanceof ClassAccessNode) && node.getRight() instanceof ClassAccessNode)) {
             return "!(" + visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + "))";
         }
         return visit(node.getLeft()) + "!=" + visit(node.getRight());
@@ -576,9 +599,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
     public String visit(EQEQNode node) {
 
         if (node.getLeft() instanceof ArrayNode && node.getRight() instanceof ArrayNode ||
-                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)){
+                (node.getLeft() instanceof ClassAccessNode && node.getRight() instanceof ClassAccessNode)) {
             return visit(node.getLeft()) + ".equals(" + visit(node.getRight()) + ")";
-        } else if(!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode){
+        } else if (!(node.getLeft() instanceof ArrayNode) && node.getRight() instanceof ArrayNode) {
             return visit(node.getRight()) + ".equals(" + visit(node.getLeft()) + ")";
         }
         return visit(node.getLeft()) + "==" + visit(node.getRight());
@@ -598,7 +621,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
         String tmp = handleType(node.getTypeName());
          if (tmp.equals("string")){
             return "String";
-         }else {
+         } else {
             return tmp;
         }
     }
@@ -651,28 +674,34 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 throw new DuplicateDefinitionException(node.getLineNumber(), "Card");
             }
             classText = new ClassStringBuilder().addStart(className, "Card");
+            int convertMethod = classes.get("Card").getBlock().indexOf("return this;");
+            classes.get("Card").getBlock().insert(convertMethod,
+                    "if(this.ID.equals( \"" + node.getID() + "\")){"
+                        + "return new " + className + "(this);}");
+            classText.addToBlock(className + "(Card card){super(card);}");
         }
         for (DefineNode field : node.getFields()) {
             String fieldText = visit(field);
             if (classes.get("Card").getBlock().indexOf(fieldText) == -1) {
-                classes.get("Card").addToBlock(visit(field));
+                classes.get("Card").addToBlock(fieldText);
+                int constructorIndex = classes.get("Card").getBlock().indexOf("this.ID = card.ID;}");
+                classes.get("Card").getBlock().insert(constructorIndex, "this." + field.getID().getText() + " = card." + field.getID().getText() + ";");
             }
         }
         for (FunctionDNode method : node.getMethods()) {
-            String methName = "public "
-                    + ((method.getModifier().getModifier() == null)  ? "" : (method.getModifier() + " "))
+            String params = visit(method.getParameter());
+            String methName =
+                    ((method.getModifier().getModifier() == null)  ? "" : (method.getModifier() + " "))
                     + handleType(method.getReturnType().getTypeName()) + " "
                     + method.getFunction().getText()
-                    + "(" + visit(method.getParameter()) + ")";
+                    + "(" + params + ")";
             if (node.getIdentifier() != null) {
                 if (!classes.get("Card").getBlock().toString().contains(methName)) {
-                    FunctionDNode emptyMeth = new FunctionDNode();
-                    emptyMeth.setModifier(method.getModifier());
-                    emptyMeth.setReturnType(method.getReturnType());
-                    emptyMeth.setFunction(method.getFunction());
-                    emptyMeth.setParameter(method.getParameter());
-                    emptyMeth.setBlock(new BlockNode());
-                    classes.get("Card").addToBlock(visit(emptyMeth));
+                    String notEmptyMeth = visit(method.getModifier()) + " " + method.getReturnType().getTypeName() + " " + method.getFunction().getText() + "(" + params + ")" +
+                            "{ Card a = convert();" +
+                            "if (a.getClass() != Card.class) {" +
+                            "a." + method.getFunction().getText() + "(" + paramToVar(params) +"); } else {}";
+                    classes.get("Card").addToBlock(notEmptyMeth).addToBlock("}");
                 }
                 //Maybe add null check
                 classText.addToBlock("@Override").addToBlock(visit(method));
@@ -680,7 +709,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 if (method.getFunction().getText().equals("toString")) {
                     int index = classes.get("Card").getBlock().indexOf("public String toString() {return ID;}");
                     int endIndex = index + "public String toString() {return ID;}".length();
-                    if(index >= 0) {
+                    if (index >= 0) {
                         System.out.println(index);
                         System.out.println(endIndex);
                         classes.get("Card").getBlock().replace(index, endIndex, visit(method));
@@ -694,7 +723,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 }
             }
         }
-        if(node.getIdentifier() != null) {
+        if (node.getIdentifier() != null) {
             classes.put(className, classText);
         }
         scopeCount--;
@@ -718,7 +747,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "}}" +
                 "players.get(args.size()-1).nextPlayer = players.get(0);" +
                 "}");
-        classes.put("Card", new ClassStringBuilder().addStart("Card").addToBlock("String ID;")
+        classes.put("Card", new ClassStringBuilder().addStart("Card implements Cloneable").addToBlock("String ID;")
                 .addToBlock("public String toString() {return ID;}" +
                     "@Override" +
                     "public Card clone() {" +
@@ -729,7 +758,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                     "return null;" +
                     "}" +
                     "}"
-                )
+                ).addToBlock("public Card convert() {").addToBlock("return this;}")
+                .addToBlock("public Card(Card card){").addToBlock("this.ID = card.ID;}")
+                .addToBlock("public Card(){}")
         );
         classes.put("Action", new ClassStringBuilder().addToBlock("static interface Action {abstract void act();"));
         classes.put("Location", new ClassStringBuilder()
@@ -755,8 +786,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "public PlayArea() {" +
                         "GameState.playAreas.add(this);" +
                         "}")
+                .addToBlock("public boolean equals(Object other){return this.name.equals(((PlayArea) other).name);}")
                 .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
-                        "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
+                        "if(!moveToLocation.cards.isEmpty()){moveToLocation.cards.add(0, super.cards.get(cardNum));}else{moveToLocation.cards.add(super.cards.get(cardNum));}" +
                         "super.cards.remove(cardNum);" +
                         "}"));
         classes.put("Player", new ClassStringBuilder().addStart("Player")
@@ -769,7 +801,9 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "tmp = tmp.nextPlayer;" +
                         "}" +
                         "return tmp;}"
-                ).addToBlock("Player(String name){this.name = name;this.hand = new Hand(this);}")
+                ).addToBlock("String toString() {return this.name}")
+                .addToBlock("public boolean equals(Object other){return this.name.equals(((Player) other).name);}")
+                .addToBlock("Player(String name){this.name = name;this.hand = new Hand(this);}")
         );
         classes.get("Deck").addToBlock("int visible = 0;").addToBlock("public void draw(Location hand){" +
                 "hand.cards.add(super.cards.get(0));" +
@@ -778,7 +812,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 .addToBlock("public Card getTop() {return super.cards.get(0);}")
                 .addToBlock("public void drawMany(Location hand, int amountToDraw) {" +
                         "for (int i = 0; i < amountToDraw; i++){" +
-                        "hand.cards.add(0, super.cards.get(0));" +
+                        "if (!hand.cards.isEmpty()){hand.cards.add(0, super.cards.get(0));}else {hand.cards.add(super.cards.get(0));}" +
                         "super.cards.remove(0);" +
                         "}" +
                         "}")
@@ -787,35 +821,37 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                         "}")
                 .addToBlock("public void add(Card card, int number) {" +
                         "for (int i = 0; i < number; i++) {" +
-                        "super.cards.add(0, card.clone());" +
+                        "if(!super.cards.isEmpty()){super.cards.add(0, card.clone());}else{super.cards.add(card.clone());}" +
                         "}}")
+                .addToBlock("public boolean equals(Object other){return this.name.equals(((Deck) other).name);}")
                 .addToBlock("@Override" +
                         "public String toString() {" +
                         "StringBuilder string = new StringBuilder();" +
                         "string.append(name).append(\" - \")" +
-                        ".append((visible == 1) ? getTop() : \"hidden (\")" +
+                        ".append((visible == 1) ? getTop() + \" (\" : \"hidden (\")" +
                         ".append(cards.size())" +
                         ".append(\" \")" +
-                        ".append((cards.size() == 1) ? \"card\" : \"cards\");" +
+                        ".append((cards.size() == 1) ? \"card)\" : \"cards)\");" +
                         "return string.toString();" +
                         "}");
         classes.get("Hand").addToBlock("String name;")
                 .addToBlock("int maxSize;")
                 .addToBlock("Player owner;")
                 .addToBlock("public void move(int cardNum, Location moveToLocation) {" +
-                        "moveToLocation.cards.add(0, super.cards.get(cardNum));" +
+                        "if(!moveToLocation.cards.isEmpty()){moveToLocation.cards.add(0, super.cards.get(cardNum));}else{moveToLocation.cards.add(super.cards.get(cardNum));}" +
                         "super.cards.remove(cardNum);" +
                         "}")
                 .addToBlock("@Override" +
                         "public String toString() {" +
                         "StringBuilder string = new StringBuilder();" +
-                        "string.append(\"This hand\\n\");" +
+                        "string.append(\"\\nThis hand\\n\");" +
                         "for (Card card : cards) {" +
                         "string.append(\"- \").append(card).append(\"\\n\");" +
                         "}" +
                         "return string.toString();" +
                         "}")
                 .addToBlock("public Hand(Player player) {GameState.hands.add(this);this.owner = player;}")
+                .addToBlock("public boolean equals(Object other){return this.owner.equals(((Hand) other).owner);}")
                 .addToBlock("public Hand() {GameState.hands.add(this);}");
         classes.put("ActionMenu", new ClassStringBuilder().addStart("ActionMenu")
         .addToBlock(
@@ -864,19 +900,20 @@ public class CodeBuilderVisitor extends ASTVisitor<String>{
                 "if (hand.owner.equals(player)) {" +
                 "System.out.println(hand);" +
                 "} else {" +
-                "System.out.print(player.name);" +
-                "System.out.print((player.name.endsWith(\"s\")) ? \"'\" : \"'s\");" +
-                "System.out.println(\"hand - \" + player.hand.cards.size() + \" cards\");" +
+                "String owner = hand.owner.name;" +
+                "System.out.print(owner);" +
+                "System.out.print((owner.endsWith(\"s\")) ? \"'\" : \"'s\");" +
+                "System.out.println(\" hand - \" + hand.cards.size() + \" cards\");" +
                 "}" +
                 "}" +
                 "}" +
                 "for (PlayArea playArea : playAreas) {" +
-                "if (playArea.cards.isEmpty()) {" +
+                "if (!playArea.cards.isEmpty()) {" +
                 "System.out.println(playArea.toString());" +
                 "}" +
                 "}" +
                 "for (Deck deck : decks) {" +
-                "if (deck.cards.isEmpty()) {" +
+                "if (!deck.cards.isEmpty()) {" +
                 "System.out.println(deck.toString());" +
                 "}" +
                 "}" +
