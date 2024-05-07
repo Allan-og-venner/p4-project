@@ -1,4 +1,5 @@
 package nodes;
 
-public class LTEQNode extends InfixExpressionNode{
+public class LTEQNode extends InfixExpressionNode {
+
 }

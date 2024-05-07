@@ -12,8 +12,9 @@ public class CardTypeNode extends DeclarationNode {
     public void setReturnType(TypeNode returnType) {
         this.returnType = returnType;
     }
-
-    public TypeNode getReturnType() {return returnType;}
+    public TypeNode getReturnType() {
+        return returnType;
+    }
 
     public void setIdentifier(IdentifierNode identifier) {
         this.identifier = identifier;
@@ -28,8 +29,12 @@ public class CardTypeNode extends DeclarationNode {
     public String getID() {
         return ID;
     }
+
     public ArrayList<FunctionDNode> getMethods() {
         return methods;
     }
-    public ArrayList<DefineNode> getFields() {return fields;}
+
+    public ArrayList<DefineNode> getFields() {
+        return fields;
+    }
 }

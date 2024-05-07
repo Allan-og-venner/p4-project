@@ -7,7 +7,6 @@ public class IfNode extends ControlNode {
     public ExpressionNode getCondition() {
         return condition;
     }
-
     public void setCondition(ExpressionNode condition) {
         this.condition = condition;
     }
@@ -15,7 +14,6 @@ public class IfNode extends ControlNode {
     public BlockNode getBlock() {
         return block;
     }
-
     public void setBlock(BlockNode block) {
         this.block = block;
     }

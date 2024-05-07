@@ -7,7 +7,6 @@ public class ExpressionsNode extends ExpressionNode {
     public ExpressionNode getLeft() {
         return left;
     }
-
     public void setLeft(ExpressionNode left) {
         this.left = left;
     }
@@ -15,7 +14,6 @@ public class ExpressionsNode extends ExpressionNode {
     public ExpressionsNode getRight() {
         return right;
     }
-
     public void setRight(ExpressionsNode right) {
         this.right = right;
     }

@@ -40,7 +40,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         addVisitedNode("Visited block node");
         BlockNode node = new BlockNode();
         node.getLineNumberFromContext(context);
-        //System.out.println(context.statement() != null);
         if (context.statement() != null) {
             node.setStatement(visitStatement(context.statement()));
             if (context.block() != null) {
@@ -63,7 +62,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             FunctionCallNode node = (FunctionCallNode) visitCall(context.call());
             node.getLineNumberFromContext(context);
             return node;
-        } else if(context.method() != null) {
+        } else if (context.method() != null) {
             ClassAccessNode node = visitMethod(context.method());
             node.getLineNumberFromContext(context);
             return node;
@@ -118,7 +117,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     @Override
     public LoopNode visitLoop(ExprParser.LoopContext context) {
         addVisitedNode("Visited loop node");
-        if(context.KEY_WHILE() != null) {
+        if (context.KEY_WHILE() != null) {
             WhileNode node = new WhileNode();
             node.setCondition(visitExpr(context.expr()));
             node.setBlock(visitBlock(context.block()));
@@ -166,7 +165,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         AssignmentNode node = new AssignmentNode();
         if (context.value() != null) {
             node.setLeft(visitValue(context.value()));
-            if (context.expr() !=null){
+            if (context.expr() != null) {
                 node.setRight(visitExpr(context.expr()));
             }
             node.getLineNumberFromContext(context);
@@ -180,7 +179,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     @Override
     public DeclarationNode visitDecl(ExprParser.DeclContext context) {
         addVisitedNode("Visited declaration node");
-        if (context.defin() != null){
+        if (context.defin() != null) {
             DefineNode node = visitDefin(context.defin());
             node.getLineNumberFromContext(context);
             return node;
@@ -223,10 +222,10 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             IdentifierNode text = new IdentifierNode();
             text.setText(context.IDENTIFIER().getText());
             node.setID(text);
-            if(context.L_BRACKET() != null && context.R_BRACKET() != null){
-                node.setArray(true);;
+            if (context.L_BRACKET() != null && context.R_BRACKET() != null) {
+                node.setArray(true);
             }
-            if (context.expr() != null){
+            if (context.expr() != null) {
                 node.setValue(visitExpr(context.expr()));
             }
         } else {
@@ -241,11 +240,11 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
     public TypeNode visitType(ExprParser.TypeContext context) {
         addVisitedNode("Visited type node");
         TypeNode node = new TypeNode();
-        if (context.TYPE_INT() != null){
+        if (context.TYPE_INT() != null) {
             node.setTypeName(context.TYPE_INT().getText());
-        } else if (context.TYPE_FLOAT() != null){
+        } else if (context.TYPE_FLOAT() != null) {
             node.setTypeName(context.TYPE_FLOAT().getText());
-        } else if (context.TYPE_STRING() != null){
+        } else if (context.TYPE_STRING() != null) {
             node.setTypeName(context.TYPE_STRING().getText());
         } else if (context.TYPE_CHAR() != null) {
             node.setTypeName(context.TYPE_CHAR().getText());
@@ -741,7 +740,6 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             fieldNode.setType((visitType(context.cardField(i).type())));
             node.getFields().add(fieldNode);
         }
-
         return node;
     }
 }

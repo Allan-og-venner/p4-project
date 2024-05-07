@@ -13,7 +13,6 @@ public class CodeFormatter {
      * @return formattedCode
      */
     public static String formatCode(String unformattedCode) {
-
         unformattedCode = unformattedCode.replaceAll("\n","");
 
         StringBuilder formattedCode = new StringBuilder();
@@ -52,7 +51,7 @@ public class CodeFormatter {
                     if (!peekNextNonWhitespaceCharIs(unformattedCode, i + 1, '}')) {
                         isNewLineNeeded = true;
                     }
-                    if(indentation == 0) {
+                    if (indentation == 0) {
                         formattedCode.append('\n');
                     }
                     break;

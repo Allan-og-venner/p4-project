@@ -1,6 +1,6 @@
 package nodes;
 
-public class ForNode  extends LoopNode{
+public class ForNode extends LoopNode {
     private IdentifierNode iterator;
     private ExpressionNode array;
     private BlockNode block;
@@ -8,7 +8,6 @@ public class ForNode  extends LoopNode{
     public BlockNode getBlock() {
         return block;
     }
-
     public void setBlock(BlockNode block) {
         this.block = block;
     }
@@ -16,7 +15,6 @@ public class ForNode  extends LoopNode{
     public IdentifierNode getIterator() {
         return iterator;
     }
-
     public void setIterator(IdentifierNode iterator) {
         this.iterator = iterator;
     }
@@ -24,7 +22,6 @@ public class ForNode  extends LoopNode{
     public ExpressionNode getArray() {
         return array;
     }
-
     public void setArray(ExpressionNode array) {
         this.array = array;
     }

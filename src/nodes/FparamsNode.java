@@ -7,7 +7,6 @@ public class FparamsNode extends FunctionDNode {
     public FparamNode getLeft() {
         return left;
     }
-
     public void setLeft(FparamNode left) {
         this.left = left;
     }
@@ -15,7 +14,6 @@ public class FparamsNode extends FunctionDNode {
     public FparamsNode getRight() {
         return right;
     }
-
     public void setRight(FparamsNode right) {
         this.right = right;
     }

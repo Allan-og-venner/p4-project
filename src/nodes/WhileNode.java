@@ -7,7 +7,6 @@ public class WhileNode extends LoopNode {
     public ExpressionNode getCondition() {
         return condition;
     }
-
     public void setCondition(ExpressionNode condition) {
         this.condition = condition;
     }
@@ -15,7 +14,6 @@ public class WhileNode extends LoopNode {
     public BlockNode getBlock() {
         return block;
     }
-
     public void setBlock(BlockNode block) {
         this.block = block;
     }

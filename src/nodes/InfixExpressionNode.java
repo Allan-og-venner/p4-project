@@ -7,7 +7,6 @@ public abstract class InfixExpressionNode extends ExpressionNode {
     public ExpressionNode getLeft() {
         return left;
     }
-
     public void setLeft(ExpressionNode left) {
         this.left = left;
     }
@@ -15,7 +14,6 @@ public abstract class InfixExpressionNode extends ExpressionNode {
     public ExpressionNode getRight() {
         return right;
     }
-
     public void setRight(ExpressionNode right) {
         this.right = right;
     }

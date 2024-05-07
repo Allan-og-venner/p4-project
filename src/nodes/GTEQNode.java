@@ -1,4 +1,5 @@
 package nodes;
 
-public class GTEQNode extends InfixExpressionNode{
+public class GTEQNode extends InfixExpressionNode {
+
 }

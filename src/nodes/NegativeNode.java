@@ -6,7 +6,6 @@ public class NegativeNode extends ExpressionNode {
     public ExpressionNode getInnerNode() {
         return innerNode;
     }
-
     public void setInnerNode(ExpressionNode innerNode) {
         this.innerNode = innerNode;
     }

@@ -6,7 +6,6 @@ public class ArrayNode extends AccessibleObjectNode {
     public ExpressionsNode getInnerNode() {
         return innerNode;
     }
-
     public void setInnerNode(ExpressionsNode innerNode) {
         this.innerNode = innerNode;
     }

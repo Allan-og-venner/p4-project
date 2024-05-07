@@ -9,7 +9,6 @@ public class DefineNode extends DeclarationNode {
     public boolean isArray() {
         return isArray;
     }
-
     public void setArray(boolean array) {
         isArray = array;
     }
@@ -17,7 +16,6 @@ public class DefineNode extends DeclarationNode {
     public ModifierNode getModi() {
         return Modi;
     }
-
     public void setModi(ModifierNode modi) {
         Modi = modi;
     }
@@ -25,7 +23,6 @@ public class DefineNode extends DeclarationNode {
     public IdentifierNode getID() {
         return ID;
     }
-
     public void setID(IdentifierNode ID) {
         this.ID = ID;
     }
@@ -33,7 +30,6 @@ public class DefineNode extends DeclarationNode {
     public ExpressionNode getValue() {
         return Value;
     }
-
     public void setValue(ExpressionNode value) {
         Value = value;
     }

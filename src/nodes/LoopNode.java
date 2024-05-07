@@ -1,14 +1,12 @@
 package nodes;
 
 public abstract class LoopNode extends ControlNode {
-
     private ExpressionNode condition;
     private BlockNode block;
 
     public ExpressionNode getCondition() {
         return condition;
     }
-
     public void setCondition(ExpressionNode condition) {
         this.condition = condition;
     }
@@ -16,7 +14,6 @@ public abstract class LoopNode extends ControlNode {
     public BlockNode getBlock() {
         return block;
     }
-
     public void setBlock(BlockNode block) {
         this.block = block;
     }

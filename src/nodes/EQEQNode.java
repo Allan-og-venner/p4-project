@@ -1,4 +1,5 @@
 package nodes;
 
-public class EQEQNode extends InfixExpressionNode{
+public class EQEQNode extends InfixExpressionNode {
+
 }

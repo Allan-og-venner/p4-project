@@ -39,7 +39,6 @@ public class SymbolTable implements Cloneable {
         } catch(CloneNotSupportedException e) {
             System.err.println(e.getMessage());
         }
-
         return this;
     }
 
@@ -52,7 +51,9 @@ public class SymbolTable implements Cloneable {
         tTable.put(name, superclass);
     }
 
-    public Hashtable<String, String> getTypes() { return this.tTable; }
+    public Hashtable<String, String> getTypes() {
+        return this.tTable;
+    }
 
     public boolean checkType(String input) {
         return this.tTable.containsKey(input);
@@ -168,11 +169,21 @@ public class SymbolTable implements Cloneable {
         return cloned;
     }
 
-    public Hashtable<String,String> getVTable() {return this.vTable;}
-    public Hashtable<String,String> getFTable() {return this.fTable;}
-    public Hashtable<String, SymbolTable> getCTable() {return this.cTable;}
-    public Hashtable<String,String> getInnerVTable() {return this.innerVTable;}
-    public Hashtable<String,String> getInnerFTable() {return this.innerFTable;}
+    public Hashtable<String,String> getVTable() {
+        return this.vTable;
+    }
+    public Hashtable<String,String> getFTable() {
+        return this.fTable;
+    }
+    public Hashtable<String, SymbolTable> getCTable() {
+        return this.cTable;
+    }
+    public Hashtable<String,String> getInnerVTable() {
+        return this.innerVTable;
+    }
+    public Hashtable<String,String> getInnerFTable() {
+        return this.innerFTable;
+    }
 
     public String findClosestAncestor(String class1, String class2) {
         if (class1.equals("null")) {

@@ -2,16 +2,10 @@ package nodes;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.lang.reflect.Type;
-
 public class BlockNode {
-
     private int lineNumber;
-
     private StatementNode statement;
-
     private BlockNode blocks;
-
     private TypeNode type;
 
     public void getLineNumberFromContext(ParserRuleContext context){
@@ -21,7 +15,6 @@ public class BlockNode {
     public int getLineNumber() {
         return lineNumber;
     }
-
     public void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }
@@ -29,7 +22,6 @@ public class BlockNode {
     public TypeNode getType() {
         return type;
     }
-
     public void setType(TypeNode Type) {
         this.type = Type;
     }
@@ -37,7 +29,6 @@ public class BlockNode {
     public StatementNode getStatement() {
         return statement;
     }
-
     public void setStatement(StatementNode statement) {
         this.statement = statement;
     }
@@ -45,7 +36,6 @@ public class BlockNode {
     public BlockNode getBlocks() {
         return blocks;
     }
-
     public void setBlocks(BlockNode blocks) {
         this.blocks = blocks;
     }

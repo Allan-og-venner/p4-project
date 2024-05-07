@@ -6,7 +6,6 @@ public class ReturnNode extends CommandNode {
     public ExpressionNode getInnerNode() {
         return innerNode;
     }
-
     public void setInnerNode(ExpressionNode innerNode) {
         this.innerNode = innerNode;
     }

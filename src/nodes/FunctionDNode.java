@@ -6,23 +6,26 @@ public class FunctionDNode extends DeclarationNode {
     private FparamsNode parameter;
     private TypeNode returnType;
     private ExpressionNode expr;
-
     private BlockNode block;
-
-    public BlockNode getBlock() {return block;}
-
-    public void setBlock(BlockNode block) {this.block = block;}
-
     private boolean isAction;
 
-    public boolean getIsAction() {return isAction;}
+    public BlockNode getBlock() {
+        return block;
+    }
+    public void setBlock(BlockNode block) {
+        this.block = block;
+    }
 
-    public void setIsAction(boolean bool) {isAction = bool;}
+    public boolean getIsAction() {
+        return isAction;
+    }
+    public void setIsAction(boolean bool) {
+        isAction = bool;
+    }
 
     public ModifierNode getModifier() {
         return modifier;
     }
-
     public void setModifier(ModifierNode modifier) {
         this.modifier = modifier;
     }
@@ -30,7 +33,6 @@ public class FunctionDNode extends DeclarationNode {
     public IdentifierNode getFunction() {
         return function;
     }
-
     public void setFunction(IdentifierNode function) {
         this.function = function;
     }
@@ -38,7 +40,6 @@ public class FunctionDNode extends DeclarationNode {
     public TypeNode getReturnType() {
         return returnType;
     }
-
     public void setReturnType(TypeNode returnType) {
         this.returnType = returnType;
     }
@@ -46,7 +47,6 @@ public class FunctionDNode extends DeclarationNode {
     public FparamsNode getParameter() {
         return parameter;
     }
-
     public void setParameter(FparamsNode parameter) {
         this.parameter = parameter;
     }
@@ -54,9 +54,7 @@ public class FunctionDNode extends DeclarationNode {
     public ExpressionNode getExpr() {
         return expr;
     }
-
     public void setExpr(ExpressionNode expr) {
         this.expr = expr;
     }
-
 }
