@@ -715,6 +715,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     @Override
     public String visit(ClassDNode node) {
         String className = node.getName().getText();
+        if(className.startsWith("Card") || className.equals("ActionMenu") || className.equals("GameState"))
+            throw new IllegalTypeException(node.getLineNumber(), className);
         String superclassName = "Object";
         if (node.getSuperClass() != null) {
             superclassName = node.getSuperClass().getText();
@@ -809,6 +811,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
     public String visit(DefineNode node, SymbolTable table) {
         String identifier = node.getID().getText();
         String type = node.getType().getTypeName();
+        if(type.equals("void"))
+            throw new IllegalTypeException(node.getLineNumber(), "void");
         if (table.checkInnerV(identifier)) {
             throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
         }
@@ -839,6 +843,8 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
         } else {
             type = node.getType().getTypeName();
         }
+        if(type.equals("void"))
+            throw new IllegalTypeException(node.getLineNumber(), "void");
         String identifier = node.getID().getText();
         if (symbolTables.peek().checkInnerV(identifier)) {
             throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
