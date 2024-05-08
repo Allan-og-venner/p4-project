@@ -2,6 +2,8 @@ package nodes;
 
 
 public class TypeNode extends DefineNode {
+
+        public TypeNode(){}
         private String typeName;
 
         public TypeNode(String type) {
