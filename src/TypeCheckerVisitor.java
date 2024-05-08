@@ -771,10 +771,16 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new WrongTypeException(node.getLineNumber(), "function", "action");
         }
         String identifier = node.getFunction().getText();
-        if (symbolTables.peek().fLookup(identifier) != null) {
-            throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
-        }
         String returnType = node.getReturnType().getTypeName();
+        String superMethod = table.fLookup(identifier);
+        if (table.checkInnerF(identifier)) {
+            throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
+        } else if (superMethod != null) {
+            String superType = superMethod.split(",")[0];
+            if(!returnType.equals(superType)) {
+                throw new WrongTypeException(node.getLineNumber(), superType, returnType);
+            }
+        }
         try {
             symbolTables.push((SymbolTable) table.clone());
             String parameterTypes = "";

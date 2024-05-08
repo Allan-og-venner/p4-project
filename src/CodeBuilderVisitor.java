@@ -407,7 +407,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
                   );
         } else {
             classD.append("public boolean equals(Object other) {" +
-                    "if (other.getClass().equals(super.getClass())) " +
+                    "if (other.getClass().equals(super.getClass())) {" +
                     "return true;" +
                     "}" +
                     "return false;" +
