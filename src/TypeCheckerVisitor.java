@@ -777,7 +777,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
         } else if (superMethod != null) {
             String superType = superMethod.split(",")[0];
-            if(!returnType.equals(superType)) {
+            if (!returnType.equals(superType)) {
                 throw new WrongTypeException(node.getLineNumber(), superType, returnType);
             }
         }
