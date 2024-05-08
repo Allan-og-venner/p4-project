@@ -652,10 +652,12 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             for (int i = 0; i < accesses; i++) {;
                 ExprParser.AccessingContext ctx = context.accessing(i);
                 if (ctx.PERIOD() != null) {
+                    //fields and methods
                     ValueNode objectNode = visitAccessibleValue(ctx.accessibleValue());
                     lastNode = objectNode;
                     node.getValue().add(objectNode);
                 } else if (ctx.L_BRACKET() != null) {
+                    //arrays
                     ArrayAccessNode arrayNode = new ArrayAccessNode();
                     arrayNode.setArray(lastNode);
                     arrayNode.setIndex(visitExpr(ctx.expr()));
