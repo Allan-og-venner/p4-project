@@ -180,6 +180,7 @@ public class BuildASTVisitorTest extends TestCase {
 
 
     }
+
     public void testVisitControlLoop() {
         ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
         ExprParser.LoopContext loopCtx = Mockito.mock(ExprParser.LoopContext.class);
@@ -201,11 +202,99 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedLoop.getClass(), result.getClass());
 
+    }
+    public void testVisitControlIfthen() {
+        ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
+        ExprParser.IfthenContext IfthenCtx = Mockito.mock(ExprParser.IfthenContext.class);
+
+        when(ctx.ifthen()).thenReturn(IfthenCtx);
+
+        BuildASTVisitor visitor = spy(new BuildASTVisitor());
+        IfNode expectedIf = new IfNode();
+        doReturn(expectedIf).when(visitor).visitIfthen(IfthenCtx);
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+        IfNode result = (IfNode) visitor.visitControl(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedIf.getClass(), result.getClass());
+
+    }
+    public void testVisitControlError() {
+        ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
+
+
+        BuildASTVisitor visitor = spy(new BuildASTVisitor());
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+        try {
+
+            IfNode result = (IfNode) visitor.visitControl(ctx);
+
+            fail("Should have thrown exception");
+        }catch (Exception e){
+            assertThat(e.getMessage(), is("1 Operation not supported (control node)"));
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+        }
+
 
     }
 
     public void testVisitIfthen() {
+        ExprParser.IfthenContext ctx = Mockito.mock(ExprParser.IfthenContext.class);
+        ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
+        ExprParser.BlockContext blockCtx = Mockito.mock(ExprParser.BlockContext.class);
+        when(ctx.expr()).thenReturn(exprCtx);
+        when(ctx.block()).thenReturn(blockCtx);
 
+        BuildASTVisitor visitor = spy(new BuildASTVisitor());
+        IfNode expectedIf = new IfNode();
+        LessThanNode expectedExpr = new LessThanNode();
+        BlockNode expectedBlock = new BlockNode();
+        doReturn(expectedExpr).when(visitor).visitExpr(exprCtx);
+        doReturn(expectedBlock).when(visitor).visitBlock(blockCtx);
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+        IfNode result = (IfNode) visitor.visitIfthen(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedIf.getClass(), result.getClass());
+    }
+    public void testVisitIfthenError() {
+        ExprParser.IfthenContext ctx = Mockito.mock(ExprParser.IfthenContext.class);
+
+        BuildASTVisitor visitor = spy(new BuildASTVisitor());
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+        try {
+
+            IfNode result = (IfNode) visitor.visitIfthen(ctx);
+
+            fail("Should have thrown exception");
+        }catch (Exception e){
+            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+        }
     }
 
     //Tests whether expressionNode and blockNode will be set
@@ -284,6 +373,30 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
         assertSame( "Block should be assigned correctly.",expectedBlock, result.getBlock());
     }
+    public void testVisitLoopError() throws Exception {
+        ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
+
+        // Mock visitor methods
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+        // Assertions
+        try {
+
+            ForNode result = (ForNode) visitor.visitLoop(ctx);
+
+            fail("Should have thrown exception");
+        }catch (Exception e){
+            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+        }
+    }
+
 
 
     public void testVisitCommand() {
@@ -1447,6 +1560,7 @@ public class BuildASTVisitorTest extends TestCase {
     }
 
     public void testVisitAccessClassArray() {
+
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
         ExprParser.AccessibleObjectContext accessibleObjectCtx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.AccessingContext accessingCtx = Mockito.mock(ExprParser.AccessingContext.class);
