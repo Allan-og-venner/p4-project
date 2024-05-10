@@ -585,6 +585,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      */
     @Override
     public String visit(FunctionDNode node) {
+        if(symbolTables.size() > 1) {
+            throw new IllegalFunctionLocationException(node.getLineNumber());
+        }
         String identifier = node.getFunction().getText();
         if (symbolTables.peek().fLookup(identifier) != null) {
             throw new DuplicateDefinitionException(node.getLineNumber(), identifier);
