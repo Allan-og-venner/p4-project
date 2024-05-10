@@ -1,9 +1,6 @@
 import junit.framework.TestCase;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.junit.Assert;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import gen.*;
 import nodes.*;
@@ -18,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class BuildASTVisitorTest extends TestCase {
@@ -170,7 +166,7 @@ public class BuildASTVisitorTest extends TestCase {
         // Visit the statement
         try {
 
-            DefineNode result = (DefineNode) visitor.visitStatement(ctx);
+            visitor.visitStatement(ctx);
 
             fail("Should have thrown exception");
         }catch (Exception e){
@@ -238,8 +234,7 @@ public class BuildASTVisitorTest extends TestCase {
         when(ctx.getStart()).thenReturn(token);
 
         try {
-
-            IfNode result = (IfNode) visitor.visitControl(ctx);
+            visitor.visitControl(ctx);
 
             fail("Should have thrown exception");
         }catch (Exception e){
@@ -270,7 +265,7 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        IfNode result = (IfNode) visitor.visitIfthen(ctx);
+        IfNode result = visitor.visitIfthen(ctx);
 
         assertNotNull(result);
         assertEquals(expectedIf.getClass(), result.getClass());
@@ -288,7 +283,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         try {
 
-            IfNode result = (IfNode) visitor.visitIfthen(ctx);
+            visitor.visitIfthen(ctx);
 
             fail("Should have thrown exception");
         }catch (Exception e){
@@ -298,7 +293,7 @@ public class BuildASTVisitorTest extends TestCase {
     }
 
     //Tests whether expressionNode and blockNode will be set
-    public void testVisitLoopWhile() throws Exception {
+    public void testVisitLoopWhile() {
         //Mocking all inputs for the method
         ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -334,7 +329,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
         assertSame( "Block should be assigned correctly.",expectedBlock, result.getBlock());
     }
-    public void testVisitLoopFor() throws Exception {
+    public void testVisitLoopFor() {
         // Assume ctx is your WhileStatementContext from ANTLR
         ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -373,7 +368,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
         assertSame( "Block should be assigned correctly.",expectedBlock, result.getBlock());
     }
-    public void testVisitLoopError() throws Exception {
+    public void testVisitLoopError() {
         ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
 
         // Mock visitor methods
@@ -388,7 +383,7 @@ public class BuildASTVisitorTest extends TestCase {
         // Assertions
         try {
 
-            ForNode result = (ForNode) visitor.visitLoop(ctx);
+            visitor.visitLoop(ctx);
 
             fail("Should have thrown exception");
         }catch (Exception e){
@@ -400,7 +395,6 @@ public class BuildASTVisitorTest extends TestCase {
 
 
     public void testVisitCommand() {
-        //test for return is correct
     }
 
     public void testVisitAssign() {
@@ -1609,17 +1603,20 @@ public class BuildASTVisitorTest extends TestCase {
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
         ClassAccessNode expectedArrayAccess = Mockito.mock(ClassAccessNode.class);
         List<ExprParser.AccessingContext> accessingCtxs = Arrays.asList(accessingCtx,accessingCtx2);
-        NumberNode node1 = new NumberNode();
+        ValueNode node1 = Mockito.mock(NumberNode.class);
         List<ValueNode> valueNodeList = Arrays.asList(node1);
 
 
-        when(expectedArrayAccess.getValue()).thenReturn(valueNodeList);
-
         when(accessingCtx.L_BRACKET()).thenReturn(node);
+        when(accessingCtx2.L_BRACKET()).thenReturn(node);
         when(ctx.accessibleObject()).thenReturn(accessibleObjectCtx);
         when(accessingCtx.expr()).thenReturn(ExprCtx);
+        when(accessingCtx2.expr()).thenReturn(ExprCtx);
         when(ctx.accessing(0)).thenReturn(accessingCtx);
+        when(ctx.accessing(1)).thenReturn(accessingCtx2);
+        when(accessingCtx.expr()).thenReturn(ExprCtx);
         when(ctx.accessing()).thenReturn(accessingCtxs);
+        when(expectedArrayAccess.getValue()).thenReturn(valueNodeList);
 
         doReturn(expectedArrayAccess).when(visitor).visitAccessibleObject(accessibleObjectCtx);
         doReturn(expressionNode).when(visitor).visitExpr(ExprCtx);
@@ -1839,8 +1836,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        CardTypeNode result = (CardTypeNode) visitor.visitCardType(ctx);
+        CardTypeNode result = visitor.visitCardType(ctx);
 
+        assertNotNull(result);
+        //assertEquals(expec);
 
         /**
         ExprParser.CardTypeContext ctx = Mockito.mock(ExprParser.CardTypeContext.class);

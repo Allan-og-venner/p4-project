@@ -230,8 +230,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
                 var.append(visit(node.getType()))
                     .append(" ")
                     .append(node.getID().getText());
-                ass.append(node.getID().getText());
-            }
+            } ass.append(node.getID().getText());
             variables.add(var.append(";").toString());
             if (node.getValue() != null) {
                 ass.append(" = ")

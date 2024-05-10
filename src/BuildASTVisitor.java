@@ -651,17 +651,25 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             ValueNode lastNode = node.getObject();
             for (int i = 0; i < accesses; i++) {
                 ExprParser.AccessingContext ctx = context.accessing(i);
+                //If there is another period, make a new ValueNode for the ClassAccessNode
                 if (ctx.PERIOD() != null) {
                     //fields and methods
                     ValueNode objectNode = visitAccessibleValue(ctx.accessibleValue());
                     lastNode = objectNode;
                     node.getValue().add(objectNode);
+                //If there is an array access, change the latest ValueNode to be an ArrayAccessNode
                 } else if (ctx.L_BRACKET() != null) {
                     //arrays
                     ArrayAccessNode arrayNode = new ArrayAccessNode();
-                    arrayNode.setArray(lastNode);
-                    arrayNode.setIndex(visitExpr(ctx.expr()));
-                    node.getValue().set(node.getValue().size() - 1, arrayNode);
+                    if(node.getValue().size() > 0) {
+                        arrayNode.setArray(lastNode);
+                        arrayNode.setIndex(visitExpr(ctx.expr()));
+                        node.getValue().set(node.getValue().size() - 1, arrayNode);
+                    } else {
+                        arrayNode.setArray(node.getObject());
+                        arrayNode.setIndex(visitExpr(ctx.expr()));
+                        node.setObject(arrayNode);
+                    }
                 } else {
                     throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
                 }
