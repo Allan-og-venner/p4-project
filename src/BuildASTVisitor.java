@@ -96,7 +96,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported (control node)");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported (control node)");
         }
 
     }
@@ -111,7 +111,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -134,7 +134,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -369,7 +369,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -395,7 +395,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -446,7 +446,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
         } else if (context.arith() != null) {
             return visitArith(context.arith());
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -476,7 +476,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -504,7 +504,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
 
     }
@@ -522,7 +522,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                 node.setParameter(visitExprs(context.exprs()));
             }
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
         node.getLineNumberFromContext(context);
         return node;
@@ -583,7 +583,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -630,7 +630,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             nameNode.getLineNumberFromContext(context);
             return nameNode;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
@@ -649,15 +649,17 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             ClassAccessNode node = new ClassAccessNode();
             node.setObject(visitAccessibleObject(context.accessibleObject()));
             ValueNode lastNode = node.getObject();
-            for (int i = 0; i < accesses; i++) {;
+            for (int i = 0; i < accesses; i++) {
                 ExprParser.AccessingContext ctx = context.accessing(i);
                 //If there is another period, make a new ValueNode for the ClassAccessNode
                 if (ctx.PERIOD() != null) {
+                    //fields and methods
                     ValueNode objectNode = visitAccessibleValue(ctx.accessibleValue());
                     lastNode = objectNode;
                     node.getValue().add(objectNode);
                 //If there is an array access, change the latest ValueNode to be an ArrayAccessNode
                 } else if (ctx.L_BRACKET() != null) {
+                    //arrays
                     ArrayAccessNode arrayNode = new ArrayAccessNode();
                     if(node.getValue().size() > 0) {
                         arrayNode.setArray(lastNode);
@@ -669,7 +671,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
                         node.setObject(arrayNode);
                     }
                 } else {
-                    throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+                    throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
                 }
             }
             node.getLineNumberFromContext(context);
@@ -706,7 +708,7 @@ public class BuildASTVisitor extends ExprBaseVisitor<BlockNode> {
             node.getLineNumberFromContext(context);
             return node;
         } else {
-            throw new UnsupportedOperationException(context.getStart().getLine() + "Operation not supported");
+            throw new UnsupportedOperationException(context.getStart().getLine() + " Operation not supported");
         }
     }
 
