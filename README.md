@@ -24,7 +24,7 @@ char letter = 'a';
 Arrays can be created as a collection of one or more of the same type. They are indexed from 0.
 
 ```
-string colors = ["red", "green", "blue", "yellow"];
+string colors[] = {"red", "green", "blue", "yellow"};
 
 print(colors[0]);
 ```
@@ -54,7 +54,7 @@ loop while (points < 100) {
 ```
 A loop can also be a repeat-For structure for iterating through an array.
 ```
-string players = ["Simon", "Nicolaj", "Allan"];
+string players[] = {"Simon", "Nicolaj", "Allan"};
 loop for player in players {
     
     print(player);
@@ -173,7 +173,7 @@ Player currPlayer = players[0];
 ```
 
 
-### Build in classes
+### Built in classes
 #### Card
 A Card has an ID which can be accessed, and a method called clone which returns a cloned card.
 
@@ -259,8 +259,8 @@ player1.findNextPlayer(3);
 #### ActionMenu
 An action menu is integrated which allows for different methods.
 
-An action can be allowed for a certain cardType. 
-In the following example, the action changeColor is allowed in four variations for the cardType "plusfour".
+An action can be allowed with certain parameters. 
+In the following example, the action changeColor is allowed for a "plusFour" card, and 4 different strings for colors.
 
 The method displayAllowedActions can be used to print all allowed actions related to a cardType.
 ```
@@ -279,13 +279,13 @@ cardType(ID = "plusfour"
         }
 )
 ```
-The method disallowAllActions can be used to clear all actions related to a cardType.
+The method disallowAllActions can be used to clear all actions that have been allowed.
 
 
 #### GameState
 
 Decks, hands and playAreas are added to the gameState when they are created.
-showGameState can be called which prints the state of all decks, hands and playAreas associated to a player.
+showGameState can be called which prints the state of all decks, hands and playAreas visible to a player.
 
 ```
 showGameState(player1);

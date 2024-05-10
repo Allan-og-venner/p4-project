@@ -32,7 +32,7 @@ public class Main {
             //System.out.println(finalfinalCode);
         } catch (Exception e){
             System.err.println(e.getMessage());
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
     }

@@ -652,6 +652,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             if (objectType.startsWith("Class ")) {
                 objectType = objectType.replaceFirst("^Class ", "");
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
+                if(classST == null) {
+                    throw new SymbolUnboundException(node.getLineNumber(), objectType);
+                }
                 String identifier = "";
                 String nextObjectType = "";
                 if (currentField instanceof FunctionCallNode) {
@@ -667,6 +670,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 objectType = nextObjectType;
             } else if (symbolTables.peek().checkClass(objectType)) {
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
+                if(classST == null) {
+                    throw new SymbolUnboundException(node.getLineNumber(), objectType);
+                }
                 String identifier = "";
                 if (currentField instanceof FunctionCallNode) {
                     identifier = ((FunctionCallNode) currentField).getFunction().getText();
