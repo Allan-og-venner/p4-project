@@ -421,7 +421,43 @@ public class BuildASTVisitorTest extends TestCase {
     public void testVisitFparam() {
     }
 
-    public void testVisitCdecl() {
+    public void testVisitCdeclIdentifier() {
+        ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        TerminalNode node = Mockito.mock(TerminalNode.class);
+
+        when(ctx.IDENTIFIER(0)).thenReturn(node);
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+        ClassDNode result = (ClassDNode) visitor.visitCdecl(ctx);
+    }
+
+    public void testVisitCdeclExtends() {
+        ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
+        ExprParser.BlockContext blockCtx = Mockito.mock(ExprParser.BlockContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        TerminalNode node = Mockito.mock(TerminalNode.class);
+        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+
+        when(ctx.block()).thenReturn(blockCtx);
+        when(ctx.IDENTIFIER(0)).thenReturn(node);
+        when(ctx.IDENTIFIER(1)).thenReturn(node);
+        when(ctx.KEY_EXTENDS()).thenReturn(node);
+
+        doReturn(expressionNode).when(visitor).visitBlock(blockCtx);
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+        ClassDNode result = (ClassDNode) visitor.visitCdecl(ctx);
     }
 
     public void testVisitExprAND() {
