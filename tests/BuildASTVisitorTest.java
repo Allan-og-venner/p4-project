@@ -1567,17 +1567,20 @@ public class BuildASTVisitorTest extends TestCase {
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
         ClassAccessNode expectedArrayAccess = Mockito.mock(ClassAccessNode.class);
         List<ExprParser.AccessingContext> accessingCtxs = Arrays.asList(accessingCtx,accessingCtx2);
-        NumberNode node1 = new NumberNode();
+        ValueNode node1 = Mockito.mock(NumberNode.class);
         List<ValueNode> valueNodeList = Arrays.asList(node1);
 
 
-        when(expectedArrayAccess.getValue()).thenReturn(valueNodeList);
-
         when(accessingCtx.L_BRACKET()).thenReturn(node);
+        when(accessingCtx2.L_BRACKET()).thenReturn(node);
         when(ctx.accessibleObject()).thenReturn(accessibleObjectCtx);
         when(accessingCtx.expr()).thenReturn(ExprCtx);
+        when(accessingCtx2.expr()).thenReturn(ExprCtx);
         when(ctx.accessing(0)).thenReturn(accessingCtx);
+        when(ctx.accessing(1)).thenReturn(accessingCtx2);
+        when(accessingCtx.expr()).thenReturn(ExprCtx);
         when(ctx.accessing()).thenReturn(accessingCtxs);
+        when(expectedArrayAccess.getValue()).thenReturn(valueNodeList);
 
         doReturn(expectedArrayAccess).when(visitor).visitAccessibleObject(accessibleObjectCtx);
         doReturn(expressionNode).when(visitor).visitExpr(ExprCtx);
@@ -1797,8 +1800,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        CardTypeNode result = (CardTypeNode) visitor.visitCardType(ctx);
+        CardTypeNode result = visitor.visitCardType(ctx);
 
+        assertNotNull(result);
+        //assertEquals(expec);
 
         /**
         ExprParser.CardTypeContext ctx = Mockito.mock(ExprParser.CardTypeContext.class);
