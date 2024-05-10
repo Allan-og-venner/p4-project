@@ -653,7 +653,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
                 objectType = objectType.replaceFirst("^Class ", "");
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
                 if(classST == null) {
-                    throw new SymbolUnboundException(node.getLineNumber(), objectType);
+                    throw new TypeNotClassException(node.getLineNumber(), objectType);
                 }
                 String identifier = "";
                 String nextObjectType = "";
@@ -671,7 +671,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
             } else if (symbolTables.peek().checkClass(objectType)) {
                 SymbolTable classST = symbolTables.peek().findClassSymbolTable(objectType);
                 if(classST == null) {
-                    throw new SymbolUnboundException(node.getLineNumber(), objectType);
+                    throw new TypeNotClassException(node.getLineNumber(), objectType);
                 }
                 String identifier = "";
                 if (currentField instanceof FunctionCallNode) {
@@ -817,7 +817,12 @@ public class TypeCheckerVisitor extends ASTVisitor<String>{
      */
     public String visit(DefineNode node, SymbolTable table) {
         String identifier = node.getID().getText();
-        String type = node.getType().getTypeName();
+        String type;
+        if (node.isArray()) {
+            type = "array " + node.getType().getTypeName();
+        } else {
+            type = node.getType().getTypeName();
+        }
         if (type.equals("void")) {
             throw new IllegalTypeException(node.getLineNumber(), "void");
         }
