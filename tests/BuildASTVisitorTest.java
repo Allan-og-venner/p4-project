@@ -287,7 +287,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (if-then node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -387,7 +387,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (loop node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -420,6 +420,7 @@ public class BuildASTVisitorTest extends TestCase {
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        ClassDNode expectedNode = Mockito.mock(ClassDNode.class);
 
         when(ctx.IDENTIFIER(0)).thenReturn(node);
         // Mock Token and ParserRuleContext for getLine()
@@ -429,6 +430,9 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
         ClassDNode result = (ClassDNode) visitor.visitCdecl(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(), result.getClass());
     }
 
     public void testVisitCdeclExtends() {
@@ -438,6 +442,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ClassDNode expectedNode = Mockito.mock(ClassDNode.class);
 
         when(ctx.block()).thenReturn(blockCtx);
         when(ctx.IDENTIFIER(0)).thenReturn(node);
@@ -452,6 +457,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
         ClassDNode result = (ClassDNode) visitor.visitCdecl(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
+
     }
 
     public void testVisitExprAND() {
@@ -462,6 +471,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ANDNode expectedNode = Mockito.mock(ANDNode.class);
 
         when(ctx.expr()).thenReturn(ctx1);
         when(ctx.relation()).thenReturn(relationCtx);
@@ -476,6 +486,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitExpr(ctx1);
         doReturn(expressionNode).when(visitor).visitRelation(relationCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitExpr(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitExprOR() {
@@ -486,6 +499,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ORNode expectedNode = Mockito.mock(ORNode.class);
 
         when(ctx.expr()).thenReturn(ctx1);
         when(ctx.relation()).thenReturn(relationCtx);
@@ -500,6 +514,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitExpr(ctx1);
         doReturn(expressionNode).when(visitor).visitRelation(relationCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitExpr(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitExprRelation() {
@@ -507,7 +524,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.RelationContext relationCtx = Mockito.mock(ExprParser.RelationContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
 
         when(ctx.relation()).thenReturn(relationCtx);
         // Mock Token and ParserRuleContext for getLine()
@@ -517,8 +534,12 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitRelation(relationCtx);
+        doReturn(expectedNode).when(visitor).visitRelation(relationCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitExpr(ctx);
+
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitExprError() {
@@ -538,7 +559,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (expression node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -552,6 +573,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        AdditionNode expectedNode = Mockito.mock(AdditionNode.class);
 
         when(ctx.PLUS()).thenReturn(node);
         when(ctx.arith()).thenReturn(ctx1);
@@ -566,6 +588,10 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitArith(ctx1);
         doReturn(expressionNode).when(visitor).visitTerm(termCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitArith(ctx);
+
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitArithMinus() {
@@ -576,6 +602,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        SubtractionNode expectedNode = Mockito.mock(SubtractionNode.class);
 
         when(ctx.MINUS()).thenReturn(node);
         when(ctx.arith()).thenReturn(ctx1);
@@ -590,6 +617,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitArith(ctx1);
         doReturn(expressionNode).when(visitor).visitTerm(termCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitArith(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitArithTerm() {
@@ -597,8 +627,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.TermContext termCtx = Mockito.mock(ExprParser.TermContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
 
-        TerminalNode node = Mockito.mock(TerminalNode.class);
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
 
         when(ctx.term()).thenReturn(termCtx);
         // Mock Token and ParserRuleContext for getLine()
@@ -608,8 +637,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitTerm(termCtx);
+        doReturn(expectedNode).when(visitor).visitTerm(termCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitArith(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitArithError() {
@@ -629,7 +661,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (arithmetic node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -643,6 +675,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        LessThanNode expectedNode = Mockito.mock(LessThanNode.class);
 
         when(ctx.LT()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -657,6 +690,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationLTEQ() {
@@ -667,6 +703,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        LTEQNode expectedNode = Mockito.mock(LTEQNode.class);
 
         when(ctx.LTEQ()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -681,6 +718,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationEQEQ() {
@@ -691,6 +731,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        EQEQNode expectedNode = Mockito.mock(EQEQNode.class);
 
         when(ctx.EQEQ()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -705,6 +746,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationGT() {
@@ -715,6 +759,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        GreaterThanNode expectedNode = Mockito.mock(GreaterThanNode.class);
 
         when(ctx.GT()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -729,6 +774,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationGTEQ() {
@@ -739,6 +787,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        GTEQNode expectedNode = Mockito.mock(GTEQNode.class);
 
         when(ctx.GTEQ()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -753,6 +802,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationNOTEQ() {
@@ -763,6 +815,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        NOTEQNode expectedNode = Mockito.mock(NOTEQNode.class);
 
         when(ctx.NOTEQ()).thenReturn(node);
         when(ctx.relation()).thenReturn(ctx1);
@@ -777,6 +830,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitRelation(ctx1);
         doReturn(expressionNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationArith() {
@@ -784,8 +840,8 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ArithContext arithCtx = Mockito.mock(ExprParser.ArithContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
 
-        TerminalNode node = Mockito.mock(TerminalNode.class);
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
+
 
         when(ctx.arith()).thenReturn(arithCtx);
         // Mock Token and ParserRuleContext for getLine()
@@ -795,8 +851,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitArith(arithCtx);
+        doReturn(expectedNode).when(visitor).visitArith(arithCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitRelation(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitRelationError() {
@@ -818,7 +877,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (relation node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -834,6 +893,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        MultiplicationNode expectedNode = Mockito.mock(MultiplicationNode.class);
 
         when(ctx.MULT()).thenReturn(node);
         when(ctx.factor()).thenReturn(factorCtx);
@@ -848,6 +908,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitTerm(ctx1);
         doReturn(expressionNode).when(visitor).visitFactor(factorCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitTerm(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitTermDiv() {
@@ -859,6 +922,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        DivisionNode expectedNode = Mockito.mock(DivisionNode.class);
 
         when(ctx.DIV()).thenReturn(node);
         when(ctx.factor()).thenReturn(factorCtx);
@@ -873,6 +937,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitTerm(ctx1);
         doReturn(expressionNode).when(visitor).visitFactor(factorCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitTerm(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitTermMod() {
@@ -884,6 +951,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ModNode expectedNode = Mockito.mock(ModNode.class);
 
         when(ctx.MOD()).thenReturn(node);
         when(ctx.factor()).thenReturn(factorCtx);
@@ -898,6 +966,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionNode).when(visitor).visitTerm(ctx1);
         doReturn(expressionNode).when(visitor).visitFactor(factorCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitTerm(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitTermFactor() {
@@ -905,10 +976,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.FactorContext factorCtx = Mockito.mock(ExprParser.FactorContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
 
-        TerminalNode node = Mockito.mock(TerminalNode.class);
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
-
-
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
         when(ctx.factor()).thenReturn(factorCtx);
 
         // Mock Token and ParserRuleContext for getLine()
@@ -918,8 +986,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitFactor(factorCtx);
+        doReturn(expectedNode).when(visitor).visitFactor(factorCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitTerm(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitTermError() {
@@ -940,7 +1011,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (term node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -951,8 +1022,9 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
         TerminalNode node = Mockito.mock(TerminalNode.class);
+
         when(ctx.L_PAREN()).thenReturn(node);
         when(ctx.R_PAREN()).thenReturn(node);
         when(ctx.expr()).thenReturn(exprCtx);
@@ -963,8 +1035,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitExpr(exprCtx);
+        doReturn(expectedNode).when(visitor).visitExpr(exprCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitFactor(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitFactorPlus() {
@@ -972,7 +1047,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.FactorContext ctx1 = Mockito.mock(ExprParser.FactorContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expectedNode = Mockito.mock(ExpressionNode.class);
         TerminalNode node = Mockito.mock(TerminalNode.class);
 
         when(ctx.PLUS()).thenReturn(node);
@@ -984,8 +1059,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(expressionNode).when(visitor).visitFactor(ctx1);
+        doReturn(expectedNode).when(visitor).visitFactor(ctx1);
         ExpressionNode result = (ExpressionNode) visitor.visitFactor(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitFactorMinus() {
@@ -995,6 +1073,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        NegativeNode expectedNode = Mockito.mock(NegativeNode.class);
 
         when(ctx.MINUS()).thenReturn(node);
         when(ctx.factor()).thenReturn(ctx1);
@@ -1007,6 +1086,9 @@ public class BuildASTVisitorTest extends TestCase {
 
         doReturn(expressionNode).when(visitor).visitFactor(ctx1);
         ExpressionNode result = (ExpressionNode) visitor.visitFactor(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitFactorNot() {
@@ -1016,6 +1098,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        NegateNode expectedNode = Mockito.mock(NegateNode.class);
 
         when(ctx.NOT()).thenReturn(node);
         when(ctx.factor()).thenReturn(ctx1);
@@ -1028,6 +1111,9 @@ public class BuildASTVisitorTest extends TestCase {
 
         doReturn(expressionNode).when(visitor).visitFactor(ctx1);
         ExpressionNode result = (ExpressionNode) visitor.visitFactor(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitFactorValue() {
@@ -1035,9 +1121,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ValueContext valueContext = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-        ValueNode valueNode = Mockito.mock(ValueNode.class);
-        TerminalNode node = Mockito.mock(TerminalNode.class);
-
+        ValueNode expectedNode = Mockito.mock(ValueNode.class);
 
         when(ctx.value()).thenReturn(valueContext);
         // Mock Token and ParserRuleContext for getLine()
@@ -1047,8 +1131,11 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        doReturn(valueNode).when(visitor).visitValue(valueContext);
+        doReturn(expectedNode).when(visitor).visitValue(valueContext);
         ExpressionNode result = (ExpressionNode) visitor.visitFactor(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitFactorError() {
@@ -1069,7 +1156,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (factor node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -1082,6 +1169,8 @@ public class BuildASTVisitorTest extends TestCase {
 
         TerminalNode node = Mockito.mock(TerminalNode.class);
         ExpressionsNode expressionsNode = Mockito.mock(ExpressionsNode.class);
+        FunctionCallNode expectedNode = Mockito.mock(FunctionCallNode.class);
+
         when(ctx.IDENTIFIER()).thenReturn(node);
         when(ctx.exprs()).thenReturn(exprsContext);
         // Mock Token and ParserRuleContext for getLine()
@@ -1093,6 +1182,9 @@ public class BuildASTVisitorTest extends TestCase {
 
         doReturn(expressionsNode).when(visitor).visitExprs(exprsContext);
         ValueNode result = (ValueNode) visitor.visitCall(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitCallError() {
@@ -1113,7 +1205,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (call node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -1125,7 +1217,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
+        ExpressionsNode expectedNode = Mockito.mock(ExpressionsNode.class);
 
         when(ctx.exprs()).thenReturn(ctx1);
         when(ctx.expr()).thenReturn(exprCtx);
@@ -1141,6 +1233,9 @@ public class BuildASTVisitorTest extends TestCase {
         doReturn(expressionsNode).when(visitor).visitExprs(ctx1);
         doReturn(expressionNode).when(visitor).visitExpr(exprCtx);
         ExpressionsNode result = (ExpressionsNode) visitor.visitExprs(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitExprsNull() {
@@ -1148,6 +1243,7 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
+        ExpressionsNode expectedNode = Mockito.mock(ExpressionsNode.class);
 
         when(ctx.expr()).thenReturn(exprCtx);
         // Mock Token and ParserRuleContext for getLine()
@@ -1160,6 +1256,9 @@ public class BuildASTVisitorTest extends TestCase {
         ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
         doReturn(expressionNode).when(visitor).visitExpr(exprCtx);
         ExpressionsNode result = (ExpressionsNode) visitor.visitExprs(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValue() {
@@ -1169,9 +1268,9 @@ public class BuildASTVisitorTest extends TestCase {
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
         when(ctx.call()).thenReturn(callCtx);
 
-        ValueNode node = Mockito.mock(ValueNode.class);
+        ValueNode expectedNode = Mockito.mock(ValueNode.class);
 
-        doReturn(node).when(visitor).visitCall(callCtx);
+        doReturn(expectedNode).when(visitor).visitCall(callCtx);
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
         when(token.getLine()).thenReturn(1);  // Return line number 1
@@ -1179,8 +1278,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         ValueNode result = (ValueNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValueArray() {
@@ -1190,9 +1291,9 @@ public class BuildASTVisitorTest extends TestCase {
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
         when(ctx.array()).thenReturn(arrayContextCtx);
 
-        ArrayNode node = Mockito.mock(ArrayNode.class);
+        ArrayNode expectedNode = Mockito.mock(ArrayNode.class);
 
-        doReturn(node).when(visitor).visitArray(arrayContextCtx);
+        doReturn(expectedNode).when(visitor).visitArray(arrayContextCtx);
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
         when(token.getLine()).thenReturn(1);  // Return line number 1
@@ -1200,8 +1301,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         ArrayNode result = (ArrayNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValueAccess() {
@@ -1211,9 +1314,9 @@ public class BuildASTVisitorTest extends TestCase {
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
         when(ctx.access()).thenReturn(accessContextCtx);
 
-        ValueNode node = Mockito.mock(ValueNode.class);
+        ValueNode expectedNode = Mockito.mock(ValueNode.class);
 
-        doReturn(node).when(visitor).visitAccess(accessContextCtx);
+        doReturn(expectedNode).when(visitor).visitAccess(accessContextCtx);
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
         when(token.getLine()).thenReturn(1);  // Return line number 1
@@ -1221,16 +1324,19 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         ValueNode result = (ValueNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValueNumeral() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        NumberNode expectedNode = Mockito.mock(NumberNode.class);
+
         when(ctx.NUMERAL()).thenReturn(node);
         when(ctx.NUMERAL().getText()).thenReturn("0");
 
@@ -1241,8 +1347,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         NumberNode result = (NumberNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
 
@@ -1250,8 +1358,9 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        FloatNode expectedNode = Mockito.mock(FloatNode.class);
+
         when(ctx.FLOAT()).thenReturn(node);
         when(ctx.FLOAT().getText()).thenReturn("2.0");
 
@@ -1262,8 +1371,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         FloatNode result = (FloatNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
 
@@ -1271,8 +1382,9 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        StringNode expectedNode = Mockito.mock(StringNode.class);
+
         when(ctx.STRING()).thenReturn(node);
         when(ctx.STRING().getText()).thenReturn("Test String");
 
@@ -1283,8 +1395,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         StringNode result = (StringNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
 
@@ -1292,8 +1406,9 @@ public class BuildASTVisitorTest extends TestCase {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        CharNode expectedNode = Mockito.mock(CharNode.class);
+
         when(ctx.CHAR()).thenReturn(node);
         when(ctx.CHAR().getText()).thenReturn("T");
 
@@ -1304,16 +1419,19 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         CharNode result = (CharNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValueIdentifier() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         TerminalNode node = Mockito.mock(TerminalNode.class);
+        IdentifierNode expectedNode = Mockito.mock(IdentifierNode.class);
+
         when(ctx.IDENTIFIER()).thenReturn(node);
         when(ctx.IDENTIFIER().getText()).thenReturn("Variable2");
 
@@ -1324,8 +1442,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         IdentifierNode result = (IdentifierNode) visitor.visitValue(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitValueError() {
@@ -1345,7 +1465,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (value node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -1353,14 +1473,12 @@ public class BuildASTVisitorTest extends TestCase {
     public void testVisitArrayExpr() {
         ExprParser.ArrayContext ctx = Mockito.mock(ExprParser.ArrayContext.class);
         ExprParser.ExprsContext exprCtx = Mockito.mock(ExprParser.ExprsContext.class);
-
-
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
-
         ExpressionsNode node = Mockito.mock(ExpressionsNode.class);
-        when(ctx.exprs()).thenReturn(exprCtx);
+        ArrayNode expectedNode = Mockito.mock(ArrayNode.class);
 
+        when(ctx.exprs()).thenReturn(exprCtx);
 
         doReturn(node).when(visitor).visitExprs(exprCtx);
 
@@ -1371,16 +1489,17 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         ArrayNode result = (ArrayNode) visitor.visitArray(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitArrayInnerNull() {
         ExprParser.ArrayContext ctx = Mockito.mock(ExprParser.ArrayContext.class);
-
-
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
 
+        ArrayNode expectedNode = Mockito.mock(ArrayNode.class);
 
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
@@ -1389,8 +1508,10 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-
         ArrayNode result = (ArrayNode) visitor.visitArray(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitMethod() {
@@ -1417,34 +1538,42 @@ public class BuildASTVisitorTest extends TestCase {
         when(ctx.getStart()).thenReturn(token);
 
 
-        ClassAccessNode classAccessNode = Mockito.mock(ClassAccessNode.class);
+        ClassAccessNode expectedNode = Mockito.mock(ClassAccessNode.class);
         NumberNode numberNode = Mockito.mock(NumberNode.class);
-        doReturn(classAccessNode).when(visitor).visitAccessibleObject(accessibleObjectCtx);
+
+        doReturn(expectedNode).when(visitor).visitAccessibleObject(accessibleObjectCtx);
         doReturn(numberNode).when(visitor).visitCall(callCtx);
         doReturn(numberNode).when(visitor).visitAccessibleValue(accessibleValueCtx);
 
         ClassAccessNode result = (ClassAccessNode) visitor.visitMethod(ctx);
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitAccessibleObjectCall() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.CallContext callCtx = Mockito.mock(ExprParser.CallContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
+
+
         when(token.getLine()).thenReturn(1);  // Return line number 1
 
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
 
-        ValueNode node = new ValueNode() {};
+        ValueNode expectedNode = new ValueNode() {};
         when(ctx.call()).thenReturn(callCtx);
-        doReturn(node).when(visitor).visitCall(callCtx);
+        doReturn(expectedNode).when(visitor).visitCall(callCtx);
 
         ValueNode result = (ValueNode) visitor.visitAccessibleObject(ctx);
-        //assertEquals("Expression should be assigned correctly.",expectedArrayAccess.getClass(), result.getClass());
-        //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitAccessibleObjectArray() {
@@ -1459,19 +1588,22 @@ public class BuildASTVisitorTest extends TestCase {
         when(ctx.getStart()).thenReturn(token);
 
 
-        ArrayAccessNode node = new ArrayAccessNode();
+        ArrayAccessNode expectedNode = new ArrayAccessNode();
         when(ctx.arrayAccess()).thenReturn(ArrayAccessctx);
-        doReturn(node).when(visitor).visitArrayAccess(ArrayAccessctx);
+        doReturn(expectedNode).when(visitor).visitArrayAccess(ArrayAccessctx);
 
         ValueNode result = (ValueNode) visitor.visitAccessibleObject(ctx);
-        //assertEquals("Expression should be assigned correctly.",expectedArrayAccess.getClass(), result.getClass());
-        //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitAccessibleObjectIdentifier() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.ArrayAccessContext ArrayAccessctx = Mockito.mock(ExprParser.ArrayAccessContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        IdentifierNode expectedNode = Mockito.mock(IdentifierNode.class);
 
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
@@ -1483,10 +1615,10 @@ public class BuildASTVisitorTest extends TestCase {
         TerminalNode terminalNode = Mockito.mock(TerminalNode.class);
         when(ctx.IDENTIFIER()).thenReturn(terminalNode);
 
-
         ValueNode result = (ValueNode) visitor.visitAccessibleObject(ctx);
-        //assertEquals("Expression should be assigned correctly.",expectedArrayAccess.getClass(), result.getClass());
-        //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
+
+        assertNotNull(result);
+        assertEquals(expectedNode.getClass(),result.getClass());
     }
 
     public void testVisitAccessibleObjectError() {
@@ -1508,7 +1640,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (accessibleObject node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -1722,7 +1854,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (access node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
@@ -1783,6 +1915,7 @@ public class BuildASTVisitorTest extends TestCase {
         // Visit the while statement
 
         ValueNode result = (ValueNode) visitor.visitAccessibleValue(ctx);
+        assertNotNull(result);
         assertEquals("Expression should be assigned correctly.",expectedValue.getClass(), result.getClass());
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
 
@@ -1810,6 +1943,7 @@ public class BuildASTVisitorTest extends TestCase {
 
         // Visit the while statement
         IdentifierNode result = (IdentifierNode) visitor.visitAccessibleValue(ctx);
+        assertNotNull(result);
         assertEquals("Expression should be assigned correctly.",expectedValue.getClass(), result.getClass());
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
 
@@ -1833,7 +1967,7 @@ public class BuildASTVisitorTest extends TestCase {
 
             fail("Should have thrown exception");
         }catch (Exception e){
-            assertThat(e.getMessage(), is("1 Operation not supported"));
+            assertThat(e.getMessage(), is("1 Operation not supported (accessibleValue node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
 
@@ -1854,6 +1988,7 @@ public class BuildASTVisitorTest extends TestCase {
         BlockNode blockNode = new BlockNode();
         TypeNode typeNode = Mockito.mock(TypeNode.class);
         FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        CardTypeNode expectedCardType = new CardTypeNode();
 
         when(ctx.STRING()).thenReturn(node);
         when(ctx.STRING().getText()).thenReturn("Something");
@@ -1892,6 +2027,7 @@ public class BuildASTVisitorTest extends TestCase {
         CardTypeNode result = visitor.visitCardType(ctx);
 
         assertNotNull(result);
+        assertEquals(expectedCardType.getClass(),result.getClass());
         //assertEquals(expec);
 
         /**
