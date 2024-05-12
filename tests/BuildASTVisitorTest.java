@@ -1589,6 +1589,58 @@ public class BuildASTVisitorTest extends TestCase {
 
     }
 
+    public void testVisitAccessClassArrayCase1() {
+
+        ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
+        ExprParser.AccessibleObjectContext accessibleObjectCtx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
+        ExprParser.AccessingContext accessingCtx = Mockito.mock(ExprParser.AccessingContext.class);
+        ExprParser.AccessingContext accessingCtx2 = Mockito.mock(ExprParser.AccessingContext.class);
+        ExprParser.AccessibleValueContext accessibleValueCtx = Mockito.mock(ExprParser.AccessibleValueContext.class);
+        ExprParser.ExprContext ExprCtx = Mockito.mock(ExprParser.ExprContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+        when(accessingCtx.accessibleValue()).thenReturn(accessibleValueCtx);
+
+        TerminalNode node = Mockito.mock(TerminalNode.class);
+        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        FunctionCallNode expectedAccessibleValue = Mockito.mock(FunctionCallNode.class);
+        ClassAccessNode expectedArrayAccess = Mockito.mock(ClassAccessNode.class);
+        ClassAccessNode expectedArrayAccessSpy = Mockito.spy(ClassAccessNode.class);
+        List<ExprParser.AccessingContext> accessingCtxs = Arrays.asList(accessingCtx,accessingCtx2);
+        ValueNode node1 = Mockito.mock(NumberNode.class);
+        List<ValueNode> valueNodeList = Arrays.asList(node1);
+
+
+        when(accessingCtx.PERIOD()).thenReturn(node);
+        when(accessingCtx2.PERIOD()).thenReturn(null);
+        when(accessingCtx2.L_BRACKET()).thenReturn(node);
+        when(ctx.accessibleObject()).thenReturn(accessibleObjectCtx);
+        when(accessingCtx.expr()).thenReturn(ExprCtx);
+        when(accessingCtx2.expr()).thenReturn(ExprCtx);
+        when(ctx.accessing(0)).thenReturn(accessingCtx);
+        when(ctx.accessing(1)).thenReturn(accessingCtx2);
+        when(accessingCtx.expr()).thenReturn(ExprCtx);
+        when(ctx.accessing()).thenReturn(accessingCtxs);
+
+        doReturn(valueNodeList).when(expectedArrayAccessSpy).getValue();
+        
+        doReturn(expectedAccessibleValue).when(visitor).visitAccessibleValue(accessibleValueCtx);
+        doReturn(expectedArrayAccess).when(visitor).visitAccessibleObject(accessibleObjectCtx);
+        doReturn(expressionNode).when(visitor).visitExpr(ExprCtx);
+
+
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+
+        ValueNode result = (ValueNode) visitor.visitAccess(ctx);
+        assertNotNull(result);
+        assertEquals(expectedArrayAccess.getClass(), result.getClass());
+
+    }
     public void testVisitAccessClassArray() {
 
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
@@ -1604,6 +1656,7 @@ public class BuildASTVisitorTest extends TestCase {
         ClassAccessNode expectedArrayAccess = Mockito.mock(ClassAccessNode.class);
         List<ExprParser.AccessingContext> accessingCtxs = Arrays.asList(accessingCtx,accessingCtx2);
         ValueNode node1 = Mockito.mock(NumberNode.class);
+        ValueNode node2 = Mockito.mock(NumberNode.class);
         List<ValueNode> valueNodeList = Arrays.asList(node1);
 
 

@@ -16,7 +16,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * If there is at least one float, all of them return float. Else, int.
      * @return "float" or "int"
      */
-    
+
     // Addition accepts both number types
     // If there is at least one float, all of them return float. Else, int
     @Override
@@ -27,9 +27,9 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
         // If either of the operands is of type "string" or "char", treat the result as a "string" type
         if (type1.matches("string|char") || type2.matches("string|char")) {
             node.setType(new TypeNode("string")); // Set the type of the node to "string"
-            return "string"; // Return the resulting type 
+            return "string"; // Return the resulting type
 
-        // If both operands are numerical (either "int" or "float") 
+        // If both operands are numerical (either "int" or "float")
         } else if (type1.matches("int|float") && type2.matches("int|float")) {
             // If at least one operand is a "float", the result will be "float"
             if (type1.equals("float") || type2.equals("float")) {
@@ -120,7 +120,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Checks that the bool to negate is an int. Throws an exception if not.
      * @return "int"
      */
-    
+
     // Takes only an int (bool) as input, and returns another one if true
     @Override
     public String visit(NegateNode node) {
@@ -142,7 +142,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Checks that both operands of modNode is type int - returns int if true
      * @return "int"
      */
-    
+
     // Takes 2 ints as input, and returns an int if true
     @Override
     public String visit(ModNode node) {
@@ -163,7 +163,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Checks that the input node is either an int or float - returns the same
      * @return "int" or "float"
      */
-    
+
     // Takes int or float, and returns the same
     @Override
     public String visit(NegativeNode node) {
@@ -186,7 +186,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * if statement in block is controlNode or LoopNode - ?? ~Merete
      * @return ???? ~Merete
      */
-    
+
     @Override
     public String visit(BlockNode node) {
         // Visit the primary statement within the block to determine its data type
@@ -222,7 +222,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Input is either int or float - returns the same
      * @return "int" or "float"
      */
-    
+
     // Always an int
     @Override
     public String visit(NumberNode node) {
@@ -245,7 +245,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Checks if both values on either side of the relational operator is an int - returns int if true.
      * @return "int"
      */
-    
+
     // The logical expressions accept only ints, and if true, return an int
     @Override
     public String visit(ORNode node) {
@@ -266,7 +266,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * Checks if both values on either side of the relational operator is an int - returns int if true.
      * @return "int"
      */
-    
+
     // The logical expressions accept only ints, and if true, return an int
     @Override
     public String visit(ANDNode node) {
@@ -314,7 +314,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
      * If there is at least one float - return float. Else, int.
      * @return "float" or "int"
      */
-    
+
     // The relational expressions accept all numbers, and if true, return an int
     @Override
     public String visit(GreaterThanNode node) {
@@ -850,7 +850,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
             throw new IllegalFunctionLocationException(node.getLineNumber());
         }
 
-         // Retrieve the function identifier
+        // Retrieve the function identifier
         String identifier = node.getFunction().getText();
 
         // Check if the function is already defined in the current scope
