@@ -73,13 +73,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     }
 
     public String boolToInt(String boolExp) {
-        // If "false" is found, it returns 0; otherwise, returns -1
-        return "((" + boolExp + ") == false ? 0 : 1 )";
+        // If false, return 0; otherwise, return -1
+        return "((" + boolExp + ") == false ? 0 : 1)";
     }
 
     public String intToBool(String intExp) {
-        // If it is zero, returns the boolean "false". Otherwise, returns "true"
-        return "((" + intExp + ") == 0 ? false : true )";
+        // If it is zero, return the boolean "false". Otherwise, return "true"
+        return "((" + intExp + ") == 0 ? false : true)";
     }
 
     /**
@@ -389,7 +389,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         // Add the `static` modifier if it is a global function
         if (scopeCount == 0) {
             function.append("static ");
-        } else {
+        } else { // Else, add the modifier (`static` or empty string (""))
             function.append(visit(node.getModifier()));
         }
 
