@@ -11,6 +11,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
     private SymbolTable symbolTable = new SymbolTable();
     private Stack<SymbolTable> symbolTables = new Stack<>();
 
+    public TypeCheckerVisitor(SymbolTable symbolTable) {
+        super();
+    }
+
     /**
      * Addition, subtraction, multiplication and division accept both number types - float and int
      * If there is at least one float, all of them return float. Else, int.
