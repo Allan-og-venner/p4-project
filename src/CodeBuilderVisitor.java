@@ -37,6 +37,10 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         return classFields;
     }
 
+    public Hashtable<String, ClassStringBuilder> getClasses() {
+        return classes;
+    }
+
     /**
      * Correctly converts a function call used as an action to parameters
      * play(card) becomes "play", card
@@ -470,8 +474,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
             }
         } else {
             // Handle regular function definitions
-            function.append("public ")
-                    .append(handleType(node.getReturnType().getTypeName())) // Add return type
+            function.append(handleType(node.getReturnType().getTypeName())) // Add return type
                     .append(" ")
                     .append(node.getFunction().getText()) // Add function name
                     .append("(")
@@ -983,8 +986,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
             if (node.getIdentifier() != null) {
                 // If the method isn't in the base "Card" class, add a conversion check
                 if (!classes.get("Card").getBlock().toString().contains(methName)) {
-                    String notEmptyMeth = visit(method.getModifier()) + " " +
-                        method.getReturnType().getTypeName() + " " +
+                    String notEmptyMeth = visit(method.getModifier()) +
+                        handleType(method.getReturnType().getTypeName()) + " " +
                         method.getFunction().getText() + "(" + params + ")" +
                         "{ Card a = convert();" +
                         "if (a.getClass() != Card.class) {" +
@@ -993,7 +996,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
                 }
 
                 // Add the method implementation to the subclass
-                classText.addToBlock("@Override").addToBlock(visit(method));
+                classText.addToBlock("@Override ").addToBlock(visit(method));
             } else {
                 // Handle special cases like "toString" method in the base "Card" class
                 if (method.getFunction().getText().equals("toString")) {
