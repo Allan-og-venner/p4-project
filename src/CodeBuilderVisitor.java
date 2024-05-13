@@ -17,9 +17,25 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     private final Hashtable<String, ArrayList<Pair<String,String>>> classFields = new Hashtable<>();
     private String gameFunction;
     private String endFunction;
-    private int scopeCount;
+    private int scopeCount = 0;
     private String currentClass = "";
     private int playerAddedCalled;
+
+    public ArrayList<String> getVariables() {
+        return variables;
+    }
+
+    public void setScopeCount(int scopeCount) {
+        this.scopeCount = scopeCount;
+    }
+
+    public void setCurrentClass(String currentClass) {
+        this.currentClass = currentClass;
+    }
+
+    public Hashtable<String, ArrayList<Pair<String, String>>> getClassFields() {
+        return classFields;
+    }
 
     /**
      * Correctly converts a function call used as an action to parameters
@@ -276,6 +292,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         // Returns the value of the character node
         return node.getValue();
     }
+
+
 
     @Override
     public String visit(DefineNode node) {
@@ -840,9 +858,13 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     @Override
     public String visit(ModifierNode node) {
         if (node.getModifier() != null) {
-            return node.getModifier();
+            if (node.getModifier().equals("")){
+                return node.getModifier();
+            }
+            return node.getModifier()+" ";
+        } else {
+            return "";
         }
-        return "";
     }
 
     @Override
@@ -953,7 +975,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         for (FunctionDNode method : node.getMethods()) {
             // Generate parameter list and method signature
             String params = visit(method.getParameter());
-            String methName = 
+            String methName =
                 ((method.getModifier().getModifier() == null) ? "" : (method.getModifier() + " ")) +
                 handleType(method.getReturnType().getTypeName()) + " " +
                 method.getFunction().getText() + "(" + params + ")";

@@ -413,6 +413,45 @@ public class BuildASTVisitorTest extends TestCase {
     }
 
     public void testVisitFparam() {
+        ExprParser.FparamContext ctx = Mockito.mock(ExprParser.FparamContext.class);
+        ExprParser.TypeContext typeCtx = Mockito.mock(ExprParser.TypeContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        TerminalNode node = Mockito.mock(TerminalNode.class);
+        TypeNode expectedType = Mockito.mock(TypeNode.class);
+
+        when(ctx.IDENTIFIER()).thenReturn(node);
+        when(ctx.type()).thenReturn(typeCtx);
+        doReturn(expectedType).when(visitor).visitType(typeCtx);
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+        FparamNode result = (FparamNode) visitor.visitFparam(ctx);
+    }
+
+    public void testVisitFparamError() {
+        ExprParser.FparamContext ctx = Mockito.mock(ExprParser.FparamContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+        try {
+
+            FparamNode result = (FparamNode) visitor.visitFparam(ctx);
+
+            fail("Should have thrown exception");
+        }catch (Exception e){
+            assertThat(e.getMessage(), is("1 Operation not supported (functionParam node)"));
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+        }
+
     }
 
     public void testVisitCdeclIdentifier() {
@@ -463,6 +502,30 @@ public class BuildASTVisitorTest extends TestCase {
 
     }
 
+    public void testVisitCdeclError() {
+        ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
+        BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
+
+        // Mock Token and ParserRuleContext for getLine()
+        Token token = Mockito.mock(Token.class);
+        when(token.getLine()).thenReturn(1);  // Return line number 1
+
+        // Ensure getStart() returns the mocked token
+        when(ctx.getStart()).thenReturn(token);
+
+
+        try {
+
+            ClassDNode result = (ClassDNode) visitor.visitCdecl(ctx);
+
+            fail("Should have thrown exception");
+        }catch (Exception e){
+            assertThat(e.getMessage(), is("1 Operation not supported (classDeclaration node)"));
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+        }
+
+    }
+
     public void testVisitExprAND() {
         ExprParser.ExprContext ctx = Mockito.mock(ExprParser.ExprContext.class);
         ExprParser.ExprContext ctx1 = Mockito.mock(ExprParser.ExprContext.class);
@@ -476,13 +539,13 @@ public class BuildASTVisitorTest extends TestCase {
         when(ctx.expr()).thenReturn(ctx1);
         when(ctx.relation()).thenReturn(relationCtx);
         when(ctx.AND()).thenReturn(node);
+
         // Mock Token and ParserRuleContext for getLine()
         Token token = Mockito.mock(Token.class);
         when(token.getLine()).thenReturn(1);  // Return line number 1
 
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
-
         doReturn(expressionNode).when(visitor).visitExpr(ctx1);
         doReturn(expressionNode).when(visitor).visitRelation(relationCtx);
         ExpressionNode result = (ExpressionNode) visitor.visitExpr(ctx);
