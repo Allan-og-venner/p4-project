@@ -74,7 +74,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
 
     public String boolToInt(String boolExp) {
         // If "false" is found, it returns 0; otherwise, returns -1
-        return "-(\"false\".indexOf(\"\" + ("+ boolExp +")))";
+        return "((" + boolExp + ") == false ? 0 : 1 )";
     }
 
     public String intToBool(String intExp) {
@@ -389,6 +389,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         // Add the `static` modifier if it is a global function
         if (scopeCount == 0) {
             function.append("static ");
+        } else {
+            function.append(visit(node.getModifier()));
         }
 
         // Check if the node represents an action function
