@@ -338,8 +338,6 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         } else {
             // For other scopes, append the modifier ("static")
             var.append(visit(node.getModi()));
-            // Add a space after the modifier
-            var.append(" ");
         }
 
         // Handle array declarations or regular variables
