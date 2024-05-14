@@ -1,6 +1,5 @@
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-
 import nodes.*;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -9,17 +8,13 @@ public class TypeCheckerVisitorTests {
 
     @Test
     public void testAdditionNode() {
-        //Set up
-        SymbolTable symbolTable = new SymbolTable();
-        TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
-        TypeCheckerVisitor spyVisitor = spy(visitor);
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
 
-        NumberNode leftNode = new NumberNode();
-        NumberNode rightNode = new NumberNode();
+        NumberNode leftNode = mock(NumberNode.class);
+        NumberNode rightNode = mock(NumberNode.class);
 
-
-        leftNode.setType(new TypeNode("int"));
-        rightNode.setType(new TypeNode("int"));
+        when(leftNode.getType()).thenReturn(new TypeNode("int"));
+        when(rightNode.getType()).thenReturn(new TypeNode("int"));
 
         AdditionNode node = new AdditionNode();
         node.setLeft(leftNode);
@@ -39,25 +34,105 @@ public class TypeCheckerVisitorTests {
     }
 
     @Test
+    public void testSubtractionNode(){
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
+
+        NumberNode leftNode = mock(NumberNode.class);
+        NumberNode rightNode = mock(NumberNode.class);
+
+        when(leftNode.getType()).thenReturn(new TypeNode("int"));
+        when(rightNode.getType()).thenReturn(new TypeNode("int"));
+
+        SubtractionNode node = new SubtractionNode();
+        node.setLeft(leftNode);
+        node.setRight(rightNode);
+
+        //Use spy to simulate visit calls
+        doReturn("int").when(spyVisitor).visit(leftNode);
+        doReturn("int").when(spyVisitor).visit(rightNode);
+
+        //Execute
+        String result = spyVisitor.visit(node);
+
+        //Verify
+        verify(spyVisitor).visit(leftNode);
+        verify(spyVisitor).visit(rightNode);
+        assertEquals("int", result);
+    }
+
+    @Test
     public void testAndNodeWithBooleans() {
-        SymbolTable symbolTable = new SymbolTable();
-        symbolTable.createOuterSymbolTable();  //Ensuring types are defined
-        TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
-        TypeCheckerVisitor spyVisitor = Mockito.spy(visitor);
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
 
-        NumberNode leftValue = new NumberNode();
-        leftValue.setValue(1);  //Simulating boolean true
+        //Set up mocks for the left and right values
+        NumberNode leftValue = mock(NumberNode.class);
+        when(leftValue.getType()).thenReturn(new TypeNode("int"));
 
-        NumberNode rightValue = new NumberNode();
-        rightValue.setValue(0);  //Simulating boolean false
+        NumberNode rightValue = mock(NumberNode.class);
+        when(rightValue.getType()).thenReturn(new TypeNode("int"));
 
-        NegateNode leftNode = new NegateNode();
-        leftNode.setInnerNode(leftValue);
+        NegateNode leftNode = mock(NegateNode.class);
+        when(leftNode.getInnerNode()).thenReturn(leftValue);
 
-        NegateNode rightNode = new NegateNode();
-        rightNode.setInnerNode(rightValue);
+        NegateNode rightNode = mock(NegateNode.class);
+        when(rightNode.getInnerNode()).thenReturn(rightValue);
 
+        //Creating an ANDNode with mocked NegateNode instances
         ANDNode node = new ANDNode();
+        node.setLeft(leftNode);
+        node.setRight(rightNode);
+
+        //Configure the spy to return 'int' when visiting any NegateNode
+        doReturn("int").when(spyVisitor).visit(any(NegateNode.class));
+
+        //Execute
+        String result = spyVisitor.visit(node);
+
+        //Assert
+        assertEquals("int", result);  //Expecting 'int' as the type result for the AND operation
+
+        //Verify that visit was called on both NegateNodes to make sure the interaction has been tested correctly
+        verify(spyVisitor, times(2)).visit(any(NegateNode.class));
+    }
+    
+    @Test(expected = WrongTypeException.class)
+    public void testAndNodeWithIntAndString() {
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
+
+        //Set up mocks for the left and right values
+        NumberNode leftNode = mock(NumberNode.class);
+        when(leftNode.getType()).thenReturn(new TypeNode("int"));
+
+        StringNode rightNode = mock(StringNode.class);
+        when(rightNode.getType()).thenReturn(new TypeNode("string"));
+
+        //Creating an ANDNode with mocked NumberNode and StringNode instances
+        ANDNode node = new ANDNode();
+        node.setLeft(leftNode);
+        node.setRight(rightNode);
+
+        spyVisitor.visit(node); //Should throw exception
+    }
+
+    @Test
+    public void testOrNodeWithBooleans() {
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
+
+        //Set up mocks, bools are represented as ints
+        NumberNode leftValue = mock(NumberNode.class);
+        when(leftValue.getType()).thenReturn(new TypeNode("int"));
+
+        NumberNode rightValue = mock(NumberNode.class);
+        when(rightValue.getType()).thenReturn(new TypeNode("int"));
+
+        NegateNode leftNode = mock(NegateNode.class);
+        when(leftNode.getInnerNode()).thenReturn(leftValue);
+
+
+        NegateNode rightNode = mock(NegateNode.class);
+        when(rightNode.getInnerNode()).thenReturn(rightValue);
+
+        ORNode node = new ORNode();
         node.setLeft(leftNode);
         node.setRight(rightNode);
 
@@ -66,30 +141,20 @@ public class TypeCheckerVisitorTests {
 
         //Execute
         String result = spyVisitor.visit(node);
-        assertEquals("int", result);  // Expecting 'int' as the type result for AND operation
+
+        //Assert
+        assertEquals("int", result);  //Expecting 'int' as the type result for the OR operation
 
         //Verify
-        verify(spyVisitor, times(2)).visit(any(NegateNode.class));
+        verify(spyVisitor, times(2)).visit(any(NegateNode.class));  //Verify that visit was called on both NegateNodes
     }
 
-
-    @Test(expected = WrongTypeException.class)
-    public void testAndNodeWithIntAndString() {
+    private static TypeCheckerVisitor getTypeCheckerVisitor() {
         SymbolTable symbolTable = new SymbolTable();
         symbolTable.createOuterSymbolTable();
         TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
-
-        NumberNode leftNode = new NumberNode();
-        leftNode.setValue(5);
-
-        StringNode rightNode = new StringNode();
-        rightNode.setValue("test");
-
-        ANDNode node = new ANDNode();
-        node.setLeft(leftNode);
-        node.setRight(rightNode);
-
-        visitor.visit(node); //Should throw exception
+        TypeCheckerVisitor spyVisitor = Mockito.spy(visitor);
+        return spyVisitor;
     }
 
 }
