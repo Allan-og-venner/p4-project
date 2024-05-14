@@ -25,6 +25,12 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         return variables;
     }
 
+    public ArrayList<String> getFunctions() { return functions; }
+
+    public String getGameFunction() { return gameFunction; }
+
+    public String getEndFunction() { return endFunction; }
+
     public void setScopeCount(int scopeCount) {
         this.scopeCount = scopeCount;
     }
