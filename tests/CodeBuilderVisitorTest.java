@@ -3,6 +3,7 @@ import junit.framework.TestCase;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.junit.Test;
 import org.mockito.Mockito;
 import gen.*;
 import nodes.*;
@@ -19,14 +20,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-public class CodeBuilderVisitorTest extends TestCase {
-
+public class CodeBuilderVisitorTest {
+    @Test
     public void testVisitStart() {
     }
-
+    @Test
     public void testVisit() {
     }
-
+    @Test
     public void testTestVisitDefineNodeArrayGlobal() {
         //ArrayList<String> test = new ArrayList<>(){{add("Hej");add("Farvel")}}
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -52,6 +53,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         assertEquals("test = new ArrayList<>(){{add(\"Hej\");add(\"Farvel\")}};", result);
         assertEquals("static ArrayList<String> test;", visitor.getVariables().get(1));
     }
+    @Test
     public void testTestVisitDefineNodeVarGlobal() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -76,6 +78,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         assertEquals("test = \"Hej\";",result );
         assertEquals("static String test;", visitor.getVariables().get(1));
     }
+    @Test
     public void testTestVisitDefineNodeGlobalNoValue() {
         //String test;
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -97,6 +100,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         assertEquals("",result);
         assertEquals("static String test;", visitor.getVariables().get(1));
     }
+    @Test
     public void testTestVisitDefineNodeArray() {
         //ArrayList<String> test = new ArrayList<>(){{add("Hej");add("Farvel")}}
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -124,6 +128,7 @@ public class CodeBuilderVisitorTest extends TestCase {
 
         assertEquals("ArrayList<String> test = new ArrayList<>(){{add(\"Hej\");add(\"Farvel\")}};", result);
     }
+    @Test
     public void testTestVisitDefineNodeVar() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -151,6 +156,7 @@ public class CodeBuilderVisitorTest extends TestCase {
 
         assertEquals("static String test = \"Hej\";",result );
     }
+    @Test
     public void testTestVisitDefineNodeVarNoValueString() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -180,6 +186,7 @@ public class CodeBuilderVisitorTest extends TestCase {
 
         assertEquals("static String test = \"\";",result );
     }
+    @Test
     public void testTestVisitDefineNodeVarNoValueChar() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -209,6 +216,7 @@ public class CodeBuilderVisitorTest extends TestCase {
 
         assertEquals("static char test = '\\0';",result );
     }
+    @Test
     public void testTestVisitDefineNodeVarNoValueInt() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -237,6 +245,7 @@ public class CodeBuilderVisitorTest extends TestCase {
 
         assertEquals("static int test = 0;",result );
     }
+    @Test
     public void testTestVisitDefineNodeVarNoValueClass() {
         //String test = "Hej";
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -268,7 +277,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         assertEquals("static Card test = null;", result);
         assertEquals(new ArrayList<Pair<String, String>>(){{add(new Pair<>("Card", "test"));}}, visitor.getClassFields().get("Card"));
     }
-
+    @Test
     public void testTestVisitCardTypeNewClass() {
         CardTypeNode node = Mockito.spy(CardTypeNode.class);
         IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
@@ -321,7 +330,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         int cardTestIndex = visitor.getClasses().get("Cardtest").getBlock().indexOf("static Integer test(int testParam){");
         assertNotEquals(-1, cardTestIndex);
     }
-
+    @Test
     public void testTestVisitCardTypeAddMethodToAll() {
         CardTypeNode node = Mockito.spy(CardTypeNode.class);
         FunctionDNode testMethod = Mockito.spy(FunctionDNode.class);
@@ -355,7 +364,7 @@ public class CodeBuilderVisitorTest extends TestCase {
         int methodIndex = visitor.getClasses().get("Card").getBlock().indexOf("static Integer test(int testParam){");
         assertNotEquals(-1, methodIndex);
     }
-
+    @Test
     public void testTestVisitCardTypeToString() {
         CardTypeNode node = Mockito.spy(CardTypeNode.class);
         FunctionDNode testMethod = Mockito.spy(FunctionDNode.class);
@@ -390,112 +399,112 @@ public class CodeBuilderVisitorTest extends TestCase {
         int methodIndex = visitor.getClasses().get("Card").getBlock().indexOf("static String toString(int testParam){");
         assertNotEquals(-1, methodIndex);
     }
-
+    @Test
     public void testTestVisit4() {
     }
-
+    @Test
     public void testTestVisit5() {
     }
-
+    @Test
     public void testTestVisit6() {
     }
-
+    @Test
     public void testTestVisit7() {
     }
-
+    @Test
     public void testTestVisit8() {
     }
-
+    @Test
     public void testTestVisit9() {
     }
-
+    @Test
     public void testTestVisit10() {
     }
-
+    @Test
     public void testTestVisit11() {
     }
-
+    @Test
     public void testTestVisit12() {
     }
-
+    @Test
     public void testTestVisit13() {
     }
-
+    @Test
     public void testTestVisit14() {
     }
-
+    @Test
     public void testTestVisit15() {
     }
-
+    @Test
     public void testTestVisit16() {
     }
-
+    @Test
     public void testTestVisit17() {
     }
-
+    @Test
     public void testTestVisit18() {
     }
-
+    @Test
     public void testTestVisit19() {
     }
-
+    @Test
     public void testTestVisit20() {
     }
-
+    @Test
     public void testTestVisit21() {
     }
-
+    @Test
     public void testTestVisit22() {
     }
-
+    @Test
     public void testTestVisit23() {
     }
-
+    @Test
     public void testTestVisit24() {
     }
-
+    @Test
     public void testTestVisit25() {
     }
-
+    @Test
     public void testTestVisit26() {
     }
-
+    @Test
     public void testTestVisit27() {
     }
-
+    @Test
     public void testTestVisit28() {
     }
-
+    @Test
     public void testTestVisit29() {
     }
-
+    @Test
     public void testTestVisit30() {
     }
-
+    @Test
     public void testTestVisit31() {
     }
-
+    @Test
     public void testTestVisit32() {
     }
-
+    @Test
     public void testTestVisit33() {
     }
-
+    @Test
     public void testTestVisit34() {
     }
-
+    @Test
     public void testTestVisit35() {
     }
-
+    @Test
     public void testTestVisit36() {
     }
-
+    @Test
     public void testTestVisit37() {
     }
-
+    @Test
     public void testTestVisit38() {
     }
-
+    @Test
     public void testTestVisit39() {
     }
 }

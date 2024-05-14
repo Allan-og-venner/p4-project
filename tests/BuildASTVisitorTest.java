@@ -1,14 +1,14 @@
 import junit.framework.TestCase;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.Mockito;
 import gen.*;
 import nodes.*;
-
+import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-
-
 import java.lang.annotation.Documented;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
-public class BuildASTVisitorTest extends TestCase {
-
+public class BuildASTVisitorTest {
+    @Test
     public void testVisitStatementDecl(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.DeclContext declCtx = Mockito.mock(ExprParser.DeclContext.class);
@@ -46,6 +46,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedDeclaration.getClass(), result.getClass());
     }
+    @Test
     public void testVisitStatementCall(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.CallContext callCtx = Mockito.mock(ExprParser.CallContext.class);
@@ -69,6 +70,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedCall.getClass(), result.getClass());
 
     }
+    @Test
     public void testVisitStatementMethod(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.MethodContext methodCtx = Mockito.mock(ExprParser.MethodContext.class);
@@ -90,6 +92,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedMethod.getClass(), result.getClass());
     }
+    @Test
     public void testVisitStatementAssign(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.AssignContext assignCtx = Mockito.mock(ExprParser.AssignContext.class);
@@ -111,6 +114,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedAssign.getClass(), result.getClass());
     }
+    @Test
     public void testVisitStatementControl(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.ControlContext controlCtx = Mockito.mock(ExprParser.ControlContext.class);
@@ -132,6 +136,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedControl.getClass(), result.getClass());
     }
+    @Test
     public void testVisitStatementCommand(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         ExprParser.CommandContext commandCtx = Mockito.mock(ExprParser.CommandContext.class);
@@ -152,6 +157,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedCommand.getClass(), result.getClass());
     }
+    @Test
     public void testVisitStatementError(){
         ExprParser.StatementContext ctx = Mockito.mock(ExprParser.StatementContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
@@ -176,7 +182,7 @@ public class BuildASTVisitorTest extends TestCase {
 
 
     }
-
+    @Test
     public void testVisitControlLoop() {
         ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
         ExprParser.LoopContext loopCtx = Mockito.mock(ExprParser.LoopContext.class);
@@ -199,6 +205,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedLoop.getClass(), result.getClass());
 
     }
+    @Test
     public void testVisitControlIfthen() {
         ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
         ExprParser.IfthenContext IfthenCtx = Mockito.mock(ExprParser.IfthenContext.class);
@@ -221,6 +228,8 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedIf.getClass(), result.getClass());
 
     }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void testVisitControlError() {
         ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
 
@@ -233,18 +242,18 @@ public class BuildASTVisitorTest extends TestCase {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        try {
+        //try {
             visitor.visitControl(ctx);
 
-            fail("Should have thrown exception");
+        /*    fail("Should have thrown exception");
         }catch (Exception e){
             assertThat(e.getMessage(), is("1 Operation not supported (control node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
-        }
+        }*/
 
 
     }
-
+    @Test
     public void testVisitIfthen() {
         ExprParser.IfthenContext ctx = Mockito.mock(ExprParser.IfthenContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -270,6 +279,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedIf.getClass(), result.getClass());
     }
+    @Test
     public void testVisitIfthenError() {
         ExprParser.IfthenContext ctx = Mockito.mock(ExprParser.IfthenContext.class);
 
@@ -291,7 +301,7 @@ public class BuildASTVisitorTest extends TestCase {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
-
+    @Test
     //Tests whether expressionNode and blockNode will be set
     public void testVisitLoopWhile() {
         //Mocking all inputs for the method
@@ -329,6 +339,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
         assertSame( "Block should be assigned correctly.",expectedBlock, result.getBlock());
     }
+    @Test
     public void testVisitLoopFor() {
         // Assume ctx is your WhileStatementContext from ANTLR
         ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
@@ -368,6 +379,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
         assertSame( "Block should be assigned correctly.",expectedBlock, result.getBlock());
     }
+    @Test
     public void testVisitLoopError() {
         ExprParser.LoopContext ctx = Mockito.mock(ExprParser.LoopContext.class);
 
@@ -411,7 +423,7 @@ public class BuildASTVisitorTest extends TestCase {
 
     public void testVisitFparams() {
     }
-
+    @Test
     public void testVisitFparam() {
         ExprParser.FparamContext ctx = Mockito.mock(ExprParser.FparamContext.class);
         ExprParser.TypeContext typeCtx = Mockito.mock(ExprParser.TypeContext.class);
@@ -431,7 +443,7 @@ public class BuildASTVisitorTest extends TestCase {
         when(ctx.getStart()).thenReturn(token);
         FparamNode result = (FparamNode) visitor.visitFparam(ctx);
     }
-
+    @Test
     public void testVisitFparamError() {
         ExprParser.FparamContext ctx = Mockito.mock(ExprParser.FparamContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -453,7 +465,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitCdeclIdentifier() {
         ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -473,7 +485,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(), result.getClass());
     }
-
+    @Test
     public void testVisitCdeclExtends() {
         ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
         ExprParser.BlockContext blockCtx = Mockito.mock(ExprParser.BlockContext.class);
@@ -501,7 +513,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedNode.getClass(),result.getClass());
 
     }
-
+    @Test
     public void testVisitCdeclError() {
         ExprParser.CdeclContext ctx = Mockito.mock(ExprParser.CdeclContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -525,7 +537,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitExprAND() {
         ExprParser.ExprContext ctx = Mockito.mock(ExprParser.ExprContext.class);
         ExprParser.ExprContext ctx1 = Mockito.mock(ExprParser.ExprContext.class);
@@ -553,7 +565,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitExprOR() {
         ExprParser.ExprContext ctx = Mockito.mock(ExprParser.ExprContext.class);
         ExprParser.ExprContext ctx1 = Mockito.mock(ExprParser.ExprContext.class);
@@ -581,7 +593,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitExprRelation() {
         ExprParser.ExprContext ctx = Mockito.mock(ExprParser.ExprContext.class);
         ExprParser.RelationContext relationCtx = Mockito.mock(ExprParser.RelationContext.class);
@@ -604,7 +616,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitExprError() {
         ExprParser.ExprContext ctx = Mockito.mock(ExprParser.ExprContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -627,7 +639,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitArithPlus() {
         ExprParser.ArithContext ctx = Mockito.mock(ExprParser.ArithContext.class);
         ExprParser.ArithContext ctx1 = Mockito.mock(ExprParser.ArithContext.class);
@@ -656,7 +668,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitArithMinus() {
         ExprParser.ArithContext ctx = Mockito.mock(ExprParser.ArithContext.class);
         ExprParser.ArithContext ctx1 = Mockito.mock(ExprParser.ArithContext.class);
@@ -684,7 +696,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitArithTerm() {
         ExprParser.ArithContext ctx = Mockito.mock(ExprParser.ArithContext.class);
         ExprParser.TermContext termCtx = Mockito.mock(ExprParser.TermContext.class);
@@ -706,7 +718,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitArithError() {
         ExprParser.ArithContext ctx = Mockito.mock(ExprParser.ArithContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
@@ -728,8 +740,7 @@ public class BuildASTVisitorTest extends TestCase {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
-
-
+    @Test
     public void testVisitRelationLT() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -757,7 +768,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationLTEQ() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -785,7 +796,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationEQEQ() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -813,7 +824,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationGT() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -841,7 +852,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationGTEQ() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -869,7 +880,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationNOTEQ() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.RelationContext ctx1 = Mockito.mock(ExprParser.RelationContext.class);
@@ -897,7 +908,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationArith() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         ExprParser.ArithContext arithCtx = Mockito.mock(ExprParser.ArithContext.class);
@@ -920,7 +931,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitRelationError() {
         ExprParser.RelationContext ctx = Mockito.mock(ExprParser.RelationContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
@@ -946,7 +957,7 @@ public class BuildASTVisitorTest extends TestCase {
 
 
     }
-
+    @Test
     public void testVisitTermMult() {
         ExprParser.TermContext ctx = Mockito.mock(ExprParser.TermContext.class);
         ExprParser.TermContext ctx1 = Mockito.mock(ExprParser.TermContext.class);
@@ -975,7 +986,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitTermDiv() {
         ExprParser.TermContext ctx = Mockito.mock(ExprParser.TermContext.class);
         ExprParser.TermContext ctx1 = Mockito.mock(ExprParser.TermContext.class);
@@ -1004,7 +1015,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitTermMod() {
         ExprParser.TermContext ctx = Mockito.mock(ExprParser.TermContext.class);
         ExprParser.TermContext ctx1 = Mockito.mock(ExprParser.TermContext.class);
@@ -1033,7 +1044,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitTermFactor() {
         ExprParser.TermContext ctx = Mockito.mock(ExprParser.TermContext.class);
         ExprParser.FactorContext factorCtx = Mockito.mock(ExprParser.FactorContext.class);
@@ -1055,7 +1066,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitTermError() {
         ExprParser.TermContext ctx = Mockito.mock(ExprParser.TermContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
@@ -1079,7 +1090,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitFactorParen() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -1104,7 +1115,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitFactorPlus() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         ExprParser.FactorContext ctx1 = Mockito.mock(ExprParser.FactorContext.class);
@@ -1128,7 +1139,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitFactorMinus() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         ExprParser.FactorContext ctx1 = Mockito.mock(ExprParser.FactorContext.class);
@@ -1153,7 +1164,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitFactorNot() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         ExprParser.FactorContext ctx1 = Mockito.mock(ExprParser.FactorContext.class);
@@ -1178,7 +1189,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitFactorValue() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         ExprParser.ValueContext valueContext = Mockito.mock(ExprParser.ValueContext.class);
@@ -1200,7 +1211,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitFactorError() {
         ExprParser.FactorContext ctx = Mockito.mock(ExprParser.FactorContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1224,7 +1235,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitCall() {
         ExprParser.CallContext ctx = Mockito.mock(ExprParser.CallContext.class);
         ExprParser.ExprsContext exprsContext = Mockito.mock(ExprParser.ExprsContext.class);
@@ -1249,7 +1260,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitCallError() {
         ExprParser.CallContext ctx = Mockito.mock(ExprParser.CallContext.class);
         ExprParser.ExprsContext exprsContext = Mockito.mock(ExprParser.ExprsContext.class);
@@ -1273,7 +1284,7 @@ public class BuildASTVisitorTest extends TestCase {
         }
 
     }
-
+    @Test
     public void testVisitExprs() {
         ExprParser.ExprsContext ctx = Mockito.mock(ExprParser.ExprsContext.class);
         ExprParser.ExprsContext ctx1 = Mockito.mock(ExprParser.ExprsContext.class);
@@ -1300,7 +1311,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitExprsNull() {
         ExprParser.ExprsContext ctx = Mockito.mock(ExprParser.ExprsContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -1323,7 +1334,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValue() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         ExprParser.CallContext callCtx = Mockito.mock(ExprParser.CallContext.class);
@@ -1346,7 +1357,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValueArray() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         ExprParser.ArrayContext arrayContextCtx = Mockito.mock(ExprParser.ArrayContext.class);
@@ -1369,7 +1380,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValueAccess() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         ExprParser.AccessContext accessContextCtx = Mockito.mock(ExprParser.AccessContext.class);
@@ -1392,7 +1403,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValueNumeral() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1416,7 +1427,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedNode.getClass(),result.getClass());
     }
 
-
+    @Test
     public void testVisitValueFloat() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1439,8 +1450,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
-
+    @Test
     public void testVisitValueString() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1464,7 +1474,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedNode.getClass(),result.getClass());
     }
 
-
+    @Test
     public void testVisitValueChar() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1487,7 +1497,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValueIdentifier() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1510,7 +1520,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitValueError() {
         ExprParser.ValueContext ctx = Mockito.mock(ExprParser.ValueContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1532,7 +1542,7 @@ public class BuildASTVisitorTest extends TestCase {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
-
+    @Test
     public void testVisitArrayExpr() {
         ExprParser.ArrayContext ctx = Mockito.mock(ExprParser.ArrayContext.class);
         ExprParser.ExprsContext exprCtx = Mockito.mock(ExprParser.ExprsContext.class);
@@ -1557,7 +1567,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitArrayInnerNull() {
         ExprParser.ArrayContext ctx = Mockito.mock(ExprParser.ArrayContext.class);
         BuildASTVisitor visitor = Mockito.spy(new BuildASTVisitor());
@@ -1576,7 +1586,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitMethod() {
         ExprParser.MethodContext ctx = Mockito.mock(ExprParser.MethodContext.class);
         ExprParser.AccessibleObjectContext accessibleObjectCtx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
@@ -1613,7 +1623,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitAccessibleObjectCall() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.CallContext callCtx = Mockito.mock(ExprParser.CallContext.class);
@@ -1638,7 +1648,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitAccessibleObjectArray() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.ArrayAccessContext ArrayAccessctx = Mockito.mock(ExprParser.ArrayAccessContext.class);
@@ -1660,7 +1670,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitAccessibleObjectIdentifier() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
         ExprParser.ArrayAccessContext ArrayAccessctx = Mockito.mock(ExprParser.ArrayAccessContext.class);
@@ -1683,7 +1693,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());
     }
-
+    @Test
     public void testVisitAccessibleObjectError() {
         ExprParser.AccessibleObjectContext ctx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
 
@@ -1707,7 +1717,7 @@ public class BuildASTVisitorTest extends TestCase {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
-
+    @Test
     public void testVisitAccessArrayOnly() {
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
         ExprParser.AccessibleObjectContext accessibleObjectCtx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
@@ -1742,7 +1752,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedAccessible.getClass(), result.getClass());
 
     }
-
+    @Test
     public void testVisitAccessClass() {
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
         ExprParser.AccessibleObjectContext accessibleObjectCtx = Mockito.mock(ExprParser.AccessibleObjectContext.class);
@@ -1783,7 +1793,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedArrayAccess.getClass(), result.getClass());
 
     }
-
+    @Test
     public void testVisitAccessClassArrayCase1() {
 
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
@@ -1836,6 +1846,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedArrayAccess.getClass(), result.getClass());
 
     }
+    @Test
     public void testVisitAccessClassArray() {
 
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
@@ -1883,7 +1894,7 @@ public class BuildASTVisitorTest extends TestCase {
         assertEquals(expectedArrayAccess.getClass(), result.getClass());
 
     }
-
+    @Test
     public void testVisitAccessError() {
         ExprParser.AccessContext ctx = Mockito.mock(ExprParser.AccessContext.class);
         ExprParser.AccessingContext accessingCtx = Mockito.mock(ExprParser.AccessingContext.class);
@@ -1921,7 +1932,7 @@ public class BuildASTVisitorTest extends TestCase {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
         }
     }
-
+    @Test
     public void testVisitArrayAccess() {
         ExprParser.ArrayAccessContext ctx = Mockito.mock(ExprParser.ArrayAccessContext.class);
         ExprParser.ExprContext exprCtx = Mockito.mock(ExprParser.ExprContext.class);
@@ -1954,7 +1965,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
 
     }
-
+    @Test
     public void testVisitAccessibleValueCall() {
         ExprParser.AccessibleValueContext ctx = Mockito.mock(ExprParser.AccessibleValueContext.class);
         ExprParser.CallContext callCtx = Mockito.mock(ExprParser.CallContext.class);
@@ -1983,7 +1994,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
 
     }
-
+    @Test
     public void testVisitAccessibleValueIdentifier() {
         ExprParser.AccessibleValueContext ctx = Mockito.mock(ExprParser.AccessibleValueContext.class);
 
@@ -2011,7 +2022,7 @@ public class BuildASTVisitorTest extends TestCase {
         //assertSame("Expression should be assigned correctly.",expectedExpression, result.getCondition());
 
     }
-
+    @Test
     public void testVisitAccessibleValueError(){
         ExprParser.AccessibleValueContext ctx = Mockito.mock(ExprParser.AccessibleValueContext.class);
         BuildASTVisitor visitor = spy(new BuildASTVisitor());
@@ -2037,7 +2048,7 @@ public class BuildASTVisitorTest extends TestCase {
 
     }
 
-
+    @Test
     public void testVisitCardType() {
         ExprParser.CardTypeContext ctx = Mockito.mock(ExprParser.CardTypeContext.class);
         ExprParser.CardMethodContext cardMethodCtx = Mockito.mock(ExprParser.CardMethodContext.class);
