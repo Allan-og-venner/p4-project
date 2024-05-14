@@ -150,10 +150,45 @@ public class TypeCheckerVisitorTests {
     }
 
     @Test
-    public void testFunctionCallNode(){
-        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
+    public void testVisitFunctionCallNodeWithNewKeyword() {
+        //Create a real SymbolTable and then a spy of it
+        SymbolTable realSymbolTable = new SymbolTable();
+        SymbolTable spiedSymbolTable = spy(realSymbolTable);
 
+        //Set behavior on the spy
+        when(spiedSymbolTable.checkClass("MyClass")).thenReturn(true);
 
+        //Create the visitor with the spied SymbolTable
+        TypeCheckerVisitor visitor = new TypeCheckerVisitor(spiedSymbolTable);
+
+        //Prepare the node
+        FunctionCallNode node = new FunctionCallNode();
+        IdentifierNode identifierNode = new IdentifierNode();
+        identifierNode.setText("MyClass");
+        node.setFunction(identifierNode);
+        node.setHasNew(true);
+
+        //Execute
+        String result = visitor.visit(node);
+
+        //Assert and verify
+        assertEquals("MyClass", result);
+        verify(spiedSymbolTable).checkClass("MyClass");
+    }
+
+    @Test(expected = SymbolUnboundException.class)
+    public void testVisitFunctionCallNodeWithNewClassNotFound() {
+        SymbolTable symbolTable = mock(SymbolTable.class);
+        when(symbolTable.checkClass("UnknownClass")).thenReturn(false);
+
+        FunctionCallNode node = new FunctionCallNode();
+        IdentifierNode identifierNode = new IdentifierNode();
+        identifierNode.setText("UnknownClass");
+        node.setFunction(identifierNode);
+        node.setHasNew(true);
+
+        TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
+        visitor.visit(node); // This should throw SymbolUnboundException
     }
 
     private static TypeCheckerVisitor getTypeCheckerVisitor() {
