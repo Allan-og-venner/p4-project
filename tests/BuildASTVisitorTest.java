@@ -1665,7 +1665,7 @@ public class BuildASTVisitorTest {
         when(ctx.arrayAccess()).thenReturn(ArrayAccessctx);
         doReturn(expectedNode).when(visitor).visitArrayAccess(ArrayAccessctx);
 
-        ValueNode result = (ValueNode) visitor.visitAccessibleObject(ctx);
+        ValueNode result = visitor.visitAccessibleObject(ctx);
 
         assertNotNull(result);
         assertEquals(expectedNode.getClass(),result.getClass());

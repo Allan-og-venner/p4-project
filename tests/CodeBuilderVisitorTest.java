@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.is;
 import java.lang.annotation.Documented;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,7 +76,7 @@ public class CodeBuilderVisitorTest {
 
         String result = visitor.visit(defineNode);
 
-        assertEquals("test = \"Hej\";",result );
+        assertEquals("test = \"Hej\";", result);
         assertEquals("static String test;", visitor.getVariables().get(1));
     }
     @Test
@@ -120,6 +121,7 @@ public class CodeBuilderVisitorTest {
 
         CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
         visitor.setScopeCount(1);
+
         doReturn("String").when(visitor).visit(typeNode);
         doReturn("").when(visitor).visit(modifierNode);
         doReturn("new ArrayList<>(){{add(\"Hej\");add(\"Farvel\")}}").when(visitor).visit(expressionNode);
@@ -154,7 +156,7 @@ public class CodeBuilderVisitorTest {
 
         String result = visitor.visit(defineNode);
 
-        assertEquals("static String test = \"Hej\";",result );
+        assertEquals("static String test = \"Hej\";", result);
     }
     @Test
     public void testTestVisitDefineNodeVarNoValueString() {
@@ -184,7 +186,7 @@ public class CodeBuilderVisitorTest {
 
         String result = visitor.visit(defineNode);
 
-        assertEquals("static String test = \"\";",result );
+        assertEquals("static String test = \"\";", result);
     }
     @Test
     public void testTestVisitDefineNodeVarNoValueChar() {
@@ -214,7 +216,7 @@ public class CodeBuilderVisitorTest {
 
         String result = visitor.visit(defineNode);
 
-        assertEquals("static char test = '\\0';",result );
+        assertEquals("static char test = '\\0';", result);
     }
     @Test
     public void testTestVisitDefineNodeVarNoValueInt() {
@@ -243,7 +245,7 @@ public class CodeBuilderVisitorTest {
 
         String result = visitor.visit(defineNode);
 
-        assertEquals("static int test = 0;",result );
+        assertEquals("static int test = 0;", result);
     }
     @Test
     public void testTestVisitDefineNodeVarNoValueClass() {
@@ -505,6 +507,263 @@ public class CodeBuilderVisitorTest {
     public void testTestVisit38() {
     }
     @Test
-    public void testTestVisit39() {
+    public void testFunctionDStaticVisit() {
+        //func calSum(int a, int b) -> int { }
+        //public int calSum(int a, int b) { return a + b; }
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        ModifierNode modifierNode = Mockito.mock(ModifierNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        visitor.setScopeCount(0);
+
+        TypeNode typeNode = Mockito.spy(TypeNode.class);
+        typeNode.setTypeName("int");
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        functionDNode.setReturnType(typeNode);
+
+        when(functionDNode.getModifier()).thenReturn(modifierNode);
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode.getFunction().getText()).thenReturn("calSum");
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        doReturn("int a, int b").when(visitor).visit(fparamsNode);
+        doReturn("return a + b;").when(visitor).visit(blockNode);
+        doReturn("").when(visitor).visit(modifierNode);
+        String result = visitor.visit(functionDNode);
+
+        assertEquals("static int calSum(int a, int b) {return a + b;}", visitor.getFunctions().get(3));
+
+        /*
+        //func calSum(int a, int b) -> int { }
+        //public int calSum(int a, int b) { }
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        FparamsNode fparamsNode = new FparamsNode();
+        IdentifierNode identifierNode = Mockito.spy(IdentifierNode.class);
+        identifierNode.setText("calSum");
+
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        visitor.setScopeCount(1);
+        functionDNode.setIsAction(true);
+
+        doReturn("int a, int b").when(visitor).visit(fparamsNode);
+        String result = visitor.visit(functionDNode);
+        */
     }
+    @Test
+    public void testFunctionDVisit() {
+        //func calSum(int a, int b) -> int { }
+        //public int calSum(int a, int b) { return a + b; }
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        ModifierNode modifierNode = Mockito.mock(ModifierNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        visitor.setScopeCount(1);
+
+        TypeNode typeNode = Mockito.spy(TypeNode.class);
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        functionDNode.setReturnType(typeNode);
+
+        when(functionDNode.getModifier()).thenReturn(modifierNode);
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode.getFunction().getText()).thenReturn("calSum");
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        when(functionDNode.getReturnType()).thenReturn(typeNode);
+        when(typeNode.getTypeName()).thenReturn("int");
+
+        doReturn("int").when(visitor).handleType(any(String.class));
+        doReturn("int a, int b").when(visitor).visit(any(FparamsNode.class));
+        doReturn("return a + b;").when(visitor).visit(blockNode);
+        doReturn("").when(visitor).visit(modifierNode);
+        String result = visitor.visit(functionDNode);
+
+        assertEquals("int calSum(int a, int b) {return a + b;}", result);
+
+    }
+    @Test
+    public void testFunctionDGameVisit() {
+        //func game() -> void { }
+        //static public void game() { print("It is your turn"); }
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        visitor.setScopeCount(0);
+
+        TypeNode typeNode = Mockito.spy(TypeNode.class);
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        functionDNode.setReturnType(typeNode);
+
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode.getFunction().getText()).thenReturn("game");
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        when(functionDNode.getReturnType()).thenReturn(typeNode);
+        when(typeNode.getTypeName()).thenReturn("void");
+
+        doReturn("void").when(visitor).handleType(any(String.class));
+        doReturn("").when(visitor).visit(any(FparamsNode.class));
+        doReturn("print(\"It is your turn\");").when(visitor).visit(blockNode);
+        String result = visitor.visit(functionDNode);
+
+        assertEquals("static void game() {print(\"It is your turn\");}", visitor.getGameFunction());
+
+    }
+    @Test
+    public void testFunctionDEndVisit() {
+        //func game() -> void { }
+        //static public void game() { print("It is your turn"); }
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        visitor.setScopeCount(0);
+
+        TypeNode typeNode = Mockito.spy(TypeNode.class);
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        functionDNode.setReturnType(typeNode);
+
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode.getFunction().getText()).thenReturn("end");
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        when(functionDNode.getReturnType()).thenReturn(typeNode);
+        when(typeNode.getTypeName()).thenReturn("void");
+
+        doReturn("void").when(visitor).handleType(any(String.class));
+        doReturn("").when(visitor).visit(any(FparamsNode.class));
+        doReturn("print(\"It is your turn\");").when(visitor).visit(blockNode);
+        String result = visitor.visit(functionDNode);
+
+        assertEquals("static void end() {print(\"It is your turn\");System.exit(0); }", visitor.getEndFunction());
+
+    }
+    @Test
+    public void testFunctionDActionAllowDefinedVisit() {
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        ModifierNode modifierNode = Mockito.mock(ModifierNode.class);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        visitor.setScopeCount(1);
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode.getFunction().getText()).thenReturn("changecolor");
+        when(functionDNode.getIsAction()).thenReturn(true);
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode.getExpr()).thenReturn(expressionNode);
+        when(functionDNode.getModifier()).thenReturn(modifierNode);
+
+        doReturn("").when(visitor).visit(modifierNode);
+        doReturn("").when(visitor).visit(blockNode);
+        doReturn("Card card, String color").when(visitor).visit(fparamsNode);
+        doReturn("\"change to \"+color;").when(visitor).visit(expressionNode);
+        String result = visitor.visit(functionDNode);
+
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("if (action.equals(\"changecolor\"))"));
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("static String getchangecolorString(Card card, String color)"));
+    }
+
+    @Test
+    public void testFunctionDActionAllowActionVisit() {
+        FparamsNode fparamsNode = Mockito.mock(FparamsNode.class);
+        FparamsNode fparamsNode2 = Mockito.mock(FparamsNode.class);
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        IdentifierNode identifierNode2 = Mockito.mock(IdentifierNode.class);
+        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+        ExpressionNode expressionNode2 = Mockito.mock(ExpressionNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        BlockNode blockNode2 = Mockito.mock(BlockNode.class);
+        ModifierNode modifierNode = Mockito.mock(ModifierNode.class);
+        ModifierNode modifierNode2 = Mockito.mock(ModifierNode.class);
+        ClassStringBuilder actionMenu = Mockito.mock(ClassStringBuilder.class);
+        StringBuilder block = Mockito.spy(StringBuilder.class);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        visitor.setScopeCount(1);
+
+        FunctionDNode functionDNode = Mockito.spy(FunctionDNode.class);
+        FunctionDNode functionDNode2 = Mockito.spy(FunctionDNode.class);
+
+        when(functionDNode.getBlock()).thenReturn(blockNode);
+        when(functionDNode2.getBlock()).thenReturn(blockNode2);
+        when(actionMenu.getBlock()).thenReturn(block);
+        when(block.toString()).thenReturn("static void allowAction(");
+        when(functionDNode.getFunction()).thenReturn(identifierNode);
+        when(functionDNode2.getFunction()).thenReturn(identifierNode2);
+        when(functionDNode.getFunction().getText()).thenReturn("functionText");
+        when(functionDNode2.getFunction().getText()).thenReturn("funcText2");
+        when(functionDNode.getIsAction()).thenReturn(true);
+        when(functionDNode2.getIsAction()).thenReturn(true);
+        when(functionDNode.getParameter()).thenReturn(fparamsNode);
+        when(functionDNode2.getParameter()).thenReturn(fparamsNode2);
+        when(functionDNode.getExpr()).thenReturn(expressionNode);
+        when(functionDNode2.getExpr()).thenReturn(expressionNode2);
+        when(functionDNode.getModifier()).thenReturn(modifierNode);
+        when(functionDNode2.getModifier()).thenReturn(modifierNode2);
+
+        //doReturn(block).when(actionMenu).getBlock();
+        doReturn("").when(visitor).visit(modifierNode);
+        doReturn("").when(visitor).visit(blockNode);
+        doReturn("").when(visitor).visit(fparamsNode);
+        doReturn("").when(visitor).visit(blockNode2);
+        doReturn("").when(visitor).visit(modifierNode2);
+        doReturn("").when(visitor).visit(fparamsNode2);
+
+        doReturn("\"change to \"+color;").when(visitor).visit(expressionNode);
+        doReturn("\"change to \"+color;").when(visitor).visit(expressionNode2);
+        String preResult = visitor.visit(functionDNode);
+        String result = visitor.visit(functionDNode2);
+
+
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("if (action.equals(\"funcText2\"))"));
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("static String getfuncText2String()"));
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("if (action.equals(\"functionText\"))"));
+        assertNotEquals(-1, visitor.getClasses().get("ActionMenu").close().indexOf("static String getfunctionTextString()"));
+    }
+
+    @Test
+    public void testClassD() {
+        ClassDNode classDNode = Mockito.mock(ClassDNode.class);
+        StringBuilder classD = Mockito.spy(StringBuilder.class);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        Hashtable<String, ArrayList<Pair<String,String>>> classFields = Mockito.spy(visitor.getClassFields());
+        Pair pair1 = mock(Pair.class);
+        Pair pair2 = mock(Pair.class);
+
+        ArrayList<Pair<String,String>> pairlist = new ArrayList<>(){{add(pair1);add(pair2);}};
+
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        visitor.setScopeCount(1);
+
+
+        when(classDNode.getBlock()).thenReturn(blockNode);
+        when(classDNode.getSuperClass()).thenReturn(identifierNode);
+        when(classDNode.getName()).thenReturn(identifierNode);
+        doReturn("String a;int b;").when(visitor).visit(blockNode);
+        doReturn("className").when(visitor).visit(identifierNode);
+        doReturn(pairlist).when(classFields).get("className");
+        String result = visitor.visit(classDNode);
+        System.out.println(CodeFormatter.formatCode(result));
+    }
+
 }
