@@ -149,6 +149,13 @@ public class TypeCheckerVisitorTests {
         verify(spyVisitor, times(2)).visit(any(NegateNode.class));  //Verify that visit was called on both NegateNodes
     }
 
+    @Test
+    public void testFunctionCallNode(){
+        TypeCheckerVisitor spyVisitor = getTypeCheckerVisitor();
+
+
+    }
+
     private static TypeCheckerVisitor getTypeCheckerVisitor() {
         SymbolTable symbolTable = new SymbolTable();
         symbolTable.createOuterSymbolTable();
