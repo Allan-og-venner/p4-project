@@ -421,7 +421,8 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
             String disallowMeth = "static void disallowAction(String action" + (parameters.isBlank() ? "" : ", ") + parameters + ") {";
 
             // Check if the allow method is already defined in the `ActionMenu`
-            if (!actionMenu.getBlock().toString().contains(allowMeth)) {
+            //System.out.println(CodeFormatter.formatCode(actionMenu.close()));
+            if (!(actionMenu.getBlock().toString().contains(allowMeth))) {
                 // Add the allow method to the `ActionMenu`
                 actionMenu.addToBlock(allowMeth)
                           .addToBlock(
