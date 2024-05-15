@@ -741,29 +741,83 @@ public class CodeBuilderVisitorTest {
     }
 
     @Test
-    public void testClassD() {
+    public void testClassDEqualsWithString() {
         ClassDNode classDNode = Mockito.mock(ClassDNode.class);
         StringBuilder classD = Mockito.spy(StringBuilder.class);
         CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
-        Hashtable<String, ArrayList<Pair<String,String>>> classFields = Mockito.spy(visitor.getClassFields());
-        Pair pair1 = mock(Pair.class);
-        Pair pair2 = mock(Pair.class);
-
-        ArrayList<Pair<String,String>> pairlist = new ArrayList<>(){{add(pair1);add(pair2);}};
+        Pair<String,String> pair1 = new Pair<>("String","a");
+        Pair<String,String> pair2 = new Pair<>("int","b");
+        ArrayList<Pair<String,String>> list1 = new ArrayList<>(){{add(pair2);add(pair1);}};
+        Hashtable<String,ArrayList<Pair<String,String>>> table = Mockito.spy(Hashtable.class);
+        table.put("className",list1);
 
         IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
         BlockNode blockNode = Mockito.mock(BlockNode.class);
         visitor.setScopeCount(1);
-
 
         when(classDNode.getBlock()).thenReturn(blockNode);
         when(classDNode.getSuperClass()).thenReturn(identifierNode);
         when(classDNode.getName()).thenReturn(identifierNode);
         doReturn("String a;int b;").when(visitor).visit(blockNode);
         doReturn("className").when(visitor).visit(identifierNode);
-        doReturn(pairlist).when(classFields).get("className");
+        doReturn(list1).when(table).get(anyString());
+        doReturn(table).when(visitor).getClassFields();
         String result = visitor.visit(classDNode);
-        System.out.println(CodeFormatter.formatCode(result));
+
+
+        assertTrue(result.contains("public boolean equals(Object other) {if (other.getClass().equals(super.getClass())) {return (this.b == ((className) other).b && this.a.equals(((className) other).a));}return false;}"));
     }
 
+    @Test
+    public void testClassDEqualsWithClass() {
+        ClassDNode classDNode = Mockito.mock(ClassDNode.class);
+        StringBuilder classD = Mockito.spy(StringBuilder.class);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        Pair<String,String> pair1 = new Pair<>("anotherClass","a");
+        Pair<String,String> pair2 = new Pair<>("int","b");
+        ArrayList<Pair<String,String>> list1 = new ArrayList<>(){{add(pair2);add(pair1);}};
+        Hashtable<String,ArrayList<Pair<String,String>>> table = Mockito.spy(Hashtable.class);
+        table.put("className",list1);
+
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        visitor.setScopeCount(1);
+
+        when(classDNode.getBlock()).thenReturn(blockNode);
+        when(classDNode.getSuperClass()).thenReturn(identifierNode);
+        when(classDNode.getName()).thenReturn(identifierNode);
+        doReturn("anotherClass a;int b;").when(visitor).visit(blockNode);
+        doReturn("className").when(visitor).visit(identifierNode);
+        doReturn(list1).when(table).get(anyString());
+        doReturn(table).when(visitor).getClassFields();
+        String result = visitor.visit(classDNode);
+
+
+        assertTrue(result.contains("public boolean equals(Object other) {if (other.getClass().equals(super.getClass())) {return (this.b == ((className) other).b && this.a.equals(((className) other).a));}return false;}"));
+    }
+
+    @Test
+    public void testClassDEqualsWithoutFields() {
+        ClassDNode classDNode = Mockito.mock(ClassDNode.class);
+        StringBuilder classD = Mockito.spy(StringBuilder.class);
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ArrayList<Pair<String,String>> list1 = new ArrayList<>();
+        Hashtable<String,ArrayList<Pair<String,String>>> table = Mockito.spy(Hashtable.class);
+        table.put("className", list1);
+
+        IdentifierNode identifierNode = Mockito.mock(IdentifierNode.class);
+        BlockNode blockNode = Mockito.mock(BlockNode.class);
+        visitor.setScopeCount(1);
+
+        when(classDNode.getBlock()).thenReturn(blockNode);
+        when(classDNode.getSuperClass()).thenReturn(identifierNode);
+        when(classDNode.getName()).thenReturn(identifierNode);
+        doReturn("className").when(visitor).visit(identifierNode);
+        doReturn(list1).when(table).get(anyString());
+        doReturn(table).when(visitor).getClassFields();
+        String result = visitor.visit(classDNode);
+
+
+        assertTrue(result.contains("public boolean equals(Object other) {if (other.getClass().equals(super.getClass())) {return true;}return false;}"));
+    }
 }
