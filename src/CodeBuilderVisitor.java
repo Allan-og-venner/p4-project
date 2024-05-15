@@ -555,7 +555,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         String regex = "int|char|float";
 
         // Generate comparison logic for each instance field
-        for (Pair<String, String> instanceField : classFields.get(currentClass)) {
+        for (Pair<String, String> instanceField : getClassFields().get(currentClass)) {
             if (!instanceFields.isEmpty()) {
                 instanceFields.append(" && ");
             }
@@ -581,7 +581,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
         }
 
         // Add the `equals` method implementation to the class
-        if (!classFields.get(currentClass).isEmpty()) {
+        if (!getClassFields().get(currentClass).isEmpty()) {
             classD.append("public boolean equals(Object other) {")
                     .append("if (other.getClass().equals(super.getClass())) {")
                     .append("return (")
