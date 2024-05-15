@@ -1,0 +1,134 @@
+generatePlayerList({"Nicolaj", "Simon", "Kamilla", "Allan", "Sina", "Merete"});
+
+Player currPlayer = players[0];
+Deck deck = new Deck();
+Deck playPile = new Deck();
+playPile.visible = 1;
+
+cardType( : string color
+          : toString() -> string {return color + " " + ID;})
+
+
+cardType(ID = "plus"
+    : int amount
+    : onPlayed(Card card) -> void {
+        deck.drawMany(currPlayer.nextPlayer.hand, amount);
+        currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
+        }
+)
+
+cardType(ID = "skip"
+    : onPlayed(Card card) -> void {
+        currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
+    }
+)
+
+cardType(ID = "reverse"
+    : onPlayed(Card card) -> void {
+        loop for player in players {
+            player.nextPlayer = player.findNextPlayer(5);
+        }
+    })
+
+
+action changeColor(Card card, string color) -> void : "change to " + color {
+    card.color = color;
+}
+
+cardType(ID = "wild"
+    : onPlayed(Card card) -> void {
+        allowAction(changeColor(card, "red"));
+        allowAction(changeColor(card, "yellow"));
+        allowAction(changeColor(card, "green"));
+        allowAction(changeColor(card, "blue"));
+        displayAllowedActions();
+    }
+)
+
+action play(Card card) -> void : "play " + card.color + " " + card.ID {
+    int i = 0;
+    loop while(i < currPlayer.hand.numberOfCards()) {
+        if(currPlayer.hand.cards[i] == card) {
+            currPlayer.hand.move(i, playPile);
+            card.onPlayed(card);
+        }
+    }
+}
+
+action draw() -> void : "draw from deck" {
+    deck.draw(currPlayer.hand);
+    Card card = currPlayer.hand.cards[0];
+    print("You drew a" + card.color + " " + card.ID);
+    if (card.color == playPile.getTop().color || card.color == "wild" || card.ID == playPile.getTop().ID) {
+        disallowAllActions();
+        allowAction(play(card));
+        displayAllowedActions();
+        disallowAllActions();
+    }
+}
+
+int i = 1;
+int colors = 0;
+
+loop while (colors < 4) {
+    string color = "";
+    if (colors == 0) {
+        color = "red";
+    }
+    if (colors == 1) {
+        color = "blue";
+    }
+    if (colors == 2) {
+        color = "yellow";
+    }
+    if (colors == 3) {
+        color = "green";
+    }
+
+    loop while(i < 9) {
+        Card card = new Card();
+        card.ID = color + " " + i;
+        deck.add(card, 2);
+        i = i + 1;
+    }
+
+    Card plusCard = new Card();
+    plusCard.ID = "plus";
+    plusCard.amount = 4;
+    deck.add(plusCard, 1);
+    plusCard.amount = 2;
+    deck.add(plusCard, 2);
+
+    Card skipCard = new Card();
+    skipCard.ID = "skip";
+    deck.add(skipCard, 2);
+}
+
+deck.shuffle();
+deck.draw(playPile);
+
+loop for player in players {
+    deck.drawMany(player.hand, 7);
+}
+
+func end(Player player) -> void {
+    print("YOU ARE THE WINNER " + player.name + ", CONGLATURATIONS");
+}
+
+func game() -> void {
+    print("It is your turn, " + currPlayer);
+    showGameState(currPlayer);
+
+    loop for card in currPlayer.hand.cards {
+        if (card.color == playPile.getTop().color || card.color == "wild" || card.ID == playPile.getTop().ID) {
+            allowAction(play(card));
+        }
+    }
+    allowAction(draw());
+    displayAllowedActions();
+    disallowAllActions();
+    if (currPlayer.hand.numberOfCards() == 0) {
+        end(currPlayer);
+    }
+    currPlayer = currPlayer.nextPlayer;
+}
