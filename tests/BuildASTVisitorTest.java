@@ -229,7 +229,7 @@ public class BuildASTVisitorTest {
 
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testVisitControlError() {
         ExprParser.ControlContext ctx = Mockito.mock(ExprParser.ControlContext.class);
 
@@ -242,14 +242,15 @@ public class BuildASTVisitorTest {
         // Ensure getStart() returns the mocked token
         when(ctx.getStart()).thenReturn(token);
 
-        //try {
+        try {
+
             visitor.visitControl(ctx);
 
-        /*    fail("Should have thrown exception");
+        fail("Should have thrown exception");
         }catch (Exception e){
             assertThat(e.getMessage(), is("1 Operation not supported (control node)"));
             assertThat(e, instanceOf(UnsupportedOperationException.class));
-        }*/
+        }
 
 
     }

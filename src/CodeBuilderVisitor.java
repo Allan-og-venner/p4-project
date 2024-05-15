@@ -461,23 +461,26 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
                           );
             } else {
                 // If the allow method already exists, insert the new action logic into it
+
+                // Increase the scope count for this function's scope
+                scopeCount++;
+
+                // Add the anonymous function for the action execution
+
+
+                actionMenu.getBlock().insert(actionMenu.getBlock().indexOf(allowMeth)+allowMeth.length(),"allowedActions.add(() -> {" +
+                        visit(node.getBlock()) +
+                        "}); }");
+
+                // Exit the function's scope
+                scopeCount--;
+
                 actionMenu.getBlock().insert(
                         actionMenu.getBlock().indexOf(allowMeth) + allowMeth.length(),
                         "if (action.equals(\"" + actionName + "\")) {" +
                         "allowedNames.add(get" + actionName + "String(" + String.join(", ", vars) + "));" +
                         "indexes.add(action " + ((vars.isEmpty()) ? " + " + String.join(" + ", vars) : "") + ");"
                 );
-
-                // Increase the scope count for this function's scope
-                scopeCount++;
-
-                // Add the anonymous function for the action execution
-                actionMenu.addToBlock("allowedActions.add(() -> {" +
-                        visit(node.getBlock()) +
-                        "}); }}");
-
-                // Exit the function's scope
-                scopeCount--;
             }
         } else {
             // Handle regular function definitions
@@ -1015,7 +1018,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
                     // If the "toString" method implementation was found
                     if (index >= 0) {
                         // Replace the old "toString" method with the new one generated from the provided method node
-                        classes.get("Card").getBlock().replace(index, endIndex, visit(method));
+                        classes.get("Card").getBlock().replace(index, endIndex, "public " + visit(method));
                     } else {
                         throw new DuplicateDefinitionException(node.getLineNumber(), method.getFunction().getText());
                     }
