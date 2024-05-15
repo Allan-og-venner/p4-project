@@ -11,6 +11,10 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
     private SymbolTable symbolTable = new SymbolTable();
     private Stack<SymbolTable> symbolTables = new Stack<>();
 
+    public Stack<SymbolTable> getSymbolTables() {
+        return symbolTables;
+    }
+
     public TypeCheckerVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
         this.symbolTables.push(this.symbolTable);
@@ -737,26 +741,30 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
 
                 // Check if the method already exists in the Card symbol table
                 String expectedTypes = cardTable.fLookup(methodName);
+                System.out.println(expectedTypes);
                 if (expectedTypes != null) {
                     // Verify that the method signature matches the expected signature
-                    if (!types.equals(method.getReturnType().getTypeName() + "," + parameterTypes)) {
+                    System.out.println(types);
+                    System.out.println(method.getReturnType().getTypeName() + "," + parameterTypes);
+                    if (!types.equals(expectedTypes)) {
                         throw new WrongTypeException(node.getLineNumber(), expectedTypes, types);
                     }
-                } else {
                     // Check inheritance and ensure the return type is compatible
                     if (symbolTables.peek().checkInherits(returnedType, returnType)) {
                         if (methods.contains(methodName)) {
                             throw new DuplicateDefinitionException(node.getLineNumber(), methodName);
+                        }}else {
+                            // Mismatched return type
+                            throw new WrongTypeException(node.getLineNumber(), returnType, returnedType);
                         }
+                } else {
+
 
                         // Add the method to the Card symbol table and mark it as processed
                         cardTable.addFunction(methodName, types);
                         methods.add(methodName);
-                    } else {
-                        // Mismatched return type
-                        throw new WrongTypeException(node.getLineNumber(), returnType, returnedType);
-                    }
                 }
+
             } catch (CloneNotSupportedException e) {
                 // Print error message if symbol table cloning fails
                 System.err.println(e.getMessage());
