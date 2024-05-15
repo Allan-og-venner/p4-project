@@ -13,6 +13,13 @@ import java.util.Stack;
 
 
 public class TypeCheckerVisitorTests {
+    private static TypeCheckerVisitor getTypeCheckerVisitor() {
+        SymbolTable symbolTable = new SymbolTable();
+        symbolTable.createOuterSymbolTable();
+        TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
+        TypeCheckerVisitor spyVisitor = Mockito.spy(visitor);
+        return spyVisitor;
+    }
 
     @Test
     public void testAdditionNode() {
@@ -199,12 +206,41 @@ public class TypeCheckerVisitorTests {
         visitor.visit(node); // This should throw SymbolUnboundException
     }
 
-    private static TypeCheckerVisitor getTypeCheckerVisitor() {
-        SymbolTable symbolTable = new SymbolTable();
-        symbolTable.createOuterSymbolTable();
+    @Test
+    public void testVisitFunctionCallNodeWithoutNewKeyword(){
+        ExpressionsNode paramNode = mock(ExpressionsNode.class);
+        FunctionCallNode node = mock(FunctionCallNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+
+        when(node.getHasNew()).thenReturn(false);
+        when(identifierNode.getText()).thenReturn("myFunction");
+        when(node.getParameter()).thenReturn(paramNode);
+        when(node.getFunction()).thenReturn(identifierNode);
+
+
+        SymbolTable symbolTable = mock(SymbolTable.class);
+        when(symbolTable.fLookup("myFunction")).thenReturn("void");
+
+        TypeCheckerVisitor visitor = getTypeCheckerVisitor();
+        visitor.getSymbolTables().peek().addFunction("myFunction", "void");
+        doReturn(" ").when(visitor).visit(eq(paramNode), (ArrayList<String>) any(ArrayList.class));
+        String result = visitor.visit(node);
+
+        assertEquals("void", result);
+    }
+
+    @Test(expected = SymbolUnboundException.class)
+    public void testVisitFunctionCallNodeWithoutNewKeywordError(){
+        SymbolTable symbolTable = mock(SymbolTable.class);
+        when(symbolTable.fLookup("myFunction")).thenReturn("null");
+        FunctionCallNode node = new FunctionCallNode();
+        IdentifierNode identifierNode = new IdentifierNode();
+        identifierNode.setText("myFunction");
+        node.setFunction(identifierNode);
+        node.setHasNew(false);
+
         TypeCheckerVisitor visitor = new TypeCheckerVisitor(symbolTable);
-        TypeCheckerVisitor spyVisitor = Mockito.spy(visitor);
-        return spyVisitor;
+        String result = visitor.visit(node);
     }
 
     @Test
@@ -1131,6 +1167,7 @@ public class TypeCheckerVisitorTests {
 
         String result = visitor.visit(node);
     }
+
 
 
 
