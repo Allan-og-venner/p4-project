@@ -1010,10 +1010,7 @@ public class TypeCheckerVisitor extends ASTVisitor<String> {
                     ArrayList<String> types = new ArrayList<>(Arrays.asList(type.split(",")));
                     objectType = types.get(0);  // The first value is the return type
 
-                    // Ensure that the function is not declared with a "null" return type
-                    if (type.equals("null")) {
-                        throw new SymbolUnboundException(node.getLineNumber(), identifier);
-                    }
+
 
                     // Process the parameters if the function has any, matching them to expected types
                     if (((FunctionCallNode) currentField).getParameter() != null) {

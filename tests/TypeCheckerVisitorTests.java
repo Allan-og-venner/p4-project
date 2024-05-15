@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Stack;
 
+
 public class TypeCheckerVisitorTests {
 
     @Test
@@ -343,7 +344,7 @@ public class TypeCheckerVisitorTests {
         assertEquals("int,int", visitor.getSymbolTables().peek().getCTable().get("Card").fLookup("drawCards"));
 
     }
-
+    @Test
     public void testCardTypeMethodsError1(){
         CardTypeNode node = mock(CardTypeNode.class);
         FunctionDNode functionDNode = mock(FunctionDNode.class);
@@ -389,7 +390,7 @@ public class TypeCheckerVisitorTests {
 
 
     }
-
+    @Test
     public void testCardTypeMethodsError2(){
         CardTypeNode node = mock(CardTypeNode.class);
         FunctionDNode functionDNode = mock(FunctionDNode.class);
@@ -423,14 +424,14 @@ public class TypeCheckerVisitorTests {
         doReturn("string").when(visitor).visit(fparamsNode);
         doReturn("string").when(visitor).visit(blockNode);
         doReturn("string").when(visitor).visit(fparamsNode2);
-        doReturn("int").when(visitor).visit(blockNode2);
+        doReturn("string").when(visitor).visit(blockNode2);
 
         //visi
         try {
             visitor.visit(node);
             fail("Not thrown");
         }catch (Exception e){
-            assertThat(e, instanceOf(WrongTypeException.class));
+            assertThat(e, instanceOf(DuplicateDefinitionException.class));
         }
 
 
@@ -796,5 +797,341 @@ public class TypeCheckerVisitorTests {
 
 
     }
+
+    @Test
+    public void testClassAccessClassStatic(){
+        //Test the type of the method being accessed
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(functionCallNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("static Bark","void");
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("static Køn","string");
+        doReturn("Class Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+
+        assertEquals("void",result);
+        assertEquals("void", node.getType().getTypeName());
+
+    }
+    @Test
+    public void testClassAccessClassStatic2(){
+        //Test the type of the identifier of the method
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(identifierNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("static Bark","void");
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("static Køn","string");
+        doReturn("Class Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+
+        assertEquals("string",result);
+        assertEquals("string", node.getType().getTypeName());
+
+    }
+    @Test
+    public void testClassAccessClassMethod(){
+        //Test the type of the identifier of the method without static modifier
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(functionCallNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+        ExpressionsNode paramNode = mock(ExpressionsNode.class);
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+        when(functionCallNode.getParameter()).thenReturn(paramNode);
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+        doReturn(" ").when(visitor).visit((ExpressionsNode) eq(paramNode), (ArrayList<String>) any(ArrayList.class));
+
+        String result = visitor.visit(node);
+
+        assertEquals("void",result);
+        assertEquals("void", node.getType().getTypeName());
+
+    }
+    @Test
+    public void testClassAccessClassField(){
+        //Test the type of the identifier without static modifier
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(identifierNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+
+        assertEquals("string",result);
+        assertEquals("string", node.getType().getTypeName());
+
+    }
+    @Test
+    public void testClassAccessClassArray(){
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(arrayAccessNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+        doReturn("int").when(visitor).visit(arrayAccessNode);
+        String result = visitor.visit(node);
+
+        assertEquals("int",result);
+        assertEquals("int", node.getType().getTypeName());
+
+    }
+    @Test(expected = TypeNotClassException.class)
+    public void testClassAccessWithStaticError(){
+        //Test the type of the method being accessed
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(functionCallNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+
+        doReturn("Class Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+    }
+
+    @Test(expected = NoStaticFieldException.class)
+    public void testClassAccessClassStaticError(){
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(identifierNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("static Bark","void");
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("static Køn","string");
+        doReturn("Class Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+
+    }
+
+    @Test(expected = SymbolUnboundException.class)
+    public void testClassAccessClassMethodError(){
+
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(functionCallNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+
+    }
+
+    @Test(expected = WrongTypeException.class)
+    public void testClassAccessClassTypeWrongError(){
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(identifierNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        //visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+    }
+
+    @Test(expected = TypeNotClassException.class)
+    public void testClassAccessWithStaticError2(){
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+        ArrayAccessNode arrayAccessNode = mock(ArrayAccessNode.class);
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(functionCallNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        //visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark","void,");
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","string");
+        doReturn("Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+    }
+
+    @Test(expected = SymbolUnboundException.class)
+    public void testClassAccessFunctionReturnNull(){
+        ClassAccessNode node = spy(ClassAccessNode.class);
+        ValueNode valueNode = mock(ValueNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        IdentifierNode funcIdenti = mock(IdentifierNode.class);
+        FunctionCallNode functionCallNode = mock(FunctionCallNode.class);
+
+        ArrayList<ValueNode> valueNodes = new ArrayList<>(){{add(identifierNode);}};
+        SymbolTable testTable = spy(SymbolTable.class);
+        testTable.createOuterSymbolTable();
+
+        when(node.getObject()).thenReturn(valueNode);
+        when(node.getValue()).thenReturn(valueNodes);
+        when(functionCallNode.getFunction()).thenReturn(funcIdenti);
+        when(funcIdenti.getText()).thenReturn("Bark");
+        when(identifierNode.getText()).thenReturn("Køn");
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        visitor.getSymbolTables().peek().addClass("Dog");
+        visitor.getSymbolTables().peek().addClassSymbols("Dog", testTable);
+
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addFunction("Bark",",");
+        //visitor.getSymbolTables().peek().findClassSymbolTable("Dog").addValue("Køn","null");
+        doReturn("Dog").when(visitor).visit(valueNode);
+
+        String result = visitor.visit(node);
+    }
+
+
 
 }
