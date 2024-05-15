@@ -1168,6 +1168,65 @@ public class TypeCheckerVisitorTests {
         String result = visitor.visit(node);
     }
 
+    @Test
+    public void testVisitExpressionsNode(){
+        ExpressionsNode node = spy(ExpressionsNode.class);
+        NumberNode numberNode = mock(NumberNode.class);
+
+        when(node.getLeft()).thenReturn(numberNode);
+        when(node.getRight()).thenReturn(null);
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        doReturn("int").when(visitor).visit(numberNode);
+
+        String result = visitor.visit(node);
+
+        assertEquals("int", result);
+    }
+
+    @Test(expected = WrongTypeException.class)
+    public void testVisitExpressionsNodeError(){
+        ExpressionsNode node = spy(ExpressionsNode.class);
+        NumberNode numberNode = mock(NumberNode.class);
+        ArrayList<String> stringArrayList = new ArrayList<>(){{add("int");}};
+
+        when(node.getLeft()).thenReturn(numberNode);
+        when(node.getRight()).thenReturn(null);
+
+        when(node.getLeft()).thenReturn(numberNode);
+        when(node.getRight()).thenReturn(null);
+
+
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+
+        String result = visitor.visit(node, stringArrayList);
+    }
+
+    @Test
+    public void testVisitExpressionsNodeWithRightNode(){
+        ExpressionsNode node = spy(ExpressionsNode.class);
+        NumberNode numberNode = mock(NumberNode.class);
+        ExpressionsNode expressionsNode = mock(ExpressionsNode.class);
+        ArrayList<String> stringArrayList = new ArrayList<>(){{add("int"); add("int");}};
+
+        when(node.getRight()).thenReturn(expressionsNode);
+        when(node.getLeft()).thenReturn(numberNode);
+
+        when(node.getRight()).thenReturn(expressionsNode);
+        when(node.getLeft()).thenReturn(numberNode);
+        TypeCheckerVisitor visitor = spy(TypeCheckerVisitor.class);
+        doReturn("int").when(visitor).visit(numberNode);
+        doReturn("int").when(visitor).visit(expressionsNode, stringArrayList);
+
+        String result = visitor.visit(node, stringArrayList);
+
+        assertEquals("int", result);
+        assertEquals("int", node.getType().getTypeName());
+    }
+
+
+
+
 
 
 
