@@ -61,7 +61,7 @@ public class SymbolTable implements Cloneable {
 
     public boolean checkClass(String input) {
         String found = this.tTable.get(input);
-        return !(found == null || found.isEmpty());
+        return !(found == null );
     }
 
     public boolean checkInnerF(String input) {
