@@ -83,7 +83,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     }
 
     public String boolToInt(String boolExp) {
-        // If false, return 0; otherwise, return -1
+        // If false, return 0; otherwise, return 1
         return "((" + boolExp + ") == false ? 0 : 1)";
     }
 
@@ -805,7 +805,7 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     @Override
     public String visit(AssignmentNode node) {
         // Concatenate the left-hand side, assignment operator, and right-hand side
-        return visit(node.getLeft()) + " = " + visit(node.getRight()) + ";";
+        return visit(node.getLeft()) + " = " + visit(node.getRight());
     }
 
     @Override
