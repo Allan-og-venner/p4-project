@@ -1,0 +1,7 @@
+loop for player in players {
+    print(player);
+}
+
+loop while (colors < 4) {
+    print(colors);
+}
