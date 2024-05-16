@@ -1,0 +1,8 @@
+action draw() -> void : "draw from deck" {
+    deck.draw(currPlayer.hand);
+    Card card = currPlayer.hand.cards[0];
+    print("You drew a" + card.color + " " + card.ID);
+    if (card.color == playPile.getTop().color) {
+        allowAction(play(card));
+    }
+}

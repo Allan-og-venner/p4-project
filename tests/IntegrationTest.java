@@ -12,8 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class IntegrationTest {
     @Test
@@ -59,12 +58,37 @@ public class IntegrationTest {
             ExprParser parser = new ExprParser(tokens);
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
+
+
+
+            StatementNode arrayAccessNodeLeft = ((ClassAccessNode) ast.getStatement().getLeft()).getObject();
+
+            ValueNode identifierNode = ((ArrayAccessNode) arrayAccessNodeLeft).getArray();
+            String identifierText = ((IdentifierNode) identifierNode).getText();
+
+            ExpressionNode index = ((ArrayAccessNode) arrayAccessNodeLeft).getIndex();
+            double indexValue = ((NumberNode) index).getValue();
+
+            List arrayAccessNode2 = ((ClassAccessNode) ast.getStatement().getLeft()).getValue();
+            String fieldText = ((IdentifierNode)arrayAccessNode2.get(0)).getText();
+
+            StatementNode arrayAccessNodeRight = ast.getStatement().getRight();
+            double assignmentValue = ((NumberNode)arrayAccessNodeRight).getValue();
+            System.out.println(assignmentValue);
+
             assertNotNull(ast);
-            StatementNode node = ((ClassAccessNode) ast.getStatement().getLeft()).getObject();
-            ValueNode node1 = ((ArrayAccessNode) node).getArray();
-            String node2 = ((IdentifierNode) node1).getText();
-            assertEquals("a", node2);
-            System.out.println(node2);allan hvadspoba, e9 e9 e9 e9 e9
+            assertNotNull(arrayAccessNodeLeft);
+            assertNotNull(arrayAccessNodeRight);
+            assertNotNull(identifierNode);
+            assertNotNull(index);
+            assertNotNull(arrayAccessNode2);
+
+            assertEquals("a", identifierText);
+            assertEquals(4.0, indexValue,0);
+            assertEquals("size", fieldText);
+
+            assertEquals(2.0, assignmentValue,0);
+
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
             assertEquals("1 Operation not supported (accessible node)",e.getMessage());
