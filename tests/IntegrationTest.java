@@ -61,8 +61,6 @@ public class IntegrationTest {
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
 
-
-
             StatementNode arrayAccessNodeLeft = ((ClassAccessNode) ast.getStatement().getLeft()).getObject();
 
             ValueNode identifierNode = ((ArrayAccessNode) arrayAccessNodeLeft).getArray();
@@ -228,6 +226,17 @@ public class IntegrationTest {
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
             assertNotNull(ast);
+
+            StatementNode leftStatement = ast.getStatement();
+            assertEquals("player", ((ForNode) leftStatement).getIterator().getText());
+            assertEquals("players", ((IdentifierNode) ((ForNode) leftStatement).getArray()).getText());
+            assertNotNull(((ForNode) leftStatement).getBlock());
+
+            BlockNode leftBlock = ast.getBlocks();
+            assertEquals("colors", ((IdentifierNode) ((WhileNode) leftBlock.getStatement()).getCondition().getLeft()).getText());
+            assertTrue((((WhileNode) leftBlock.getStatement()).getCondition()) instanceof LessThanNode);
+            assertEquals(4.0, ((NumberNode) ((WhileNode) leftBlock.getStatement()).getCondition().getRight()).getValue(), 0);
+            assertNotNull(((WhileNode) leftBlock.getStatement()).getBlock());
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
             assertEquals("1 Operation not supported (loop node)",e.getMessage());
