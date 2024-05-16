@@ -1,0 +1,8 @@
+cardType(
+    ID = "plus" :
+    int amount :
+    onPlayed(Card card) -> void {
+        deck.drawMany(currPlayer.nextPlayer.hand, amount);
+        currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
+    }
+)

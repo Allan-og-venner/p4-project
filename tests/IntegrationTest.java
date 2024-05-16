@@ -209,6 +209,20 @@ public class IntegrationTest {
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
             assertNotNull(ast);
+
+            assertEquals("ID", ((IdentifierNode) ((CardTypeNode) ast.getStatement()).getIdentifier()).getText());
+            assertEquals("plus", ((CardTypeNode) ast.getStatement()).getID());
+
+            assertEquals("int", ((DefineNode) ((CardTypeNode) ast.getStatement()).getFields().get(0)).getType().getTypeName());
+            assertEquals("amount", ((IdentifierNode) ((DefineNode) ((CardTypeNode) ast.getStatement()).getFields().get(0)).getID()).getText());
+
+            assertEquals("onPlayed", ((IdentifierNode) ((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getFunction()).getText());
+            assertEquals("Card", ((FparamsNode) ((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getParameter()).getLeft().getType().getTypeName());
+            assertEquals("card", ((IdentifierNode) ((FparamsNode) ((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getParameter()).getLeft().getIdentifier()).getText());
+            assertEquals("void", ((TypeNode) ((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getReturnType()).getTypeName());
+            assertFalse(((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getIsAction());
+
+            assertNotNull(((FunctionDNode) ((CardTypeNode) ast.getStatement()).getMethods().get(0)).getBlock());
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
             assertEquals("1 Operation not supported (cardType node)",e.getMessage());
