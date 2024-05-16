@@ -23,12 +23,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 public class CodeBuilderVisitorTest {
     @Test
-    public void testVisitStart() {
-    }
-    @Test
-    public void testVisit() {
-    }
-    @Test
     public void testTestVisitDefineNodeArrayGlobal() {
         //ArrayList<String> test = new ArrayList<>(){{add("Hej");add("Farvel")}}
         DefineNode defineNode = Mockito.spy(DefineNode.class);
@@ -401,111 +395,7 @@ public class CodeBuilderVisitorTest {
         int methodIndex = visitor.getClasses().get("Card").getBlock().indexOf("static String toString(int testParam){");
         assertNotEquals(-1, methodIndex);
     }
-    @Test
-    public void testTestVisit4() {
-    }
-    @Test
-    public void testTestVisit5() {
-    }
-    @Test
-    public void testTestVisit6() {
-    }
-    @Test
-    public void testTestVisit7() {
-    }
-    @Test
-    public void testTestVisit8() {
-    }
-    @Test
-    public void testTestVisit9() {
-    }
-    @Test
-    public void testTestVisit10() {
-    }
-    @Test
-    public void testTestVisit11() {
-    }
-    @Test
-    public void testTestVisit12() {
-    }
-    @Test
-    public void testTestVisit13() {
-    }
-    @Test
-    public void testTestVisit14() {
-    }
-    @Test
-    public void testTestVisit15() {
-    }
-    @Test
-    public void testTestVisit16() {
-    }
-    @Test
-    public void testTestVisit17() {
-    }
-    @Test
-    public void testTestVisit18() {
-    }
-    @Test
-    public void testTestVisit19() {
-    }
-    @Test
-    public void testTestVisit20() {
-    }
-    @Test
-    public void testTestVisit21() {
-    }
-    @Test
-    public void testTestVisit22() {
-    }
-    @Test
-    public void testTestVisit23() {
-    }
-    @Test
-    public void testTestVisit24() {
-    }
-    @Test
-    public void testTestVisit25() {
-    }
-    @Test
-    public void testTestVisit26() {
-    }
-    @Test
-    public void testTestVisit27() {
-    }
-    @Test
-    public void testTestVisit28() {
-    }
-    @Test
-    public void testTestVisit29() {
-    }
-    @Test
-    public void testTestVisit30() {
-    }
-    @Test
-    public void testTestVisit31() {
-    }
-    @Test
-    public void testTestVisit32() {
-    }
-    @Test
-    public void testTestVisit33() {
-    }
-    @Test
-    public void testTestVisit34() {
-    }
-    @Test
-    public void testTestVisit35() {
-    }
-    @Test
-    public void testTestVisit36() {
-    }
-    @Test
-    public void testTestVisit37() {
-    }
-    @Test
-    public void testTestVisit38() {
-    }
+
     @Test
     public void testFunctionDStaticVisit() {
         //func calSum(int a, int b) -> int { }
@@ -819,5 +709,300 @@ public class CodeBuilderVisitorTest {
 
 
         assertTrue(result.contains("public boolean equals(Object other) {if (other.getClass().equals(super.getClass())) {return true;}return false;}"));
+    }
+
+    @Test
+    public void testBoolToInt() {
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        String boolExp = "true";
+        String result = visitor.boolToInt(boolExp);
+        assertEquals("((true) == false ? 0 : 1)", result);
+    }
+
+    @Test
+    public void testIntToBool() {
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        String intExp = "1";
+        String result = visitor.intToBool(intExp);
+        assertEquals("((1) == 0 ? false : true)", result);
+    }
+
+    @Test
+    public void tesHandleType() {
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        String type = "int";
+        String result = visitor.handleType(type);
+        assertEquals("int", result);
+    }
+
+    @Test
+    public void testHandleTypeWithString(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        String type = "string";
+        String result = visitor.handleType(type);
+        assertEquals("String", result);
+    }
+
+    @Test
+    public void testHandleTypeWithArray(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        String type = "array int";
+        String result = visitor.handleType(type);
+        assertEquals("Integer", result);
+    }
+
+    @Test
+    public void testVisitAdditionNode(){
+        AdditionNode additionNode = Mockito.mock(AdditionNode.class);
+        ExpressionNode left = Mockito.mock(ExpressionNode.class);
+        ExpressionNode right = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(additionNode.getLeft()).thenReturn(left);
+        when(additionNode.getRight()).thenReturn(right);
+        doReturn("1").when(visitor).visit(left);
+        doReturn("2").when(visitor).visit(right);
+
+        String result = visitor.visit(additionNode);
+        assertEquals("1+2", result);
+    }
+
+    @Test
+    public void testVisitSubtractionNode(){
+        SubtractionNode subtractionNode = Mockito.mock(SubtractionNode.class);
+        ExpressionNode left = Mockito.mock(ExpressionNode.class);
+        ExpressionNode right = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(subtractionNode.getLeft()).thenReturn(left);
+        when(subtractionNode.getRight()).thenReturn(right);
+        doReturn("1").when(visitor).visit(left);
+        doReturn("2").when(visitor).visit(right);
+
+        String result = visitor.visit(subtractionNode);
+        assertEquals("1-2", result);
+    }
+
+    @Test
+    public void testVisitMultiplicationNode(){
+        MultiplicationNode multiplicationNode = Mockito.mock(MultiplicationNode.class);
+        ExpressionNode left = Mockito.mock(ExpressionNode.class);
+        ExpressionNode right = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(multiplicationNode.getLeft()).thenReturn(left);
+        when(multiplicationNode.getRight()).thenReturn(right);
+        doReturn("1").when(visitor).visit(left);
+        doReturn("2").when(visitor).visit(right);
+
+        String result = visitor.visit(multiplicationNode);
+        assertEquals("1*2", result);
+    }
+
+    @Test
+    public void testVisitDivisionNode(){
+        DivisionNode divisionNode = Mockito.mock(DivisionNode.class);
+        ExpressionNode left = Mockito.mock(ExpressionNode.class);
+        ExpressionNode right = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(divisionNode.getLeft()).thenReturn(left);
+        when(divisionNode.getRight()).thenReturn(right);
+        doReturn("1").when(visitor).visit(left);
+        doReturn("2").when(visitor).visit(right);
+
+        String result = visitor.visit(divisionNode);
+        assertEquals("1/2", result);
+    }
+
+    @Test
+    public void testVisitModNode(){
+        ModNode modNode = Mockito.mock(ModNode.class);
+        ExpressionNode left = Mockito.mock(ExpressionNode.class);
+        ExpressionNode right = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(modNode.getLeft()).thenReturn(left);
+        when(modNode.getRight()).thenReturn(right);
+        doReturn("1").when(visitor).visit(left);
+        doReturn("2").when(visitor).visit(right);
+
+        String result = visitor.visit(modNode);
+        assertEquals("1%2", result);
+    }
+
+    @Test
+    public void testVisitNegateNode(){
+        NegateNode negateNode = Mockito.mock(NegateNode.class);
+        ExpressionNode expressionNode = Mockito.mock(ExpressionNode.class);
+
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+
+        when(negateNode.getInnerNode()).thenReturn(expressionNode);
+        doReturn("1").when(visitor).visit(expressionNode);
+
+        String result = visitor.visit(negateNode);
+        assertEquals("!1", result);
+    }
+
+    @Test
+    public void testVisitNumberNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        NumberNode node = mock(NumberNode.class);
+
+        doReturn("1").when(visitor).visit(node);
+
+        String result = visitor.visit(node);
+        assertEquals("1", result);
+    }
+
+    @Test
+    public void testVisitStringNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        StringNode node = mock(StringNode.class);
+
+        when(node.getValue()).thenReturn("Hej");
+
+        String result = visitor.visit(node);
+        assertEquals("Hej", result);
+    }
+
+    @Test
+    public void testVisitFloatNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        FloatNode node = mock(FloatNode.class);
+        when(node.getValue()).thenReturn(1.0);
+
+        String result = visitor.visit(node);
+        assertEquals("1.0f", result);
+    }
+
+    @Test
+    public void testVisitCharNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        CharNode node = mock(CharNode.class);
+        when(node.getValue()).thenReturn(String.valueOf('a'));
+
+        String result = visitor.visit(node);
+        assertEquals("a", result);
+    }
+
+    @Test
+    public void testVisitReturnNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ReturnNode node = mock(ReturnNode.class);
+        ExpressionNode expressionNode = mock(ExpressionNode.class);
+
+        when(node.getInnerNode()).thenReturn(expressionNode);
+        doReturn("1").when(visitor).visit(expressionNode);
+
+        String result = visitor.visit(node);
+        assertEquals("return 1", result);
+    }
+
+    @Test
+    public void testVisitBreakNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        BreakNode node = mock(BreakNode.class);
+
+        String result = visitor.visit(node);
+        assertEquals("break", result);
+    }
+
+    @Test
+    public void testVisitContinueNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ContinueNode node = mock(ContinueNode.class);
+
+        String result = visitor.visit(node);
+        assertEquals("continue", result);
+    }
+
+    @Test
+    public void testVisitArrayNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ArrayNode node = mock(ArrayNode.class);
+        ExpressionsNode expressionNode = mock(ExpressionsNode.class);
+
+        when(node.getInnerNode()).thenReturn(expressionNode);
+        doReturn("4").when(visitor).visit(expressionNode);
+
+        String result = visitor.visit(node);
+        assertEquals("new ArrayList<>() {{add(4);}}", result);
+    }
+
+    @Test
+    public void testVisitArrayAccessNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ArrayAccessNode node = mock(ArrayAccessNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        ExpressionNode expressionNode = mock(ExpressionNode.class);
+
+        when(node.getArray()).thenReturn(identifierNode);
+        when(node.getIndex()).thenReturn(expressionNode);
+        doReturn("array").when(visitor).visit(identifierNode);
+        doReturn("4").when(visitor).visit(expressionNode);
+
+        String result = visitor.visit(node);
+        assertEquals("array.get(4)", result);
+    }
+
+    @Test
+    public void testVisitAssignmentNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        AssignmentNode node = mock(AssignmentNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+        ExpressionNode expressionNode = mock(ExpressionNode.class);
+
+        when(node.getLeft()).thenReturn(identifierNode);
+        when(node.getRight()).thenReturn(expressionNode);
+        doReturn("a").when(visitor).visit(identifierNode);
+        doReturn("4").when(visitor).visit(expressionNode);
+
+        String result = visitor.visit(node);
+        assertEquals("a = 4", result);
+    }
+
+    @Test
+    public void testVisitFparamNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        FparamNode node = mock(FparamNode.class);
+        TypeNode typeNode = mock(TypeNode.class);
+        IdentifierNode identifierNode = mock(IdentifierNode.class);
+
+        when(node.getType()).thenReturn(typeNode);
+        when(node.getIdentifier()).thenReturn(identifierNode);
+        doReturn("int").when(visitor).visit(typeNode);
+        doReturn("a").when(visitor).visit(identifierNode);
+
+        String result = visitor.visit(node);
+        assertEquals("int a", result);
+    }
+
+    @Test
+    public void testVisitModifierNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        ModifierNode node = mock(ModifierNode.class);
+
+        when(node.getModifier()).thenReturn("static");
+
+        String result = visitor.visit(node);
+        assertEquals("static ", result);
+    }
+
+    @Test
+    public void testVisitTypeNode(){
+        CodeBuilderVisitor visitor = Mockito.spy(CodeBuilderVisitor.class);
+        TypeNode node = mock(TypeNode.class);
+
+        when(node.getTypeName()).thenReturn("int");
+
+        String result = visitor.visit(node);
+        assertEquals("int", result);
     }
 }
