@@ -805,7 +805,29 @@ public class CodeBuilderVisitor extends ASTVisitor<String> {
     @Override
     public String visit(AssignmentNode node) {
         // Concatenate the left-hand side, assignment operator, and right-hand side
-        return visit(node.getLeft()) + " = " + visit(node.getRight());
+        String expression = visit(node.getRight());
+        String var = visit(node.getLeft());
+
+
+
+        //We need to define some variables for the code.
+        //This is because we are not allowed to evaluate the same expression twice.
+        //Since the index of the array is used twice, it needs to be a variable.
+        //Java does not allow shadowing of local variables, but it does allow shadowing of fields
+        //Therefore, we cannot risk that the user's code has the same variable name as the one used here
+        //Global variables are always fields, and "players" is a guaranteed global variable.
+        //Therefore, the variable name "players" is used here.
+        //The statement is put into an if(true) so that the new binding for players is forgotten again
+        if(node.getLeft() instanceof ArrayAccessNode) {
+            String identifier = visit(((ArrayAccessNode) node.getLeft()).getArray());
+            String code = "if (true){";
+            code += "int players = " + visit(((ArrayAccessNode) node.getLeft()).getIndex()) + ";";
+            code += "for (int i = "+identifier+".size(); i <= players; i++){" + identifier + ".add(null);}";
+            code += var.replaceFirst("get\\((.)*\\)", "set(players, " + expression + ");");
+            code += "}";
+            return code;
+        }
+        return var + " = " + expression;
     }
 
     @Override
