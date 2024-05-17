@@ -61,7 +61,7 @@ public class IntegrationTest {
             ExprParser.ProgContext tree = parser.prog();
             BlockNode ast = new BuildASTVisitor().visitProg(tree);
 
-            StatementNode arrayAccessNodeLeft = ((ClassAccessNode) ast.getStatement().getLeft()).getObject();
+            StatementNode arrayAccessNodeLeft = ((ClassAccessNode) ((AssignmentNode) ((StatementNode) ast.getStatement())).getLeft()).getObject();
 
             ValueNode identifierNode = ((ArrayAccessNode) arrayAccessNodeLeft).getArray();
             String identifierText = ((IdentifierNode) identifierNode).getText();
@@ -69,12 +69,11 @@ public class IntegrationTest {
             ExpressionNode index = ((ArrayAccessNode) arrayAccessNodeLeft).getIndex();
             double indexValue = ((NumberNode) index).getValue();
 
-            List arrayAccessNode2 = ((ClassAccessNode) ast.getStatement().getLeft()).getValue();
-            String fieldText = ((IdentifierNode)arrayAccessNode2.get(0)).getText();
+            List<ValueNode> arrayAccessNode2 = ((ClassAccessNode) ((AssignmentNode) ((StatementNode) ast.getStatement())).getLeft()).getValue();
+            String fieldText = ((IdentifierNode) arrayAccessNode2.get(0)).getText();
 
-            StatementNode arrayAccessNodeRight = ast.getStatement().getRight();
-            double assignmentValue = ((NumberNode)arrayAccessNodeRight).getValue();
-            System.out.println(assignmentValue);
+            StatementNode arrayAccessNodeRight = ast.getStatement();
+            double assignmentValue = ((NumberNode) ((AssignmentNode) ((StatementNode) ast.getStatement())).getRight()).getValue();
 
             assertNotNull(ast);
             assertNotNull(arrayAccessNodeLeft);
@@ -125,9 +124,8 @@ public class IntegrationTest {
             assertEquals("void", ((FunctionDNode) statementClassBlock3).getReturnType().getTypeName());
 
             StatementNode statementClassBlock4 = ((FunctionDNode) statementClassBlock3).getBlock().getStatement();
-            assertEquals("name", ((IdentifierNode) ((ExpressionsNode) ((FunctionCallNode) statementClassBlock4).getParameter()).getLeft().getLeft()).getText());
-            assertEquals("\" barks!\"", ((StringNode) ((ExpressionsNode) ((FunctionCallNode) statementClassBlock4).getParameter()).getLeft().getRight()).getValue());
-
+            assertEquals("name", ((IdentifierNode) ((AdditionNode) ((ExpressionsNode) ((FunctionCallNode) statementClassBlock4).getParameter()).getLeft()).getLeft()).getText());
+            assertEquals("\" barks!\"", ((StringNode) ((AdditionNode) ((ExpressionsNode) ((FunctionCallNode) statementClassBlock4).getParameter()).getLeft()).getRight()).getValue());
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
             assertEquals("1 Operation not supported (class node)",e.getMessage());
@@ -169,7 +167,7 @@ public class IntegrationTest {
             ExpressionsNode expressionNode = ((FunctionCallNode) statementNode).getParameter();
             AdditionNode printText = ((AdditionNode) expressionNode.getLeft());
             List<ValueNode> classAccessNodes = ((ClassAccessNode) printText.getRight()).getValue();
-            ValueNode objectValue = ((ClassAccessNode) printText.getRight()).getObject();
+            ValueNode objectValue = (((ClassAccessNode) printText.getRight())).getObject();
             String classField = ((IdentifierNode) classAccessNodes.get(0)).getText();
             assertEquals("ID", classField);
             String identifierID = ((IdentifierNode) objectValue).getText();
@@ -177,10 +175,10 @@ public class IntegrationTest {
 
             BlockNode blockRight2 = exprRight.getBlocks().getBlocks();
             ExpressionNode ifthenNode = ((IfNode) blockRight2.getStatement()).getCondition();
-            assertNotNull(ifthenNode.getLeft());
+            assertNotNull(ifthenNode);
 
-            List<ValueNode> ifNodes = ((ClassAccessNode) ifthenNode.getRight()).getValue();
-            ValueNode ifNode = ((ClassAccessNode) ifthenNode.getRight()).getObject();
+            List<ValueNode> ifNodes = ((ClassAccessNode) (((InfixExpressionNode) ifthenNode).getRight())).getValue();
+            ValueNode ifNode = ((ClassAccessNode) ((InfixExpressionNode) ifthenNode).getRight()).getObject();
 
             assertEquals("playPile", ((IdentifierNode) ifNode).getText());
             assertEquals("getTop", ((FunctionCallNode) ifNodes.get(0)).getFunction().getText());
@@ -247,9 +245,9 @@ public class IntegrationTest {
             assertNotNull(((ForNode) leftStatement).getBlock());
 
             BlockNode leftBlock = ast.getBlocks();
-            assertEquals("colors", ((IdentifierNode) ((WhileNode) leftBlock.getStatement()).getCondition().getLeft()).getText());
+            assertEquals("colors", ((IdentifierNode) ((InfixExpressionNode) ((WhileNode) leftBlock.getStatement()).getCondition()).getLeft()).getText());
             assertTrue((((WhileNode) leftBlock.getStatement()).getCondition()) instanceof LessThanNode);
-            assertEquals(4.0, ((NumberNode) ((WhileNode) leftBlock.getStatement()).getCondition().getRight()).getValue(), 0);
+            assertEquals(4.0, ((NumberNode) ((InfixExpressionNode) ((WhileNode) leftBlock.getStatement()).getCondition()).getRight()).getValue(), 0);
             assertNotNull(((WhileNode) leftBlock.getStatement()).getBlock());
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
