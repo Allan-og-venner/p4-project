@@ -1,0 +1,13 @@
+class Animal {
+    string race;
+}
+
+class Cat extends Animal {
+    string color;
+}
+
+class Dog extends Animal {
+    string name;
+}
+
+Animal animalArray[] = {new Cat(),new Dog()};

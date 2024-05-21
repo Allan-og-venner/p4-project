@@ -1,0 +1,25 @@
+class Animal {
+    string name;
+    static int count;
+    func sound() -> void {
+        print(name + " makes a sound!");
+    }
+}
+
+class Human {
+    int age;
+}
+
+class Race extends Animal {
+    string race;
+}
+
+class Color extends Race {
+    string color;
+}
+
+class Dog extends Animal {
+    string type;
+}
+
+Animal dogs[] = {new Animal(),new Dog(), new Color(), new Human()};

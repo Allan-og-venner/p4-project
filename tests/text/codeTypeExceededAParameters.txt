@@ -1,0 +1,5 @@
+func Sum(int a, int b) -> int {
+    return a + b;
+}
+
+Sum(2,4,5);

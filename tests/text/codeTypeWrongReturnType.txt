@@ -1,0 +1,5 @@
+func Sum(string a, string b) -> int {
+    return a + b;
+}
+
+Sum("ab","ba");

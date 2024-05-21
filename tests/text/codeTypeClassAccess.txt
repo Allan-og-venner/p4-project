@@ -1,0 +1,7 @@
+class Animal {
+    string race;
+}
+
+Animal dog = new Animal();
+
+dog.race = "Bulldog";

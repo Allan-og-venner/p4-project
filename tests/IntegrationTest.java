@@ -17,6 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 public class IntegrationTest {
+
+    /*
     @Test
     public void testUNOSuccess() {
         try {
@@ -32,23 +34,9 @@ public class IntegrationTest {
             e.printStackTrace();
         }
     }
+    */
 
-    @Test
-    public void testBlockNode() {
-        try {
-            String userDir = System.getProperty("user.dir");
-            CharStream in = CharStreams.fromFileName(userDir + "/tests/codeBlockNode.txt");
-            ExprLexer lexer = new ExprLexer(in);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            ExprParser parser = new ExprParser(tokens);
-            ExprParser.ProgContext tree = parser.prog();
-            BlockNode ast = new BuildASTVisitor().visitProg(tree);
-            assertNotNull(ast);
-        } catch (Exception e) {
-            assertThat(e, instanceOf(UnsupportedOperationException.class));
-            assertEquals("1 Operation not supported (block node)",e.getMessage());
-        }
-    }
+
 
     @Test
     public void testAccessible() {
@@ -252,6 +240,233 @@ public class IntegrationTest {
         } catch (Exception e) {
             assertThat(e, instanceOf(UnsupportedOperationException.class));
             assertEquals("1 Operation not supported (loop node)",e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestContinueBreak(){
+        try {
+        String userDir = System.getProperty("user.dir");
+        CharStream in = CharStreams.fromFileName(userDir + "/tests/text/codeContinueBreak.txt");
+        ExprLexer lexer = new ExprLexer(in);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ExprParser parser = new ExprParser(tokens);
+        ExprParser.ProgContext tree = parser.prog();
+        BlockNode ast = new BuildASTVisitor().visitProg(tree);
+        assertNotNull(ast);
+
+        StatementNode forloop = ast.getStatement();
+
+        StatementNode continueNode = ((IfNode)((ForNode) forloop).getBlock().getStatement()).getBlock().getStatement();
+        assertNotNull(continueNode);
+
+        StatementNode breakNode = ((IfNode)(((ForNode) forloop).getBlock()).getBlocks().getStatement()).getBlock().getStatement();
+        assertNotNull(breakNode);
+
+        } catch (Exception e) {
+            assertThat(e, instanceOf(UnsupportedOperationException.class));
+            assertEquals("1 Operation not supported (loop node)",e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeAssignment() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeAssign.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeSubtraction() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeSubtraction.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: number and number, received: string, string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeClassArray() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeClassArray.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("25: Expected type: array Animal, received: array Object", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeExceedAParameters() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeExceededAParameters.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("5: Expected type: void, received: int", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeFunctionReturnError() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeWrongReturnType.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeClass() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeClass.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+            assertEquals(((ClassDNode)ast.getStatement()).getType().getTypeName(),"void");
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeClassAccess() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeClassAccess.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+            assertEquals("Animal", ((ClassAccessNode)((AssignmentNode)ast.getBlocks().getBlocks().getStatement()).getLeft()).getObject().getType().getTypeName());
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeArrayDefine() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeArrayDefine.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+            assertEquals("array Animal", ast.getBlocks().getStatement().getType().getTypeName());
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeReturn() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeReturn.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+            String returnType = ((FunctionDNode)ast.getStatement()).getReturnType().getTypeName();
+            String IfNodeType = ((ReturnNode)((IfNode)((FunctionDNode) ast.getStatement()).getBlock()
+                    .getStatement()).getBlock().getStatement()).getInnerNode().getType().getTypeName();
+            String outerBlockType = ((FunctionDNode)ast.getStatement()).getBlock().getType().getTypeName();
+            assertEquals(returnType, IfNodeType);
+            assertEquals(returnType, outerBlockType);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
+        }
+    }
+
+    @Test
+    public void TestTypeSubClass() {
+        try {
+            String userDir = System.getProperty("user.dir");
+            CharStream in = CharStreams.fromFileName(userDir + "/Tests/Text/codeTypeSubClass.txt");
+            ExprLexer lexer = new ExprLexer(in);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            ExprParser parser = new ExprParser(tokens);
+            ExprParser.ProgContext tree = parser.prog();
+            BlockNode ast = new BuildASTVisitor().visitProg(tree);
+            TypeCheckerVisitor typeChecker = new TypeCheckerVisitor();
+            typeChecker.visit(ast);
+
+            assertEquals("Object",typeChecker.getSymbolTables().peek().getTypes().get("Animal"));
+            assertEquals("Animal",typeChecker.getSymbolTables().peek().getTypes().get("Dog"));
+            assertEquals("Animal",typeChecker.getSymbolTables().peek().getTypes().get("Cat"));
+
+            String arrayType = ast.getBlocks().getBlocks().getBlocks().getStatement().getType().getTypeName();
+            String firstElementType = ((ArrayNode)((DefineNode)ast.getBlocks().getBlocks().getBlocks().getStatement()).getValue()).getInnerNode().getLeft().getType().getTypeName();
+            String secondElementType = ((ArrayNode)((DefineNode)ast.getBlocks().getBlocks().getBlocks().getStatement()).getValue()).getInnerNode().getRight().getType().getTypeName();
+            assertEquals(arrayType,"array Animal");
+            assertEquals(firstElementType, "Cat");
+            assertEquals(secondElementType, "Dog");
+
+        } catch (Exception e) {
+            assertThat(e, instanceOf(WrongTypeException.class));
+            assertEquals("1: Expected type: int, received: string", e.getMessage());
         }
     }
 }

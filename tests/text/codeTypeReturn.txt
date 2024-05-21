@@ -1,0 +1,6 @@
+func Sum(int a, int b) -> int {
+    if(1) {
+        return a + b;
+    }
+    return 0;
+}
