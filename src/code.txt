@@ -1,24 +1,65 @@
-generatePlayerList({"Nicolaj", "Simon", "Kamilla", "Allan", "Sina", "Merete"});
+generatePlayerList({"Nicolaj", "Simon", "Allan", "Sina", "Merete", "Kamilla"});
 
 Player currPlayer = players[0];
 Deck deck = new Deck();
+deck.name = "Deck";
 Deck playPile = new Deck();
+playPile.name = "Play pile";
 playPile.visible = 1;
+Player savedPrevPlayer;
+Player savedNextPlayer;
+int returnNextPlayer = 0;
 
 cardType( : string color
-          : toString() -> string {return color + " " + ID;})
+          : toString() -> string {
+          if(ID == "plusfour") {
+            return "plus 4";
+          }
+          if(ID == "plustwo") {
+            return color + " plus 2";
+          }
+          if(ID == "wild") {
+            return "wild";
+          }
+          return color + " " + ID;
+          })
 
 
-cardType(ID = "plus"
-    : int amount
+cardType(ID = "plustwo"
     : onPlayed(Card card) -> void {
-        deck.drawMany(currPlayer.nextPlayer.hand, amount);
+    savedPrevPlayer = currPlayer;
+        savedNextPlayer = currPlayer.nextPlayer;
+        returnNextPlayer = 1;
+        deck.drawMany(currPlayer.nextPlayer.hand, 2);
         currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
+        }
+)
+
+action changeColor(Card card, string color) -> void : "change to " + color {
+    card.color = color;
+}
+
+cardType(ID = "plusfour"
+    : onPlayed(Card card) -> void {
+        savedPrevPlayer = currPlayer;
+        savedNextPlayer = currPlayer.nextPlayer;
+        returnNextPlayer = 1;
+        deck.drawMany(currPlayer.nextPlayer.hand, 4);
+        currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
+        disallowAllActions();
+        allowAction(changeColor(card, "red"));
+        allowAction(changeColor(card, "yellow"));
+        allowAction(changeColor(card, "green"));
+        allowAction(changeColor(card, "blue"));
+        displayAllowedActions();
         }
 )
 
 cardType(ID = "skip"
     : onPlayed(Card card) -> void {
+        savedPrevPlayer = currPlayer;
+        savedNextPlayer = currPlayer.nextPlayer;
+        returnNextPlayer = 1;
         currPlayer.nextPlayer = currPlayer.nextPlayer.nextPlayer;
     }
 )
@@ -30,13 +71,9 @@ cardType(ID = "reverse"
         }
     })
 
-
-action changeColor(Card card, string color) -> void : "change to " + color {
-    card.color = color;
-}
-
 cardType(ID = "wild"
     : onPlayed(Card card) -> void {
+        disallowAllActions();
         allowAction(changeColor(card, "red"));
         allowAction(changeColor(card, "yellow"));
         allowAction(changeColor(card, "green"));
@@ -45,20 +82,21 @@ cardType(ID = "wild"
     }
 )
 
-action play(Card card) -> void : "play " + card.color + " " + card.ID {
+action play(Card card) -> void : "play " + card {
     int i = 0;
     loop while(i < currPlayer.hand.numberOfCards()) {
         if(currPlayer.hand.cards[i] == card) {
             currPlayer.hand.move(i, playPile);
             card.onPlayed(card);
         }
+        i = i + 1;
     }
 }
 
 action draw() -> void : "draw from deck" {
     deck.draw(currPlayer.hand);
     Card card = currPlayer.hand.cards[0];
-    print("You drew a" + card.color + " " + card.ID);
+    print("You drew a " + card + "\n");
     if (card.color == playPile.getTop().color || card.color == "wild" || card.ID == playPile.getTop().ID) {
         disallowAllActions();
         allowAction(play(card));
@@ -67,8 +105,15 @@ action draw() -> void : "draw from deck" {
     }
 }
 
-int i = 1;
 int colors = 0;
+
+
+class A {
+    func getA() -> A {
+        return new A();
+    }
+}
+
 
 loop while (colors < 4) {
     string color = "";
@@ -85,24 +130,42 @@ loop while (colors < 4) {
         color = "green";
     }
 
+    Card zero = new Card();
+    zero.ID = 0 + "";
+    zero.color = color;
+    deck.add(zero, 1);
+
+    int i = 1;
     loop while(i < 9) {
         Card card = new Card();
-        card.ID = color + " " + i;
+        card.ID = i + "";
+        card.color = color;
         deck.add(card, 2);
         i = i + 1;
     }
 
     Card plusCard = new Card();
-    plusCard.ID = "plus";
-    plusCard.amount = 4;
-    deck.add(plusCard, 1);
-    plusCard.amount = 2;
+    plusCard.ID = "plustwo";
+    plusCard.color = color;
     deck.add(plusCard, 2);
 
     Card skipCard = new Card();
     skipCard.ID = "skip";
+    skipCard.color = color;
     deck.add(skipCard, 2);
+    colors = colors + 1;
 }
+
+Card wildCard = new Card();
+wildCard.ID = "wild";
+wildCard.color = "wild";
+deck.add(wildCard, 8);
+
+Card plusFour = new Card();
+plusFour.ID = "plusfour";
+plusFour.color = "wild";
+deck.add(plusFour, 4);
+
 
 deck.shuffle();
 deck.draw(playPile);
@@ -115,8 +178,13 @@ func end(Player player) -> void {
     print("YOU ARE THE WINNER " + player.name + ", CONGLATURATIONS");
 }
 
+
 func game() -> void {
-    print("It is your turn, " + currPlayer);
+    if(returnNextPlayer == 1) {
+        savedPrevPlayer.nextPlayer = savedNextPlayer;
+    }
+    returnNextPlayer = 0;
+    print("It is your turn, " + currPlayer.name + "\n");
     showGameState(currPlayer);
 
     loop for card in currPlayer.hand.cards {
